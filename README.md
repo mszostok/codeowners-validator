@@ -18,6 +18,9 @@ Use the following environment variables to configure the application:
 | **GITHUB_ACCESS_TOKEN** | Yes | - | The GitHub access token. Instruction for creating token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token)|
 | **VALID_OWNER_CHECKER_ORGANIZATION_NAME** | Yes | - | The organization name where the repository is created. Used to check if GitHub owner is in the given organization. |
 
+
+![usage](./docs/assets/usage.png)
+
 ## Roadmap
 
 _Sorted with priority. First - most important._
