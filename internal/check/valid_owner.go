@@ -191,11 +191,8 @@ func (v *ValidOwnerChecker) initOrgListMembers(ctx context.Context) error {
 
 func isEmailAddress(s string) bool {
 	_, err := mail.ParseAddress(s)
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 func isGithubTeam(s string) bool {
