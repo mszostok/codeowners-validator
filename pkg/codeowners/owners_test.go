@@ -23,9 +23,21 @@ func TestParseCodeownersSuccess(t *testing.T) {
 	// given
 	givenCodeownerPath := "workspace/go/repo-name"
 	expEntries := []codeowners.Entry{
-		{3, "*", []string{"@everyone"}},
-		{5, "src/**", []string{"@org/hakuna-matata", "@pico-bello"}},
-		{6, "pkg/github.com/**", []string{"@myk"}},
+		{
+			LineNo:  3,
+			Pattern: "*",
+			Owners:  []string{"@everyone"},
+		},
+		{
+			LineNo:  5,
+			Pattern: "src/**",
+			Owners:  []string{"@org/hakuna-matata", "@pico-bello"},
+		},
+		{
+			LineNo:  6,
+			Pattern: "pkg/github.com/**",
+			Owners:  []string{"@myk"},
+		},
 	}
 
 	tFS := afero.NewMemMapFs()

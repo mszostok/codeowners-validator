@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 	"github.com/mszostok/codeowners-validator/internal/check"
+	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

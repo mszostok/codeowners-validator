@@ -20,6 +20,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Config holds the application configuration
 type Config struct {
 	RepositoryPath string
 	Github         struct {

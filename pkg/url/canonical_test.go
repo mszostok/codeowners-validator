@@ -1,8 +1,8 @@
 package url_test
 
 import (
-	"github.com/kubernetes-incubator/service-catalog/.pkg/dep/sources/https---github.com-magiconair-properties/assert"
 	"github.com/mszostok/codeowners-validator/pkg/url"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 

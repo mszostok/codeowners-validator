@@ -3,11 +3,12 @@ package check
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-github/github"
-	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 	"net/http"
 	"net/mail"
 	"strings"
+
+	"github.com/google/go-github/github"
+	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 )
 
 type ValidOwnerCheckerConfig struct {
