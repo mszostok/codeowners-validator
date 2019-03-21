@@ -3,11 +3,12 @@ package check
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-github/github"
-	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 	"net/http"
 	"net/mail"
 	"strings"
+
+	"github.com/google/go-github/github"
+	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 )
 
 type ValidOwnerCheckerConfig struct {
@@ -114,7 +115,7 @@ func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *vali
 
 	teamExists := func() bool {
 		for _, v := range allTeams {
-			if v.GetName() == team {
+			if v.GetSlug() == team {
 				return true
 			}
 		}

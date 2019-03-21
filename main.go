@@ -9,9 +9,10 @@ import (
 	"syscall"
 
 	"github.com/mszostok/codeowners-validator/internal/check"
-	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 	"github.com/mszostok/codeowners-validator/internal/printer"
 	"github.com/mszostok/codeowners-validator/internal/runner"
+	"github.com/mszostok/codeowners-validator/pkg/codeowners"
+	"github.com/mszostok/codeowners-validator/pkg/url"
 
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
@@ -19,9 +20,14 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Config holds the application configuration
 type Config struct {
-	RepositoryPath    string
-	GithubAccessToken string
+	RepositoryPath string
+	Github         struct {
+		AccessToken string `envconfig:"optional"`
+		BaseURL     string `envconfig:"optional"`
+		UploadURL   string `envconfig:"optional"`
+	}
 	ValidOwnerChecker check.ValidOwnerCheckerConfig
 }
 
@@ -38,19 +44,18 @@ func main() {
 
 	// init GitHub client
 	httpClient := http.DefaultClient
-	if cfg.GithubAccessToken != "" {
+	if cfg.Github.AccessToken != "" {
 		httpClient = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: cfg.GithubAccessToken},
+			&oauth2.Token{AccessToken: cfg.Github.AccessToken},
 		))
 	}
 
-	ghClient := github.NewClient(httpClient)
+	ghClient, err := newGithubClient(cfg, httpClient)
+	fatalOnError(err)
 
 	// init codeowners entries
 	codeownersEntries, err := codeowners.NewFromPath(cfg.RepositoryPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fatalOnError(err)
 
 	// gather checks
 	checks := []check.Checker{
@@ -60,11 +65,28 @@ func main() {
 
 	// run check runner
 	absRepoPath, err := filepath.Abs(cfg.RepositoryPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fatalOnError(err)
+
 	checkRunner := runner.NewCheckRunner(log, &printer.TTYPrinter{}, codeownersEntries, absRepoPath, checks...)
 	checkRunner.Run(ctx)
+}
+
+func newGithubClient(cfg Config, httpClient *http.Client) (ghClient *github.Client, err error) {
+	baseURL, uploadURL := cfg.Github.BaseURL, cfg.Github.UploadURL
+
+	if baseURL != "" {
+		if uploadURL == "" { // often the baseURL are same as the uploadURL, so we do not require to provide both of them
+			uploadURL = baseURL
+		}
+
+		bURL, uURL := url.CanonicalPath(baseURL), url.CanonicalPath(uploadURL)
+		ghClient, err = github.NewEnterpriseClient(bURL, uURL, httpClient)
+
+	} else {
+		ghClient = github.NewClient(httpClient)
+	}
+
+	return
 }
 
 func fatalOnError(err error) {

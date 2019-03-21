@@ -36,6 +36,7 @@ func WithSeverity(s SeverityType) Opt {
 		i.Severity = s
 	}
 }
+
 // TODO: decide where to put it
 func (out *Output) ReportIssue(e codeowners.Entry, msg string, opts ...Opt) Issue {
 	if out == nil { // TODO: error?

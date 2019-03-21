@@ -2,10 +2,11 @@ package printer
 
 import (
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/mszostok/codeowners-validator/internal/check"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/mszostok/codeowners-validator/internal/check"
 )
 
 type TTYPrinter struct{}
