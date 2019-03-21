@@ -115,7 +115,7 @@ func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *vali
 
 	teamExists := func() bool {
 		for _, v := range allTeams {
-			if v.GetName() == team {
+			if v.GetSlug() == team {
 				return true
 			}
 		}

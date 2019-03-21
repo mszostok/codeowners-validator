@@ -24,7 +24,7 @@ import (
 type Config struct {
 	RepositoryPath string
 	Github         struct {
-		AccessToken string
+		AccessToken string `envconfig:"optional"`
 		BaseURL     string `envconfig:"optional"`
 		UploadURL   string `envconfig:"optional"`
 	}

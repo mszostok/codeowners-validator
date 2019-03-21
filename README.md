@@ -16,7 +16,7 @@ Use the following environment variables to configure the application:
 | Name | Required | Default | Description |
 |-----|---------|--------|------------|
 | **REPOSITORY_PATH** | Yes | - | The repository path to your repository on your local machine. |
-| **GITHUB_ACCESS_TOKEN** | No | - | The GitHub access token. Instruction for creating token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token). If not provided then validating owners functionality is not working. |
+| **GITHUB_ACCESS_TOKEN** | No | - | The GitHub access token. Instruction for creating token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token). If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur. |
 | **GITHUB_BASE_URL** | No | https://api.github.com/ | The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. |
 | **GITHUB_UPLOAD_URL** | No | https://uploads.github.com/ | The GitHub upload URL for uploading files. <br> <br>It is taken into account only when the `GITHUB_BASE_URL` is also set. If only the `GITHUB_BASE_URL` is provided then this parameter defaults to the `GITHUB_BASE_URL` value. |
 | **VALID_OWNER_CHECKER_ORGANIZATION_NAME** | Yes | - | The organization name where the repository is created. Used to check if GitHub owner is in the given organization. |
