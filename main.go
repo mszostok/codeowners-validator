@@ -28,7 +28,7 @@ type Config struct {
 		UploadURL   string `envconfig:"optional"`
 	}
 	CheckFailureLevel check.SeverityType `envconfig:"default=warning"`
-	ValidOwnerChecker check.ValidOwnerCheckerConfig
+	OwnerChecker      check.ValidOwnerCheckerConfig
 }
 
 func main() {
@@ -60,7 +60,7 @@ func main() {
 	// aggregates checks
 	checks := []check.Checker{
 		check.NewFileExist(),
-		check.NewValidOwner(cfg.ValidOwnerChecker, ghClient),
+		check.NewValidOwner(cfg.OwnerChecker, ghClient),
 	}
 
 	// run check runner
