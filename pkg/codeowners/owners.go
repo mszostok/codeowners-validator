@@ -78,7 +78,7 @@ func parseCodeowners(r io.Reader) []Entry {
 			continue
 		}
 
-		if strings.HasPrefix(fields[0], "#"){ // comment
+		if strings.HasPrefix(fields[0], "#") { // comment
 			continue
 		}
 

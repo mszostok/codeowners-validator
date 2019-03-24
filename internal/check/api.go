@@ -2,6 +2,8 @@ package check
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 )
@@ -74,4 +76,19 @@ func (s SeverityType) String() string {
 	default:
 		return ""
 	}
+}
+
+// Unmarshal provides custom parsing of severity type.
+// Implements envconfig.Unmarshal interface.
+func (s *SeverityType) Unmarshal(in string) error {
+	switch strings.ToLower(in) {
+	case "error", "err":
+		*s = Error
+	case "warning", "warn":
+		*s = Warning
+	default:
+		return fmt.Errorf("not a valid severity type: %q", in)
+	}
+
+	return nil
 }

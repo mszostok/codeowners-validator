@@ -9,7 +9,6 @@ import (
 	"syscall"
 
 	"github.com/mszostok/codeowners-validator/internal/check"
-	"github.com/mszostok/codeowners-validator/internal/printer"
 	"github.com/mszostok/codeowners-validator/internal/runner"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 	"github.com/mszostok/codeowners-validator/pkg/url"
@@ -28,6 +27,7 @@ type Config struct {
 		BaseURL     string `envconfig:"optional"`
 		UploadURL   string `envconfig:"optional"`
 	}
+	CheckFailureLevel check.SeverityType `envconfig:"default=warning"`
 	ValidOwnerChecker check.ValidOwnerCheckerConfig
 }
 
@@ -57,7 +57,7 @@ func main() {
 	codeownersEntries, err := codeowners.NewFromPath(cfg.RepositoryPath)
 	fatalOnError(err)
 
-	// gather checks
+	// aggregates checks
 	checks := []check.Checker{
 		check.NewFileExist(),
 		check.NewValidOwner(cfg.ValidOwnerChecker, ghClient),
@@ -67,8 +67,16 @@ func main() {
 	absRepoPath, err := filepath.Abs(cfg.RepositoryPath)
 	fatalOnError(err)
 
-	checkRunner := runner.NewCheckRunner(log, &printer.TTYPrinter{}, codeownersEntries, absRepoPath, checks...)
+	checkRunner := runner.NewCheckRunner(log, codeownersEntries, absRepoPath, cfg.CheckFailureLevel, checks...)
 	checkRunner.Run(ctx)
+
+	if ctx.Err() != nil {
+		log.Error("Application was interrupted by operating system")
+		os.Exit(2)
+	}
+	if checkRunner.ShouldExitWithCheckFailure() {
+		os.Exit(3)
+	}
 }
 
 func newGithubClient(cfg Config, httpClient *http.Client) (ghClient *github.Client, err error) {

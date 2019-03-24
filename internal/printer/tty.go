@@ -41,7 +41,7 @@ func (TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(format st
 	return p.PrintfFunc()
 }
 
-func (TTYPrinter) PrintSummary(allCheck uint64, failedChecks uint64) {
+func (TTYPrinter) PrintSummary(allCheck, failedChecks int) {
 	failures := "no"
 	if failedChecks > 0 {
 		failures = fmt.Sprintf("%d", failedChecks)
