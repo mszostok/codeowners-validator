@@ -1,5 +1,7 @@
 # Codeowners Validator
-[![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/built-with-grammas-recipe.svg)](https://forthebadge.com) 
+![goreport](https://goreportcard.com/badge/github.com/mszostok/codeowners-validator) ![travis](https://travis-ci.com/mszostok/codeowners-validator.svg?branch=master) 
+
+[![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com) 
 
 ## Overview
 
