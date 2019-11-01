@@ -13,6 +13,8 @@ The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.
 
 ## Usage
 
+![usage](./docs/assets/usage.png)
+
 Use the following environment variables to configure the application:
 
 | Name | Required | Default | Description |
@@ -23,9 +25,6 @@ Use the following environment variables to configure the application:
 | **GITHUB_UPLOAD_URL** | No | https://uploads.github.com/ | The GitHub upload URL for uploading files. <br> <br>It is taken into account only when the `GITHUB_BASE_URL` is also set. If only the `GITHUB_BASE_URL` is provided then this parameter defaults to the `GITHUB_BASE_URL` value. |
 | **CHECK_FAILURE_LEVEL** | No | `warning` | Defines the level on which application should treat check issue as a failure. Defaults to `warning`, which treats both `error` and `warning` as failure and exits with error code 2. Possible values are: `error` and `warning`. |
 | **OWNER_CHECKER_ORGANIZATION_NAME** | Yes | | The organization name where the repository is created. Used to check if GitHub owner is in the given organization. |
-
-
-![usage](./docs/assets/usage.png)
 
 ### Exit status codes
 
