@@ -58,7 +58,7 @@ func (v *ValidOwnerChecker) Check(ctx context.Context, in Input) (Output, error)
 
 			validFn := v.selectValidateFn(ownerName)
 			if err := validFn(ctx, ownerName); err != nil {
-				output.ReportIssue(entry, err.Msg, WithSeverity(err.Severity))
+				output.ReportIssue(err.Msg, WithSeverity(err.Severity), WithEntry(entry))
 				if err.RateLimitReached { // Doesn't make sense to process further. TODO(mszostok): change for more generic solution like, `IsPermanentError`
 					return output, nil
 				}
@@ -215,6 +215,7 @@ func isGithubUser(s string) bool {
 	return false
 }
 
+// Name returns human readable name of the validator
 func (ValidOwnerChecker) Name() string {
 	return "Valid Owner Checker"
 }

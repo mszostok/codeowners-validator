@@ -17,7 +17,7 @@ type (
 
 	Issue struct {
 		Severity SeverityType // enum // default error
-		LineNo   uint64
+		LineNo   *uint64
 		Message  string
 	}
 
@@ -39,15 +39,24 @@ func WithSeverity(s SeverityType) Opt {
 	}
 }
 
-// TODO: decide where to put it
-func (out *Output) ReportIssue(e codeowners.Entry, msg string, opts ...Opt) Issue {
+func WithEntry(e codeowners.Entry) Opt {
+	return func(i *Issue) {
+		i.LineNo = uint64Ptr(e.LineNo)
+	}
+}
+
+func uint64Ptr(u uint64) *uint64 {
+	c := u
+	return &c
+}
+
+func (out *Output) ReportIssue(msg string, opts ...Opt) Issue {
 	if out == nil { // TODO: error?
 		return Issue{}
 	}
 
 	i := Issue{
 		Severity: Error,
-		LineNo:   e.LineNo,
 		Message:  msg,
 	}
 

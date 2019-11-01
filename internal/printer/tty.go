@@ -21,7 +21,10 @@ func (tty TTYPrinter) PrintCheckResult(checkName string, duration time.Duration,
 		issueSeverity := tty.severityPrintfFunc(i.Severity)
 
 		issueSeverity("    [%s]", strings.ToLower(i.Severity.String()[:3]))
-		issueBody(" line %d: %s\n", i.LineNo, i.Message)
+		if i.LineNo != nil {
+			issueBody(" line %d:", *i.LineNo)
+		}
+		issueBody(" %s\n", i.Message)
 	}
 
 	if len(checkOut.Issues) == 0 {
