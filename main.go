@@ -10,7 +10,9 @@ import (
 
 	"github.com/mszostok/codeowners-validator/internal/check"
 	"github.com/mszostok/codeowners-validator/internal/runner"
+	"github.com/mszostok/codeowners-validator/pkg/cachedhttp/disk"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
+	"github.com/mszostok/codeowners-validator/pkg/homedir"
 	"github.com/mszostok/codeowners-validator/pkg/url"
 
 	"github.com/google/go-github/github"
@@ -29,6 +31,10 @@ type Config struct {
 	}
 	CheckFailureLevel check.SeverityType `envconfig:"default=warning"`
 	OwnerChecker      check.ValidOwnerCheckerConfig
+	HTTPCaching       struct {
+		Disabled  bool   `envconfig:"default=false"`
+		Directory string `envconfig:"optional"`
+	}
 }
 
 func main() {
@@ -48,6 +54,17 @@ func main() {
 		httpClient = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: cfg.Github.AccessToken},
 		))
+	}
+
+	// setup disk cache if needed
+	if !cfg.HTTPCaching.Disabled {
+		cacheDir := cfg.HTTPCaching.Directory
+		if cfg.HTTPCaching.Directory == "" {
+			cacheDir, err = disk.ComputeCacheDir(filepath.Join(homedir.HomeDir(), ".codeowners-validator", "cache", "http"), cfg.Github.BaseURL)
+			fatalOnError(err)
+		}
+
+		httpClient.Transport = disk.NewCacheRoundTripper(cacheDir, httpClient.Transport, log)
 	}
 
 	ghClient, err := newGithubClient(cfg, httpClient)
