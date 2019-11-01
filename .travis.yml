@@ -4,6 +4,9 @@ go: "1.13"
 # Skip the install step. Don't `go get` dependencies. Only build with the code in vendor/
 install: skip
 
+branches:
+  only:
+    - "master"
 env:
   global:
     - GO111MODULE=off
