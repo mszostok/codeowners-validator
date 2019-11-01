@@ -11,14 +11,14 @@ env:
 
 jobs:
   include:
-    - stage: "Before commit checks"
-      name: tests
+    - stage: test
+      name: "Code Quality Analysis"
       before_script:
         # Download the binary to bin folder in $GOPATH
         - curl -L -s https://github.com/golang/dep/releases/download/v0.5.0/dep-linux-amd64 -o $GOPATH/bin/dep
         # Make the binary executable
         - chmod +x $GOPATH/bin/dep
       script: ./hack/ci/run-tests.sh
-    - stage: "Code Quality Analysis"
-      name: tests
+    - stage: test
+      name: "Before commit checks"
       script: ./hack/ci/run-lint.sh
