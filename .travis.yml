@@ -5,8 +5,9 @@ go: "1.13"
 install: skip
 
 env:
-  - GO111MODULE=off
-  - RUN_ON_CI=true
+  global:
+    - GO111MODULE=off
+    - RUN_ON_CI=true
 
 jobs:
   include:
@@ -20,4 +21,4 @@ jobs:
       script: ./hack/ci/run-tests.sh
     - stage: "Code Quality Analysis"
       name: tests
-      script: ./hack/ci/run-tests.sh
+      script: ./hack/ci/run-lint.sh
