@@ -105,11 +105,11 @@ func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *vali
 			if err.Response.StatusCode == http.StatusUnauthorized {
 				return &validateError{fmt.Sprintf("Team %q could not be check. Requires GitHub authorization.", name), Warning, false}
 			}
-			return &validateError{fmt.Sprintf("HTTP error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
 		case *github.RateLimitError:
 			return &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
 		default:
-			return &validateError{fmt.Sprintf("Unknown error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
 		}
 	}
 
@@ -144,11 +144,11 @@ func (v *ValidOwnerChecker) validateGithubUser(ctx context.Context, name string)
 			if err.Response.StatusCode == http.StatusNotFound {
 				return &validateError{fmt.Sprintf("User %q does not have github account", name), Error, false}
 			}
-			return &validateError{fmt.Sprintf("HTTP error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
 		case *github.RateLimitError:
 			return &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
 		default:
-			return &validateError{fmt.Sprintf("Unknown error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
 		}
 	}
 

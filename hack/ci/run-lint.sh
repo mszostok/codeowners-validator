@@ -30,7 +30,7 @@ golangci::run_checks() {
 
   ENABLE=$(sed 's/ /,/g' <<< "${LINTS[@]}")
 
-  golangci-lint --disable-all --enable="${ENABLE}" run ./pkg/... ./cmd/... .
+  golangci-lint --disable-all --enable="${ENABLE}" run
 
   echo -e "${GREEN}√ run golangci-lint${NC}"
 }
