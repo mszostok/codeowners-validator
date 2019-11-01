@@ -18,3 +18,6 @@ jobs:
         # Make the binary executable
         - chmod +x $GOPATH/bin/dep
       script: ./hack/ci/run-tests.sh
+    - stage: "Code Quality Analysis"
+      name: tests
+      script: ./hack/ci/run-tests.sh

@@ -45,7 +45,8 @@ func TestParseCodeownersSuccess(t *testing.T) {
 	defer revert()
 
 	f, _ := tFS.Create(path.Join(givenCodeownerPath, "CODEOWNERS"))
-	f.WriteString(sampleCodeownerFile)
+	_, err := f.WriteString(sampleCodeownerFile)
+	require.NoError(t, err)
 
 	// when
 	entries, err := codeowners.NewFromPath(givenCodeownerPath)
@@ -82,12 +83,15 @@ func TestFindCodeownersFileSuccess(t *testing.T) {
 			revert := codeowners.SetFS(tFS)
 			defer revert()
 
-			tFS.Create(path.Join(tc.basePath, "CODEOWNERS"))
+			_, err := tFS.Create(path.Join(tc.basePath, "CODEOWNERS"))
+			require.NoError(t, err)
+
 			// when
-			_, err := codeowners.NewFromPath(tc.basePath)
+			entry, err := codeowners.NewFromPath(tc.basePath)
 
 			// then
 			require.NoError(t, err)
+			require.Empty(t, entry)
 		})
 	}
 }

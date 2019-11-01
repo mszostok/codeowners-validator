@@ -12,6 +12,3 @@ func SetFS(newFs afero.Fs) func() {
 
 	return revert
 }
-
-
-
