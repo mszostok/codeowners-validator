@@ -1,5 +1,5 @@
 # Codeowners Validator
-![goreport](https://goreportcard.com/badge/github.com/mszostok/codeowners-validator) ![travis](https://travis-ci.com/mszostok/codeowners-validator.svg?branch=master) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/mszostok/codeowners-validator)](https://goreportcard.com/report/github.com/mszostok/codeowners-validator) [![Build Status](https://travis-ci.com/mszostok/codeowners-validator.svg?branch=master)](https://travis-ci.com/mszostok/codeowners-validator)
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com) 
 
