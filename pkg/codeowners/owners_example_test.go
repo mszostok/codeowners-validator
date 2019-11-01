@@ -6,7 +6,7 @@ import (
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 )
 
-func ExampleCodeownersEntries() {
+func ExampleNewFromPath() {
 	pathToCodeownersFile := "./testdata/"
 
 	entries, err := codeowners.NewFromPath(pathToCodeownersFile)
