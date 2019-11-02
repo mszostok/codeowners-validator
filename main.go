@@ -28,8 +28,10 @@ type Config struct {
 		BaseURL     string `envconfig:"optional"`
 		UploadURL   string `envconfig:"optional"`
 	}
-	CheckFailureLevel check.SeverityType `envconfig:"default=warning"`
-	OwnerChecker      check.ValidOwnerCheckerConfig
+	CheckFailureLevel  check.SeverityType `envconfig:"default=warning"`
+	OwnerChecker       check.ValidOwnerCheckerConfig
+	NotOwnedChecker    check.NotOwnedFileCheckerConfig
+	ExperimentalChecks []string `envconfig:"optional"`
 }
 
 func main() {
@@ -50,6 +52,10 @@ func main() {
 	// init checks
 	var checks []check.Checker
 
+	if isEnabled(cfg.Checks, "duppattern") {
+		checks = append(checks, check.NewDuplicatedPattern())
+	}
+
 	if isEnabled(cfg.Checks, "files") {
 		checks = append(checks, check.NewFileExist())
 	}
@@ -67,6 +73,10 @@ func main() {
 		fatalOnError(err)
 
 		checks = append(checks, check.NewValidOwner(cfg.OwnerChecker, ghClient))
+	}
+
+	if contains(cfg.ExperimentalChecks, "notowned") {
+		checks = append(checks, check.NewNotOwnedFile(cfg.NotOwnedChecker))
 	}
 
 	// run check runner
