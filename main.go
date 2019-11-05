@@ -61,6 +61,7 @@ func main() {
 	checks := []check.Checker{
 		check.NewFileExist(),
 		check.NewValidOwner(cfg.OwnerChecker, ghClient),
+		check.NewDuplicatedPattern(),
 	}
 
 	// run check runner

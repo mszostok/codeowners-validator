@@ -5,11 +5,21 @@
 
 ## Overview
 
-The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file.
+The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file. It supports private GitHub repositories and GitHub Enterprise installations.
 
+Executed checks:
+* [ ] Find unowned files (owners not specified for given files) (PR: [#8](https://github.com/mszostok/codeowners-validator/pull/8))
+* [x] Find duplicated patterns
+* [x] Find files/directories that do not exist in a given repository
+* [x] Validate owners:
+  * [x] check if the owner definition is valid (is either a GitHub user name, an organization team name, or an email address)
+  * [x] check if a GitHub owner has a GitHub account
+  * [x] check if a GitHub owner is in a given organization
+  * [x] check if an organization team exists
+  
 ## Local Installation
 
-`go get -u github.com/mszostok/codeowners-validator`
+`env GO111MODULE=off go get -u github.com/mszostok/codeowners-validator`
 
 ## Usage
 
@@ -23,12 +33,12 @@ Use the following environment variables to configure the application:
 | **GITHUB_ACCESS_TOKEN** | No | | The GitHub access token. Instruction for creating token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token). If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur. |
 | **GITHUB_BASE_URL** | No | https://api.github.com/ | The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. |
 | **GITHUB_UPLOAD_URL** | No | https://uploads.github.com/ | The GitHub upload URL for uploading files. <br> <br>It is taken into account only when the `GITHUB_BASE_URL` is also set. If only the `GITHUB_BASE_URL` is provided then this parameter defaults to the `GITHUB_BASE_URL` value. |
-| **CHECK_FAILURE_LEVEL** | No | `warning` | Defines the level on which application should treat check issue as a failure. Defaults to `warning`, which treats both `error` and `warning` as failure and exits with error code 2. Possible values are: `error` and `warning`. |
+| **CHECK_FAILURE_LEVEL** | No | `warning` | Defines the level on which the application should treat check issues as failures. Defaults to `warning`, which treats both errors and warnings as failures, and exits with error code 3. Possible values are: `error` and `warning`. |
 | **OWNER_CHECKER_ORGANIZATION_NAME** | Yes | | The organization name where the repository is created. Used to check if GitHub owner is in the given organization. |
 
 ### Exit status codes
 
-Application exits with different statuses codes which allows you to easily distinguish error category.  
+Application exits with different status codes which allow you to easily distinguish between error categories.  
 
 | Code | Description |
 |:-----:|:------------|
@@ -48,18 +58,3 @@ _Sorted with priority. First - most important._
 * [ ] Add test coverage.
 * [ ] Add support for configuration via YAML file.
 * [ ] Move dep to go modules 
-
-
-Checks:
-
-* [ ] Unowned files (Not defined owners for given files) 
-* [ ] Find doubles paths
-* [x] File/directory does not exits
-* [x] Works with teams as well
-* [x] Support for private repos (see below)
-* [x] User exist or not
-* [x] Validate owners
-  * [x] check if owner definition is valid (GitHub user, organization team, email address)
-  * [x] check if GitHub owner have GitHub account
-  * [x] check if GitHub owner is in the given organization
-  * [x] check if Organization team exist

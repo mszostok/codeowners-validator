@@ -31,7 +31,7 @@ func (FileExistChecker) Check(ctx context.Context, in Input) (Output, error) {
 
 		if len(matches) == 0 {
 			msg := fmt.Sprintf("%q does not match any files in repository", entry.Pattern)
-			output.ReportIssue(entry, msg)
+			output.ReportIssue(msg, WithEntry(entry))
 		}
 	}
 
