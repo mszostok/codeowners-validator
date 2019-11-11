@@ -122,8 +122,21 @@ func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *vali
 		return false
 	}
 
+	teamHasPermissions := func() bool {
+		for _, v := range allTeams {
+			if v.GetPermission() != "pull" {
+				return true
+			}
+		}
+		return false
+	}
+
 	if !teamExists() {
-		return &validateError{fmt.Sprintf("Team %q does not exits in organization %q", name, org), Warning, false}
+		return &validateError{fmt.Sprintf("Team %q does not exits in organization %q or has no permissions associated with the repository.", team, org), Warning, false}
+	}
+
+	if !teamHasPermissions() {
+		return &validateError{fmt.Sprintf("Team %q doesn't have write access to the repository.", team), Warning, false}
 	}
 
 	return nil
