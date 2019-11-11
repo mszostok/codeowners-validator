@@ -92,16 +92,12 @@ func (r *CheckRunner) ShouldExitWithCheckFailure() bool {
 		}
 	}
 
-	if higherOccurredIssue <= r.treatedAsFailure {
-		return true
-	}
-
-	return false
+	return higherOccurredIssue <= r.treatedAsFailure
 }
 
 func (r *CheckRunner) collectMetrics(checkOut check.Output) {
 	for _, i := range checkOut.Issues {
-		r.allFoundIssues[i.Severity] += 1
+		r.allFoundIssues[i.Severity]++
 	}
 
 	if len(checkOut.Issues) > 0 {

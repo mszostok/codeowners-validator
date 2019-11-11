@@ -58,7 +58,7 @@ func (v *ValidOwnerChecker) Check(ctx context.Context, in Input) (Output, error)
 
 			validFn := v.selectValidateFn(ownerName)
 			if err := validFn(ctx, ownerName); err != nil {
-				output.ReportIssue(entry, err.Msg, WithSeverity(err.Severity))
+				output.ReportIssue(err.Msg, WithSeverity(err.Severity), WithEntry(entry))
 				if err.RateLimitReached { // Doesn't make sense to process further. TODO(mszostok): change for more generic solution like, `IsPermanentError`
 					return output, nil
 				}
@@ -105,11 +105,11 @@ func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *vali
 			if err.Response.StatusCode == http.StatusUnauthorized {
 				return &validateError{fmt.Sprintf("Team %q could not be check. Requires GitHub authorization.", name), Warning, false}
 			}
-			return &validateError{fmt.Sprintf("HTTP error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
 		case *github.RateLimitError:
 			return &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
 		default:
-			return &validateError{fmt.Sprintf("Unknown error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
 		}
 	}
 
@@ -144,11 +144,11 @@ func (v *ValidOwnerChecker) validateGithubUser(ctx context.Context, name string)
 			if err.Response.StatusCode == http.StatusNotFound {
 				return &validateError{fmt.Sprintf("User %q does not have github account", name), Error, false}
 			}
-			return &validateError{fmt.Sprintf("HTTP error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
 		case *github.RateLimitError:
 			return &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
 		default:
-			return &validateError{fmt.Sprintf("Unknown error occured while calling GitHub: %v", err), Error, false}
+			return &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
 		}
 	}
 
@@ -215,6 +215,7 @@ func isGithubUser(s string) bool {
 	return false
 }
 
+// Name returns human readable name of the validator
 func (ValidOwnerChecker) Name() string {
 	return "Valid Owner Checker"
 }
