@@ -22,6 +22,7 @@ import (
 // Config holds the application configuration
 type Config struct {
 	RepositoryPath string
+	Checks         []string `envconfig:"optional"`
 	Github         struct {
 		AccessToken string `envconfig:"optional"`
 		BaseURL     string `envconfig:"optional"`
@@ -42,25 +43,30 @@ func main() {
 	defer cancelFunc()
 	cancelOnInterrupt(ctx, cancelFunc)
 
-	// init GitHub client
-	httpClient := http.DefaultClient
-	if cfg.Github.AccessToken != "" {
-		httpClient = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: cfg.Github.AccessToken},
-		))
-	}
-
-	ghClient, err := newGithubClient(cfg, httpClient)
-	fatalOnError(err)
-
 	// init codeowners entries
 	codeownersEntries, err := codeowners.NewFromPath(cfg.RepositoryPath)
 	fatalOnError(err)
 
-	// aggregates checks
-	checks := []check.Checker{
-		check.NewFileExist(),
-		check.NewValidOwner(cfg.OwnerChecker, ghClient),
+	// init checks
+	var checks []check.Checker
+
+	if isEnabled(cfg.Checks, "files") {
+		checks = append(checks, check.NewFileExist())
+	}
+
+	if isEnabled(cfg.Checks, "owners") {
+		// init GitHub client
+		httpClient := http.DefaultClient
+		if cfg.Github.AccessToken != "" {
+			httpClient = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
+				&oauth2.Token{AccessToken: cfg.Github.AccessToken},
+			))
+		}
+
+		ghClient, err := newGithubClient(cfg, httpClient)
+		fatalOnError(err)
+
+		checks = append(checks, check.NewValidOwner(cfg.OwnerChecker, ghClient))
 	}
 
 	// run check runner
@@ -77,6 +83,27 @@ func main() {
 	if checkRunner.ShouldExitWithCheckFailure() {
 		os.Exit(3)
 	}
+}
+
+func isEnabled(checks []string, name string) bool {
+	// if a user does not specify concrete checks then all checks are enabled
+	if len(checks) == 0 {
+		return true
+	}
+
+	if contains(checks, name) {
+		return true
+	}
+	return false
+}
+
+func contains(checks []string, name string) bool {
+	for _, c := range checks {
+		if c == name {
+			return true
+		}
+	}
+	return false
 }
 
 func newGithubClient(cfg Config, httpClient *http.Client) (ghClient *github.Client, err error) {
