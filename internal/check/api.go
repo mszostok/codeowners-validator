@@ -72,7 +72,7 @@ func (out *Output) ReportIssue(msg string, opts ...Opt) Issue {
 type SeverityType int
 
 const (
-	Error SeverityType = iota
+	Error SeverityType = iota + 1
 	Warning
 )
 
