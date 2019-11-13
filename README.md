@@ -1,11 +1,17 @@
-# Codeowners Validator
-[![Go Report Card](https://goreportcard.com/badge/github.com/mszostok/codeowners-validator)](https://goreportcard.com/report/github.com/mszostok/codeowners-validator) [![Build Status](https://travis-ci.com/mszostok/codeowners-validator.svg?branch=master)](https://travis-ci.com/mszostok/codeowners-validator)
+<p align="center">
+  <h3 align="center">GitHub CODEOWNERS Validator</h3>
+  <p align="center">Ensures the correctness of your CODEOWNERS file.</p>
+  <p align="center">
+    <a href="/LICENSE"><img alt="Software License" src="https://img.shields.io/badge/license-Apache-brightgreen.svg?style=flat-square"></a>
+    <a href="https://goreportcard.com/report/github.com/goreleaser/godownloader"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator?style=flat-square"></a>
+    <a href="https://travis-ci.org/goreleaser/godownloader"><img alt="Travis" src="https://img.shields.io/travis/com/mszostok/codeowners-validator/master.svg?style=flat-square"></a>
+    <!-- <a href="http://godoc.org/github.com/mszostok/codeowners-validator"><img alt="Go Doc" src="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square"></a> --> 
+  </p>
+</p>
 
-[![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com) 
+---
 
-## Overview
-
-The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file. It supports private GitHub repositories and GitHub Enterprise installations.
+The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file using [those checks](#checks). It supports public and private GitHub repositories and also GitHub Enterprise installations.
 
 ![usage](./docs/assets/usage.png)
 
@@ -19,10 +25,10 @@ Here is the recommended way to install `codeowners-validator`:
 
 ```bash
 # binary installed into ./bin/
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.1.1
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.2.0
 
 # binary installed into $(go env GOPATH)/bin/codeowners-validator
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v0.1.1
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v0.2.0
 
 # In alpine linux (as it does not come with curl by default)
 wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.2.0
@@ -91,6 +97,6 @@ Application exits with different status codes which allow you to easily distingu
 
 ## Roadmap
 
-The [codeowners-validator roadmap uses Github milestones](https://github.com/mszostok/codeowners-validator/milestones) to track the progress of the project.
+The [codeowners-validator roadmap uses Github milestones](https://github.com/mszostok/codeowners-validator/milestone/1) to track the progress of the project.
 
-Issues with the `priority/important-longterm` label will be implemented as the first one.
+They are sorted with priority. First are most important.
