@@ -12,6 +12,7 @@ import (
 	"github.com/mszostok/codeowners-validator/internal/runner"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 	"github.com/mszostok/codeowners-validator/pkg/url"
+	"github.com/mszostok/codeowners-validator/pkg/version"
 
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
@@ -35,6 +36,12 @@ type Config struct {
 }
 
 func main() {
+	version.Init()
+	if version.ShouldPrintVersion() {
+		version.PrintVersion(os.Stdout)
+		os.Exit(0)
+	}
+
 	var cfg Config
 	err := envconfig.Init(&cfg)
 	fatalOnError(err)
@@ -52,7 +59,7 @@ func main() {
 	// init checks
 	var checks []check.Checker
 
-	if isEnabled(cfg.Checks, "duppattern") {
+	if isEnabled(cfg.Checks, "duppatterns") {
 		checks = append(checks, check.NewDuplicatedPattern())
 	}
 
