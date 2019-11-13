@@ -8,10 +8,6 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-func init() {
-	flag.Parse()
-}
-
 var (
 	printVer = flag.BoolP("version", "v", false, "Prints current version.")
 	short    = flag.Bool("short", false, "Print just the version number.")
@@ -25,6 +21,10 @@ type Info struct {
 	GoVersion string
 	Compiler  string
 	Platform  string
+}
+
+func Init() {
+	flag.Parse()
 }
 
 // Get returns the overall codebase version. It's for detecting

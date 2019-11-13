@@ -9,8 +9,8 @@ import (
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 )
 
-// DuplicatedPatternChecker validates if CODEOWNERS file does not contain the duplicated
-// path.
+// DuplicatedPatternChecker validates if CODEOWNERS file does not contain
+// the duplicated lines with the same file pattern.
 type DuplicatedPatternChecker struct{}
 
 // NewDuplicatedPattern returns instance of the DuplicatedPatternChecker

@@ -36,6 +36,7 @@ type Config struct {
 }
 
 func main() {
+	version.Init()
 	if version.ShouldPrintVersion() {
 		version.PrintVersion(os.Stdout)
 		os.Exit(0)
@@ -58,7 +59,7 @@ func main() {
 	// init checks
 	var checks []check.Checker
 
-	if isEnabled(cfg.Checks, "duppattern") {
+	if isEnabled(cfg.Checks, "duppatterns") {
 		checks = append(checks, check.NewDuplicatedPattern())
 	}
 
