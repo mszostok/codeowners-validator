@@ -12,6 +12,7 @@ import (
 	"github.com/mszostok/codeowners-validator/internal/runner"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 	"github.com/mszostok/codeowners-validator/pkg/url"
+	"github.com/mszostok/codeowners-validator/pkg/version"
 
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
@@ -35,6 +36,11 @@ type Config struct {
 }
 
 func main() {
+	if version.ShouldPrintVersion() {
+		version.PrintVersion(os.Stdout)
+		os.Exit(0)
+	}
+
 	var cfg Config
 	err := envconfig.Init(&cfg)
 	fatalOnError(err)
