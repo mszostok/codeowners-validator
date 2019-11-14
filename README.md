@@ -13,7 +13,7 @@
 
 The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file using [those checks](#checks). It supports public and private GitHub repositories and also GitHub Enterprise installations.
 
-![usage](./docs/assets/usage.png)
+![usage](./docs/assets/usage.svg)
 
 ## Installation
 
