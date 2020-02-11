@@ -20,6 +20,7 @@ type ValidOwnerChecker struct {
 	ghClient   *github.Client
 	orgMembers *map[string]struct{}
 	orgName    string
+	orgTeams   map[string][]*github.Team
 }
 
 // NewValidOwner returns new instance of the ValidOwnerChecker
@@ -92,24 +93,53 @@ type validateError struct {
 	RateLimitReached bool
 }
 
+func (v *ValidOwnerChecker) initOrgListTeams(ctx context.Context, org string) ([]*github.Team, *validateError) {
+	var teams []*github.Team
+	req := &github.ListOptions{
+		PerPage: 100,
+	}
+	for {
+		resultPage, resp, err := v.ghClient.Teams.ListTeams(ctx, org, req)
+		if err != nil { // TODO(mszostok): implement retry?
+			switch err := err.(type) {
+			case *github.ErrorResponse:
+				if err.Response.StatusCode == http.StatusUnauthorized {
+					return nil, &validateError{fmt.Sprintf("Teams for org %q could not be queried. Requires GitHub authorization.", org), Warning, false}
+				}
+				return nil, &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
+			case *github.RateLimitError:
+				return nil, &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
+			default:
+				return nil, &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
+			}
+		}
+		teams = append(teams, resultPage...)
+		if resp.NextPage == 0 {
+			break
+		}
+		req.Page = resp.NextPage
+	}
+
+	if v.orgTeams == nil {
+		v.orgTeams = map[string][]*github.Team{}
+	}
+	v.orgTeams[org] = teams
+
+	return teams, nil
+}
+
 func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *validateError {
 	parts := strings.SplitN(name, "/", 2)
 	org := parts[0]
 	org = strings.TrimPrefix(org, "@")
 	team := parts[1]
 
-	allTeams, _, err := v.ghClient.Teams.ListTeams(ctx, org, nil)
-	if err != nil { // TODO(mszostok): implement retry?
-		switch err := err.(type) {
-		case *github.ErrorResponse:
-			if err.Response.StatusCode == http.StatusUnauthorized {
-				return &validateError{fmt.Sprintf("Team %q could not be check. Requires GitHub authorization.", name), Warning, false}
-			}
-			return &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
-		case *github.RateLimitError:
-			return &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
-		default:
-			return &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
+	allTeams, ok := v.orgTeams[org]
+	if !ok {
+		var err *validateError
+		allTeams, err = v.initOrgListTeams(ctx, org)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -132,7 +162,7 @@ func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *vali
 	}
 
 	if !teamExists() {
-		return &validateError{fmt.Sprintf("Team %q does not exits in organization %q or has no permissions associated with the repository.", team, org), Warning, false}
+		return &validateError{fmt.Sprintf("Team %q does not exist in organization %q or has no permissions associated with the repository.", team, org), Warning, false}
 	}
 
 	if !teamHasPermissions() {
