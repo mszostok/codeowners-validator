@@ -9,17 +9,17 @@ import (
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 )
 
-// DuplicatedPatternChecker validates if CODEOWNERS file does not contain
+// DuplicatedPattern validates if CODEOWNERS file does not contain
 // the duplicated lines with the same file pattern.
-type DuplicatedPatternChecker struct{}
+type DuplicatedPattern struct{}
 
-// NewDuplicatedPattern returns instance of the DuplicatedPatternChecker
-func NewDuplicatedPattern() *DuplicatedPatternChecker {
-	return &DuplicatedPatternChecker{}
+// NewDuplicatedPattern returns instance of the DuplicatedPattern
+func NewDuplicatedPattern() *DuplicatedPattern {
+	return &DuplicatedPattern{}
 }
 
 // Check searches for doubles paths(patterns) in CODEOWNERS file.
-func (d *DuplicatedPatternChecker) Check(ctx context.Context, in Input) (Output, error) {
+func (d *DuplicatedPattern) Check(ctx context.Context, in Input) (Output, error) {
 	var output Output
 
 	// TODO(mszostok): decide if the `CodeownerEntries` entry by default should be
@@ -55,6 +55,6 @@ func ListFormatFunc(es []codeowners.Entry) string {
 }
 
 // Name returns human readable name of the validator.
-func (DuplicatedPatternChecker) Name() string {
+func (DuplicatedPattern) Name() string {
 	return "Duplicated Pattern Checker"
 }

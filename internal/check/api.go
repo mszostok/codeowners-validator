@@ -31,15 +31,15 @@ type (
 	}
 )
 
-type Opt func(*Issue)
+type ReportIssueOpt func(*Issue)
 
-func WithSeverity(s SeverityType) Opt {
+func WithSeverity(s SeverityType) ReportIssueOpt {
 	return func(i *Issue) {
 		i.Severity = s
 	}
 }
 
-func WithEntry(e codeowners.Entry) Opt {
+func WithEntry(e codeowners.Entry) ReportIssueOpt {
 	return func(i *Issue) {
 		i.LineNo = uint64Ptr(e.LineNo)
 	}
@@ -50,7 +50,7 @@ func uint64Ptr(u uint64) *uint64 {
 	return &c
 }
 
-func (out *Output) ReportIssue(msg string, opts ...Opt) Issue {
+func (out *Output) ReportIssue(msg string, opts ...ReportIssueOpt) Issue {
 	if out == nil { // TODO: error?
 		return Issue{}
 	}
