@@ -7,7 +7,7 @@ set -E         # needs to be set if we want the ERR trap
 
 readonly CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 readonly ROOT_PATH=${CURRENT_DIR}/../..
-readonly GOLANGCI_LINT_VERSION="v1.21.0"
+readonly GOLANGCI_LINT_VERSION="v1.23.8"
 
 source "${CURRENT_DIR}/utilities.sh" || { echo 'Cannot load CI utilities.'; exit 1; }
 
@@ -25,14 +25,21 @@ golangci::run_checks() {
     deadcode errcheck gosimple govet ineffassign staticcheck \
     structcheck typecheck unused varcheck \
     # additional lints
-    golint gofmt misspell gochecknoinits unparam scopelint gosec
+    golint gofmt misspell gochecknoinits unparam scopelint gosec goimports
   )
 
   ENABLE=$(sed 's/ /,/g' <<< "${LINTS[@]}")
 
-  golangci-lint --disable-all --enable="${ENABLE}" run ./...
+  golangci-lint --disable-all "$(golangci::fix_on_local)" --enable="${ENABLE}" run ./...
 
   echo -e "${GREEN}√ run golangci-lint${NC}"
+}
+
+golangci::fix_on_local() {
+  if [[ "${RUN_ON_CI:-x}" == "true" ]]; then
+    return
+  fi
+  echo "--fix"
 }
 
 main() {

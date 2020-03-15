@@ -6,8 +6,9 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/google/go-github/github"
 	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
+
+	"github.com/google/go-github/v29/github"
 )
 
 type ValidOwnerConfig struct {
