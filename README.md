@@ -25,13 +25,13 @@ Here is the recommended way to install `codeowners-validator`:
 
 ```bash
 # binary installed into ./bin/
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.2.0
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.3.0
 
 # binary installed into $(go env GOPATH)/bin/codeowners-validator
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v0.2.0
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v0.3.0
 
 # In alpine linux (as it does not come with curl by default)
-wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.2.0
+wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.3.0
 
 # Print version. Add `--short` to print just the version number.
 codeowners-validator -v
@@ -41,9 +41,9 @@ You can also download [latest version](https://github.com/mszostok/codeowners-va
 
 #### From Sources
 
-You can install `codeowners-validator` with `env GO111MODULE=off go get -u github.com/mszostok/codeowners-validator`.
+You can install `codeowners-validator` with `env GO111MODULE=on go get -u github.com/mszostok/codeowners-validator`.
 
-> NOTE: please use the latest go to do this, ideally go 1.12 or greater.
+> NOTE: please use the latest Go to do this, ideally Go 1.12 or greater.
 
 This will put `codeowners-validator` in `$(go env GOPATH)/bin`
 
