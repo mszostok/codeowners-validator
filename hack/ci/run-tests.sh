@@ -5,8 +5,8 @@ set -o nounset # treat unset variables as an error and exit immediately.
 set -o errexit # exit immediately when a command fails.
 set -E         # needs to be set if we want the ERR trap
 
-# Currently we are using the newest go (1.13) but project is still not switched to go modules
-export GO111MODULE=off
+# Currently we are using the newest go (1.13) with go modules
+export GO111MODULE=on
 
 readonly CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 readonly ROOT_PATH=${CURRENT_DIR}/../..
@@ -29,15 +29,17 @@ echo "GOPATH:" + ${GOPATH}
 echo -e "${NC}"
 
 ##
-# DEP STATUS
+# Go modules
 ##
-shout "? dep status"
-depResult=$(dep status -v)
-if [[ $? != 0 ]]; then
-	echo -e "${RED}✗ dep status\n$depResult${NC}"
-	exit 1
-else echo -e "${GREEN}√ dep status${NC}"
+shout "? go mod tidy"
+go mod tidy
+STATUS=$( git status --porcelain go.mod go.sum )
+if [ ! -z "$STATUS" ]; then
+    echo "${RED}✗ go mod tidy modified go.mod and/or go.sum${NC}"
+    exit 1
+else echo -e "${GREEN}√ go mod tidy${NC}"
 fi
+
 
 ##
 # GO BUILD
@@ -66,26 +68,4 @@ if [[ $? != 0 ]]; then
 	echo -e "${RED}✗ go test\n${NC}"
 	exit 1
 else echo -e "${GREEN}√ go test${NC}"
-fi
-
-goFilesToCheck=$(find . -type f -name "*.go" | egrep -v "\/vendor\/|_*/automock/|_*/testdata/|/pkg\/|_*export_test.go")
-
-##
-# GO IMPORTS & FMT
-##
-go build -o goimports-vendored ./vendor/golang.org/x/tools/cmd/goimports
-buildGoImportResult=$?
-if [[ ${buildGoImportResult} != 0 ]]; then
-	echo -e "${RED}✗ go build goimports${NC}\n$buildGoImportResult${NC}"
-	exit 1
-fi
-
-shout "? goimports"
-goImportsResult=$(echo "${goFilesToCheck}" | xargs -L1 ./goimports-vendored -w -l)
-rm goimports-vendored
-
-if [[ $(echo ${#goImportsResult}) != 0 ]]; then
-	echo -e "${RED}✗ goimports and fmt ${NC}\n$goImportsResult${NC}"
-	exit 1
-else echo -e "${GREEN}√ goimports and fmt ${NC}"
 fi

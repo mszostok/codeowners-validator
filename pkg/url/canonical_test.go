@@ -1,9 +1,10 @@
 package url_test
 
 import (
+	"testing"
+
 	"github.com/mszostok/codeowners-validator/pkg/url"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestCanonicalURLPath(t *testing.T) {
