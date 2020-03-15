@@ -9,13 +9,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-type FileExistChecker struct{}
+type FileExist struct{}
 
-func NewFileExist() *FileExistChecker {
-	return &FileExistChecker{}
+func NewFileExist() *FileExist {
+	return &FileExist{}
 }
 
-func (FileExistChecker) Check(ctx context.Context, in Input) (Output, error) {
+func (FileExist) Check(ctx context.Context, in Input) (Output, error) {
 	var output Output
 
 	for _, entry := range in.CodeownerEntries {
@@ -38,6 +38,6 @@ func (FileExistChecker) Check(ctx context.Context, in Input) (Output, error) {
 	return output, nil
 }
 
-func (FileExistChecker) Name() string {
+func (FileExist) Name() string {
 	return "File Exist Checker"
 }

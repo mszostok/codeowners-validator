@@ -2,7 +2,6 @@ package check
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/mail"
 	"strings"
@@ -11,27 +10,27 @@ import (
 	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 )
 
-type ValidOwnerCheckerConfig struct {
-	OrganizationName string
+type ValidOwnerConfig struct {
+	OrganizationName string `envconfig:"optional"`
 }
 
-// ValidOwnerChecker validates each owner
-type ValidOwnerChecker struct {
+// ValidOwner validates each owner
+type ValidOwner struct {
 	ghClient   *github.Client
 	orgMembers *map[string]struct{}
 	orgName    string
 	orgTeams   map[string][]*github.Team
 }
 
-// NewValidOwner returns new instance of the ValidOwnerChecker
-func NewValidOwner(cfg ValidOwnerCheckerConfig, ghClient *github.Client) *ValidOwnerChecker {
-	return &ValidOwnerChecker{
+// NewValidOwner returns new instance of the ValidOwner
+func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) *ValidOwner {
+	return &ValidOwner{
 		ghClient: ghClient,
 		orgName:  cfg.OrganizationName,
 	}
 }
 
-// Check check if defined owners are the valid ones.
+// Check checks if defined owners are the valid ones.
 // Allowed owner syntax:
 // @username
 // @org/team-name
@@ -43,7 +42,7 @@ func NewValidOwner(cfg ValidOwnerCheckerConfig, ghClient *github.Client) *ValidO
 // - if github user then check if have github account
 // - if github user then check if he/she is in organization
 // - if org team then check if exists in organization
-func (v *ValidOwnerChecker) Check(ctx context.Context, in Input) (Output, error) {
+func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 	var output Output
 	checkedOwners := map[string]struct{}{}
 
@@ -59,8 +58,8 @@ func (v *ValidOwnerChecker) Check(ctx context.Context, in Input) (Output, error)
 
 			validFn := v.selectValidateFn(ownerName)
 			if err := validFn(ctx, ownerName); err != nil {
-				output.ReportIssue(err.Msg, WithSeverity(err.Severity), WithEntry(entry))
-				if err.RateLimitReached { // Doesn't make sense to process further. TODO(mszostok): change for more generic solution like, `IsPermanentError`
+				output.ReportIssue(err.msg, WithEntry(entry))
+				if err.rateLimitReached { // Doesn't make sense to process further. TODO(mszostok): change for more generic solution like, `IsPermanentError`
 					return output, nil
 				}
 			}
@@ -71,7 +70,7 @@ func (v *ValidOwnerChecker) Check(ctx context.Context, in Input) (Output, error)
 	return output, nil
 }
 
-func (v *ValidOwnerChecker) selectValidateFn(name string) func(context.Context, string) *validateError {
+func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string) *validateError {
 	switch {
 	case isGithubUser(name):
 		return v.validateGithubUser
@@ -82,18 +81,12 @@ func (v *ValidOwnerChecker) selectValidateFn(name string) func(context.Context, 
 		return func(context.Context, string) *validateError { return nil }
 	default:
 		return func(_ context.Context, name string) *validateError {
-			return &validateError{fmt.Sprintf("Not valid owner definition %q", name), Error, false}
+			return newValidateError("Not valid owner definition %q", name)
 		}
 	}
 }
 
-type validateError struct {
-	Msg              string
-	Severity         SeverityType
-	RateLimitReached bool
-}
-
-func (v *ValidOwnerChecker) initOrgListTeams(ctx context.Context, org string) ([]*github.Team, *validateError) {
+func (v *ValidOwner) initOrgListTeams(ctx context.Context, org string) ([]*github.Team, *validateError) {
 	var teams []*github.Team
 	req := &github.ListOptions{
 		PerPage: 100,
@@ -104,13 +97,13 @@ func (v *ValidOwnerChecker) initOrgListTeams(ctx context.Context, org string) ([
 			switch err := err.(type) {
 			case *github.ErrorResponse:
 				if err.Response.StatusCode == http.StatusUnauthorized {
-					return nil, &validateError{fmt.Sprintf("Teams for org %q could not be queried. Requires GitHub authorization.", org), Warning, false}
+					return nil, newValidateError("Teams for organization %q could not be queried. Requires GitHub authorization.", org)
 				}
-				return nil, &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
+				return nil, newValidateError("HTTP error occurred while calling GitHub: %v", err)
 			case *github.RateLimitError:
-				return nil, &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
+				return nil, newValidateError("GitHub rate limit reached: %v", err.Message).RateLimitReached()
 			default:
-				return nil, &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
+				return nil, newValidateError("Unknown error occurred while calling GitHub: %v", err)
 			}
 		}
 		teams = append(teams, resultPage...)
@@ -128,7 +121,7 @@ func (v *ValidOwnerChecker) initOrgListTeams(ctx context.Context, org string) ([
 	return teams, nil
 }
 
-func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *validateError {
+func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateError {
 	parts := strings.SplitN(name, "/", 2)
 	org := parts[0]
 	org = strings.TrimPrefix(org, "@")
@@ -153,16 +146,16 @@ func (v *ValidOwnerChecker) validateTeam(ctx context.Context, name string) *vali
 	}
 
 	if !teamExists() {
-		return &validateError{fmt.Sprintf("Team %q does not exist in organization %q or has no permissions associated with the repository.", team, org), Warning, false}
+		return newValidateError("Team %q does not exist in organization %q or has no permissions associated with the repository.", team, org)
 	}
 
 	return nil
 }
 
-func (v *ValidOwnerChecker) validateGithubUser(ctx context.Context, name string) *validateError {
+func (v *ValidOwner) validateGithubUser(ctx context.Context, name string) *validateError {
 	if v.orgMembers == nil { //TODO(mszostok): lazy init, make it more robust.
 		if err := v.initOrgListMembers(ctx); err != nil {
-			return &validateError{fmt.Sprintf("Cannot initialize organization member list: %v", err), Error, false}
+			return newValidateError("Cannot initialize organization member list: %v", err)
 		}
 	}
 
@@ -172,19 +165,19 @@ func (v *ValidOwnerChecker) validateGithubUser(ctx context.Context, name string)
 		switch err := err.(type) {
 		case *github.ErrorResponse:
 			if err.Response.StatusCode == http.StatusNotFound {
-				return &validateError{fmt.Sprintf("User %q does not have github account", name), Error, false}
+				return newValidateError("User %q does not have github account", name)
 			}
-			return &validateError{fmt.Sprintf("HTTP error occurred while calling GitHub: %v", err), Error, false}
+			return newValidateError("HTTP error occurred while calling GitHub: %v", err)
 		case *github.RateLimitError:
-			return &validateError{fmt.Sprintf("GitHub rate limit reached: %v", err.Message), Warning, true}
+			return newValidateError("GitHub rate limit reached: %v", err.Message).RateLimitReached()
 		default:
-			return &validateError{fmt.Sprintf("Unknown error occurred while calling GitHub: %v", err), Error, false}
+			return newValidateError("Unknown error occurred while calling GitHub: %v", err)
 		}
 	}
 
 	_, isMember := (*v.orgMembers)[userName]
 	if !isMember {
-		return &validateError{fmt.Sprintf("User %q is not a member of the organization", name), Error, false}
+		return newValidateError("User %q is not a member of the organization", name)
 	}
 
 	return nil
@@ -194,7 +187,7 @@ func (v *ValidOwnerChecker) validateGithubUser(ctx context.Context, name string)
 //  client.Organizations.IsMember(context.Background(), "org-name", "user-name")
 // But latency is too huge for checking each single user independent
 // better and faster is to ask for all members and cache them.
-func (v *ValidOwnerChecker) initOrgListMembers(ctx context.Context) error {
+func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
 	opt := &github.ListMembersOptions{
 		ListOptions: github.ListOptions{PerPage: 100},
 	}
@@ -246,6 +239,6 @@ func isGithubUser(s string) bool {
 }
 
 // Name returns human readable name of the validator
-func (ValidOwnerChecker) Name() string {
+func (ValidOwner) Name() string {
 	return "Valid Owner Checker"
 }
