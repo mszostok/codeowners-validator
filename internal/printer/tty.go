@@ -3,15 +3,21 @@ package printer
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/fatih/color"
 	"github.com/mszostok/codeowners-validator/internal/check"
 )
 
-type TTYPrinter struct{}
+type TTYPrinter struct {
+	m sync.RWMutex
+}
 
-func (tty TTYPrinter) PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output) {
+func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output) {
+	tty.m.Lock()
+	defer tty.m.Unlock()
+
 	header := color.New(color.Bold).PrintfFunc()
 	issueBody := color.New(color.FgWhite).PrintfFunc()
 	okCheck := color.New(color.FgGreen).PrintlnFunc()
@@ -32,7 +38,7 @@ func (tty TTYPrinter) PrintCheckResult(checkName string, duration time.Duration,
 	}
 }
 
-func (TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(format string, a ...interface{}) {
+func (*TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(format string, a ...interface{}) {
 	p := color.New()
 	switch severity {
 	case check.Warning:
@@ -44,7 +50,7 @@ func (TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(format st
 	return p.PrintfFunc()
 }
 
-func (TTYPrinter) PrintSummary(allCheck, failedChecks int) {
+func (*TTYPrinter) PrintSummary(allCheck, failedChecks int) {
 	failures := "no"
 	if failedChecks > 0 {
 		failures = fmt.Sprintf("%d", failedChecks)

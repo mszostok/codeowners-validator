@@ -29,6 +29,7 @@ type Printer interface {
 // CheckRunner runs all registered checks in parallel.
 // Needs to be initialized via NewCheckRunner func.
 type CheckRunner struct {
+	m                  sync.RWMutex
 	log                logrus.FieldLogger
 	codeowners         []codeowners.Entry
 	repoPath           string
@@ -75,7 +76,6 @@ func (r *CheckRunner) Run(ctx context.Context) {
 
 			r.collectMetrics(out)
 
-			// TODO(mszostok): concurrency support (lock per print)
 			r.printer.PrintCheckResult(c.Name(), time.Since(startTime), out)
 		}(c)
 	}
@@ -96,6 +96,8 @@ func (r *CheckRunner) ShouldExitWithCheckFailure() bool {
 }
 
 func (r *CheckRunner) collectMetrics(checkOut check.Output) {
+	r.m.Lock()
+	defer r.m.Unlock()
 	for _, i := range checkOut.Issues {
 		r.allFoundIssues[i.Severity]++
 	}
