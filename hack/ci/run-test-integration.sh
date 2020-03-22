@@ -29,43 +29,13 @@ echo "GOPATH:" + ${GOPATH}
 echo -e "${NC}"
 
 ##
-# Go modules
+# GO TEST INTEGRATION
 ##
-shout "? go mod tidy"
-go mod tidy
-STATUS=$( git status --porcelain go.mod go.sum )
-if [ ! -z "$STATUS" ]; then
-    echo "${RED}✗ go mod tidy modified go.mod and/or go.sum${NC}"
-    exit 1
-else echo -e "${GREEN}√ go mod tidy${NC}"
-fi
-
-
-##
-# GO BUILD
-##
-buildEnv=""
-if [[ "${RUN_ON_CI:-x}" == "true" ]]; then
-	# build binary statically
-	buildEnv="env CGO_ENABLED=0"
-fi
-shout "? go build"
-${buildEnv} go build -o codeowners-validator ./main.go
-goBuildResult=$?
-if [[ ${goBuildResult} != 0 ]]; then
-    echo -e "${RED}✗ go build ${NC}\n $goBuildResult${NC}"
-    exit 1
-else echo -e "${GREEN}√ go build ${NC}"
-fi
-
-##
-# GO TEST
-##
-shout "? go test"
-go test ./...
+shout "? go test integration"
+go test ./tests/integration/... -v -tags=integration
 # Check if tests passed
 if [[ $? != 0 ]]; then
-	echo -e "${RED}✗ go test\n${NC}"
+	echo -e "${RED}✗ go test integration\n${NC}"
 	exit 1
-else echo -e "${GREEN}√ go test${NC}"
+else echo -e "${GREEN}√ go test integration${NC}"
 fi

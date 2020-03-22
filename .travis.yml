@@ -1,10 +1,6 @@
 language: go
 
-go:
-  - 1.12.x
-  - 1.13.x
-
-# Skip the install step. Don't `go get` dependencies. Only build with the code in vendor/
+# Skip the install step. Don't `go get` dependencies
 install: skip
 
 branches:
@@ -15,16 +11,44 @@ env:
     - GO111MODULE=on
     - RUN_ON_CI=true
 
+script: skip
+
 jobs:
   include:
     - stage: test
-      name: "Before commit checks"
-      before_script:
-        # Download the binary to bin folder in $GOPATH
-        - curl -L -s https://github.com/golang/dep/releases/download/v0.5.0/dep-linux-amd64 -o $GOPATH/bin/dep
-        # Make the binary executable
-        - chmod +x $GOPATH/bin/dep
-      script: ./hack/ci/run-tests.sh
+      name: "Build and unit-test with Go 1.12.x"
+      go: 1.12.x
+      script: make test-unit
+    - stage: test
+      name: "Build and unit-test with Go 1.13.x"
+      go: 1.13.x
+      script: make test-unit
+    - stage: test
+      name: "Hammer unit-test with Go 1.13.x"
+      go: 1.13.x
+      script: make test-hammer
     - stage: test
       name: "Code Quality Analysis"
-      script: ./hack/ci/run-lint.sh
+      script: make test-lint
+      go: 1.13.x
+    - stage: test-integration
+      name: "Integration testing on OSX"
+      script: make test-integration
+      os: osx
+      go: 1.13.x
+    - stage: test-integration
+      name: "Integration testing on Linux"
+      script: make test-integration
+      os: linux
+      go: 1.13.x
+#    Currently skipped as the new line encoding differs between linux and windows
+#    - stage: test-integration
+#      name: "Integration testing on Windows"
+#      before_install:
+#        - export "BINARY_PATH=$TRAVIS_BUILD_DIR/codeowners-validator.exe"
+#      script:
+#        - go build -o codeowners-validator.exe ./main.go
+#        - echo $(pwd)
+#        - go test ./tests/integration/... -v -tags=integration
+#      os: windows
+#      go: 1.13.x
