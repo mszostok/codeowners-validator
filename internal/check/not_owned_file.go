@@ -7,12 +7,12 @@ import (
 	"path"
 	"strings"
 
-	"github.com/hashicorp/go-multierror"
+	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
+
+	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 	"gopkg.in/pipe.v2"
-
-	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 )
 
 type NotOwnedFileConfig struct {
@@ -104,6 +104,8 @@ func (c *NotOwnedFile) AppendToGitignoreFile(repoDir string, patterns []string) 
 	defer f.Close()
 
 	content := strings.Builder{}
+	// ensure we are starting from new line
+	content.WriteString("\n")
 	for _, p := range patterns {
 		content.WriteString(fmt.Sprintf("%s\n", p))
 	}

@@ -9,26 +9,34 @@ import (
 	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
 
 	"github.com/google/go-github/v29/github"
+	"github.com/pkg/errors"
 )
 
 type ValidOwnerConfig struct {
-	OrganizationName string `envconfig:"optional"`
+	Repository string
 }
 
 // ValidOwner validates each owner
 type ValidOwner struct {
-	ghClient   *github.Client
-	orgMembers *map[string]struct{}
-	orgName    string
-	orgTeams   map[string][]*github.Team
+	ghClient    *github.Client
+	orgMembers  *map[string]struct{}
+	orgName     string
+	orgTeams    []*github.Team
+	orgRepoName string
 }
 
 // NewValidOwner returns new instance of the ValidOwner
-func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) *ValidOwner {
-	return &ValidOwner{
-		ghClient: ghClient,
-		orgName:  cfg.OrganizationName,
+func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, error) {
+	split := strings.Split(cfg.Repository, "/")
+	if len(split) != 2 {
+		return nil, errors.Errorf("Wrong repository name. Expected pattern 'owner/repository', got '%s'", cfg.Repository)
 	}
+
+	return &ValidOwner{
+		ghClient:    ghClient,
+		orgName:     split[0],
+		orgRepoName: split[1],
+	}, nil
 }
 
 // Check checks if defined owners are the valid ones.
@@ -60,7 +68,7 @@ func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 			validFn := v.selectValidateFn(ownerName)
 			if err := validFn(ctx, ownerName); err != nil {
 				output.ReportIssue(err.msg, WithEntry(entry))
-				if err.rateLimitReached { // Doesn't make sense to process further. TODO(mszostok): change for more generic solution like, `IsPermanentError`
+				if err.permanent { // Doesn't make sense to process further
 					return output, nil
 				}
 			}
@@ -87,24 +95,24 @@ func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string)
 	}
 }
 
-func (v *ValidOwner) initOrgListTeams(ctx context.Context, org string) ([]*github.Team, *validateError) {
+func (v *ValidOwner) initOrgListTeams(ctx context.Context) *validateError {
 	var teams []*github.Team
 	req := &github.ListOptions{
 		PerPage: 100,
 	}
 	for {
-		resultPage, resp, err := v.ghClient.Teams.ListTeams(ctx, org, req)
+		resultPage, resp, err := v.ghClient.Repositories.ListTeams(ctx, v.orgName, v.orgRepoName, req)
 		if err != nil { // TODO(mszostok): implement retry?
 			switch err := err.(type) {
 			case *github.ErrorResponse:
 				if err.Response.StatusCode == http.StatusUnauthorized {
-					return nil, newValidateError("Teams for organization %q could not be queried. Requires GitHub authorization.", org)
+					return newValidateError("Teams for organization %q could not be queried. Requires GitHub authorization.", v.orgName)
 				}
-				return nil, newValidateError("HTTP error occurred while calling GitHub: %v", err)
+				return newValidateError("HTTP error occurred while calling GitHub: %v", err)
 			case *github.RateLimitError:
-				return nil, newValidateError("GitHub rate limit reached: %v", err.Message).RateLimitReached()
+				return newValidateError("GitHub rate limit reached: %v", err.Message)
 			default:
-				return nil, newValidateError("Unknown error occurred while calling GitHub: %v", err)
+				return newValidateError("Unknown error occurred while calling GitHub: %v", err)
 			}
 		}
 		teams = append(teams, resultPage...)
@@ -114,31 +122,30 @@ func (v *ValidOwner) initOrgListTeams(ctx context.Context, org string) ([]*githu
 		req.Page = resp.NextPage
 	}
 
-	if v.orgTeams == nil {
-		v.orgTeams = map[string][]*github.Team{}
-	}
-	v.orgTeams[org] = teams
+	v.orgTeams = teams
 
-	return teams, nil
+	return nil
 }
 
 func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateError {
+	if v.orgTeams == nil {
+		if err := v.initOrgListTeams(ctx); err != nil {
+			return err.AsPermanent()
+		}
+	}
+
+	// called after validation it's safe to work on `parts` slice
 	parts := strings.SplitN(name, "/", 2)
 	org := parts[0]
 	org = strings.TrimPrefix(org, "@")
 	team := parts[1]
 
-	allTeams, ok := v.orgTeams[org]
-	if !ok {
-		var err *validateError
-		allTeams, err = v.initOrgListTeams(ctx, org)
-		if err != nil {
-			return err
-		}
+	if org != v.orgName {
+		return newValidateError("Team %q does not belongs to %q organization.", team, v.orgName)
 	}
 
 	teamExists := func() bool {
-		for _, v := range allTeams {
+		for _, v := range v.orgTeams {
 			if v.GetSlug() == team {
 				return true
 			}
@@ -156,7 +163,7 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 func (v *ValidOwner) validateGithubUser(ctx context.Context, name string) *validateError {
 	if v.orgMembers == nil { //TODO(mszostok): lazy init, make it more robust.
 		if err := v.initOrgListMembers(ctx); err != nil {
-			return newValidateError("Cannot initialize organization member list: %v", err)
+			return newValidateError("Cannot initialize organization member list: %v", err).AsPermanent()
 		}
 	}
 
@@ -168,11 +175,11 @@ func (v *ValidOwner) validateGithubUser(ctx context.Context, name string) *valid
 			if err.Response.StatusCode == http.StatusNotFound {
 				return newValidateError("User %q does not have github account", name)
 			}
-			return newValidateError("HTTP error occurred while calling GitHub: %v", err)
+			return newValidateError("HTTP error occurred while calling GitHub: %v", err).AsPermanent()
 		case *github.RateLimitError:
-			return newValidateError("GitHub rate limit reached: %v", err.Message).RateLimitReached()
+			return newValidateError("GitHub rate limit reached: %v", err.Message).AsPermanent()
 		default:
-			return newValidateError("Unknown error occurred while calling GitHub: %v", err)
+			return newValidateError("Unknown error occurred while calling GitHub: %v", err).AsPermanent()
 		}
 	}
 
@@ -223,9 +230,9 @@ func isEmailAddress(s string) bool {
 func isGithubTeam(s string) bool {
 	hasPrefix := strings.HasPrefix(s, "@")
 	containsSlash := strings.Contains(s, "/")
-	splited := strings.SplitN(s, "/", 3) // 3 is enough to confirm that is invalid + will not overflow the buffer
+	split := strings.SplitN(s, "/", 3) // 3 is enough to confirm that is invalid + will not overflow the buffer
 
-	if hasPrefix && containsSlash && len(splited) == 2 {
+	if hasPrefix && containsSlash && len(split) == 2 {
 		return true
 	}
 

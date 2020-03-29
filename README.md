@@ -47,6 +47,56 @@ You can install `codeowners-validator` with `env GO111MODULE=on go get -u github
 
 This will put `codeowners-validator` in `$(go env GOPATH)/bin`
 
+## Usage
+
+#### Docker
+
+```bash
+export GH_TOKEN=<your_token>
+docker run --rm -v $(pwd):/repo -w /repo \
+  -e REPOSITORY_PATH="." \
+  -e GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
+  -e EXPERIMENTAL_CHECKS="notowned" \
+  -e OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
+  mszostok/codeowners-validator:v0.4.0
+```
+
+#### Command line
+
+```bash
+export GH_TOKEN=<your_token>
+env REPOSITORY_PATH="." \
+    GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
+    EXPERIMENTAL_CHECKS="notowned" \
+    OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
+  codeowners-validator
+```
+
+#### GitHub Action
+
+Coming soon 😎 Stay tuned!
+
+
+Check the [Configuration](#configuration) section for more info on how to enable and configure given checks.
+
+## Configuration
+
+Use the following environment variables to configure the application:
+
+| Name | Default | Description |
+|-----|:--------|:------------|
+| <tt>REPOSITORY_PATH</tt> <b>*</b> | | The repository path to your repository on your local machine. |
+| <tt>GITHUB_ACCESS_TOKEN</tt>| | The GitHub access token. Instruction for creating a token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token). If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur. |
+| <tt>GITHUB_BASE_URL</tt>| https://api.github.com/ | The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. |
+| <tt>GITHUB_UPLOAD_URL</tt> | https://uploads.github.com/ | The GitHub upload URL for uploading files. <br> <br>It is taken into account only when the `GITHUB_BASE_URL` is also set. If only the `GITHUB_BASE_URL` is provided then this parameter defaults to the `GITHUB_BASE_URL` value. |
+| <tt>CHECKS</tt>| - |  The list of checks that will be executed. By default, all checks are executed. Possible values: `files`,`owners`,`duppatterns` |
+| <tt>EXPERIMENTAL_CHECKS</tt> | - | The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: `notowned`.|
+| <tt>CHECK_FAILURE_LEVEL</tt> | `warning` | Defines the level on which the application should treat check issues as failures. Defaults to `warning`, which treats both errors and warnings as failures, and exits with error code 3. Possible values are `error` and `warning`. |
+| <tt>OWNER_CHECKER_REPOSITORY</tt>  <b>*</b>| | The owner and repository name separated by slash. For example, gh-codeowners/codeowners-samples. Used to check if GitHub owner is in the given organization. |
+| <tt>NOT_OWNED_CHECKER_SKIP_PATTERNS</tt>| - | The comma-separated list of patterns that should be ignored by `not-owned-checker`. For example, you can specify `*` and as a result, the `*` pattern from the **CODEOWNERS** file will be ignored and files owned by this pattern will be reported as unowned unless a later specific pattern will match that path. It's useful because often we have default owners entry at the begging of the CODOEWNERS file, e.g. `*       @global-owner1 @global-owner2` |
+
+ <b>*</b> - Required
+
 ## Checks
 
 The following checks are enabled by default:
@@ -65,25 +115,7 @@ The experimental checks are disabled by default:
 
 To enable experimental check set `EXPERIMENTAL_CHECKS=notowned` environment variable. 
 
-Check the [Usage](#usage) section for more info on how to enable and configure given checks.
-
-## Usage
-
-Use the following environment variables to configure the application:
-
-| Name | Default | Description |
-|-----|:--------|:------------|
-| <tt>REPOSITORY_PATH</tt> <b>*</b> | | The repository path to your repository on your local machine. |
-| <tt>GITHUB_ACCESS_TOKEN</tt>| | The GitHub access token. Instruction for creating a token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token). If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur. |
-| <tt>GITHUB_BASE_URL</tt>| https://api.github.com/ | The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. |
-| <tt>GITHUB_UPLOAD_URL</tt> | https://uploads.github.com/ | The GitHub upload URL for uploading files. <br> <br>It is taken into account only when the `GITHUB_BASE_URL` is also set. If only the `GITHUB_BASE_URL` is provided then this parameter defaults to the `GITHUB_BASE_URL` value. |
-| <tt>CHECKS</tt>| - |  The list of checks that will be executed. By default, all checks are executed. Possible values: `files`,`owners`,`duppatterns` |
-| <tt>EXPERIMENTAL_CHECKS</tt> | - | The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: `notowned`.|
-| <tt>CHECK_FAILURE_LEVEL</tt> | `warning` | Defines the level on which the application should treat check issues as failures. Defaults to `warning`, which treats both errors and warnings as failures, and exits with error code 3. Possible values are `error` and `warning`. |
-| <tt>OWNER_CHECKER_ORGANIZATION_NAME</tt>  <b>*</b>| | The organization name where the repository is created. Used to check if GitHub owner is in the given organization. |
-| <tt>NOT_OWNED_CHECKER_SKIP_PATTERNS</tt>| - | The comma-separated list of patterns that should be ignored by `not-owned-checker`. For example, you can specify `*` and as a result, the `*` pattern from the **CODEOWNERS** file will be ignored and files owned by this pattern will be reported as unowned unless a later specific pattern will match that path. It's useful because often we have default owners entry at the begging of the CODOEWNERS file, e.g. `*       @global-owner1 @global-owner2` |
-
- <b>*</b> - Required
+Check the [Configuration](#configuration) section for more info on how to enable and configure given checks.
 
 #### Exit status codes
 

@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/mszostok/codeowners-validator/internal/check"
+	"github.com/mszostok/codeowners-validator/internal/envconfig"
 	"github.com/mszostok/codeowners-validator/internal/github"
 
 	"github.com/pkg/errors"
-	"github.com/vrischmann/envconfig"
 )
 
 // For now, it is a good enough solution to init checks. Important thing is to do not require env variables
@@ -39,7 +39,11 @@ func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []st
 			return nil, errors.Wrap(err, "while creating GitHub client")
 		}
 
-		checks = append(checks, check.NewValidOwner(cfg.OwnerChecker, ghClient))
+		owners, err := check.NewValidOwner(cfg.OwnerChecker, ghClient)
+		if err != nil {
+			return nil, errors.Wrap(err, "while enabling 'owners' checker")
+		}
+		checks = append(checks, owners)
 	}
 
 	expChecks, err := loadExperimentalChecks(experimentalChecks)

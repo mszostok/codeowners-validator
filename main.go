@@ -8,13 +8,13 @@ import (
 	"syscall"
 
 	"github.com/mszostok/codeowners-validator/internal/check"
+	"github.com/mszostok/codeowners-validator/internal/envconfig"
 	"github.com/mszostok/codeowners-validator/internal/load"
 	"github.com/mszostok/codeowners-validator/internal/runner"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 	"github.com/mszostok/codeowners-validator/pkg/version"
 
 	"github.com/sirupsen/logrus"
-	"github.com/vrischmann/envconfig"
 )
 
 // Config holds the application configuration

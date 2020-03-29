@@ -1,6 +1,9 @@
 builds:
 - env:
   - CGO_ENABLED=0
+  hooks:
+    # Install upx first, https://github.com/upx/upx/releases
+    post: ./hack/ci/compress.sh
   goos:
   - linux
   - darwin
@@ -30,3 +33,12 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+
+dockers:
+  - dockerfile: Dockerfile
+    binaries:
+      - codeowners-validator
+    image_templates:
+      - "mszostok/codeowners-validator:latest"
+      - "mszostok/codeowners-validator:{{ .Tag }}"
+      - "mszostok/codeowners-validator:v{{ .Major }}.{{ .Minor }}"
