@@ -30,3 +30,12 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+
+dockers:
+  - dockerfile: Dockerfile
+    binaries:
+      - codeowners-validator
+    image_templates:
+      - "mszostok/codeowners-validator:latest"
+      - "mszostok/codeowners-validator:{{ .Tag }}"
+      - "mszostok/codeowners-validator:v{{ .Major }}.{{ .Minor }}"
