@@ -1,0 +1,54 @@
+name: "GitHub CODEOWNERS Validator"
+description: "Github action to ensure the correctness of your CODEOWNERS file."
+author: "szostok.mateusz@gmail.com"
+
+inputs:
+  github_access_token:
+    description: "The GitHub access token. Instruction for creating a token can be found here. If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur."
+    required: false
+
+  github_base_url:
+    description: "The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. Default: https://api.github.com/"
+    required: false
+
+  github_upload_url:
+    description: "The GitHub upload URL for uploading files. It is taken into account only when the GITHUB_BASE_URL is also set. If only the GITHUB_BASE_URL is provided then this parameter defaults to the GITHUB_BASE_URL value. Default: https://uploads.github.com/"
+    required: false
+
+  experimental_checks:
+    description: "The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: notowned."
+    default: ""
+    required: false
+
+  checks:
+    description: "The list of checks that will be executed. By default, all checks are executed. Possible values: files,owners,duppatterns"
+    required: false
+    default: ""
+
+  repository_path:
+    description: "The repository path in which CODEOWNERS file should be validated."
+    required: false
+    default: "."
+
+  check_failure_level:
+    description: "Defines the level on which the application should treat check issues as failures. Defaults to warning, which treats both errors and warnings as failures, and exits with error code 3. Possible values are error and warning. Default: warning"
+    required: false
+
+  not_owned_checker_skip_patterns:
+    description: "The comma-separated list of patterns that should be ignored by not-owned-checker. For example, you can specify * and as a result, the * pattern from the CODEOWNERS file will be ignored and files owned by this pattern will be reported as unowned unless a later specific pattern will match that path. It's useful because often we have default owners entry at the begging of the CODOEWNERS file, e.g. * @global-owner1 @global-owner2"
+    required: false
+
+  owner_checker_repository:
+    description: "The owner and repository name. For example, gh-codeowners/codeowners-samples. Used to check if GitHub team is in the given organization and has permission to the given repository."
+    required: false
+    default: "${{ github.repository }}"
+
+runs:
+  using: 'docker'
+  image: 'docker://mszostok/codeowners-validator@sha256:8016ae44f761344ca86187fe5ed282c96b0b6b9b78d7c82402e2b19a5f9543be'
+  env:
+    ENVS_PREFIX: "INPUT"
+
+branding:
+  icon: "shield"
+  color: "gray-dark"
