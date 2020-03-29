@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/mszostok/codeowners-validator/internal/check"
+	"github.com/mszostok/codeowners-validator/internal/envconfig"
 	"github.com/mszostok/codeowners-validator/internal/github"
 
 	"github.com/pkg/errors"
-	"github.com/vrischmann/envconfig"
 )
 
 // For now, it is a good enough solution to init checks. Important thing is to do not require env variables
