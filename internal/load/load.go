@@ -39,7 +39,11 @@ func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []st
 			return nil, errors.Wrap(err, "while creating GitHub client")
 		}
 
-		checks = append(checks, check.NewValidOwner(cfg.OwnerChecker, ghClient))
+		owners, err := check.NewValidOwner(cfg.OwnerChecker, ghClient)
+		if err != nil {
+			return nil, errors.Wrap(err, "while enabling 'owners' checker")
+		}
+		checks = append(checks, owners)
 	}
 
 	expChecks, err := loadExperimentalChecks(experimentalChecks)

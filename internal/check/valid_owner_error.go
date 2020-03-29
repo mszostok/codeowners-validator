@@ -3,8 +3,8 @@ package check
 import "fmt"
 
 type validateError struct {
-	msg              string
-	rateLimitReached bool
+	msg       string
+	permanent bool
 }
 
 func newValidateError(format string, a ...interface{}) *validateError {
@@ -13,7 +13,7 @@ func newValidateError(format string, a ...interface{}) *validateError {
 	}
 }
 
-func (err *validateError) RateLimitReached() *validateError {
-	err.rateLimitReached = true
+func (err *validateError) AsPermanent() *validateError {
+	err.permanent = true
 	return err
 }
