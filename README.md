@@ -74,8 +74,9 @@ env REPOSITORY_PATH="." \
 
 #### GitHub Action
 
-Coming soon 😎 Stay tuned!
+The validator can be also executed as a GitHub Action, check [this](./docs/gh-action.md) document for more information.
 
+----
 
 Check the [Configuration](#configuration) section for more info on how to enable and configure given checks.
 
