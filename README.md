@@ -67,13 +67,13 @@ Here is the recommended way to install `codeowners-validator`:
 
 ```bash
 # binary installed into ./bin/
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.3.0
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.4.0
 
 # binary installed into $(go env GOPATH)/bin/codeowners-validator
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v0.3.0
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v0.4.0
 
 # In alpine linux (as it does not come with curl by default)
-wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.3.0
+wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/master/install.sh| sh -s v0.4.0
 
 # Print version. Add `--short` to print just the version number.
 codeowners-validator -v
