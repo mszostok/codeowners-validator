@@ -4,7 +4,7 @@ author: "szostok.mateusz@gmail.com"
 
 inputs:
   github_access_token:
-    description: "The GitHub access token. Instruction for creating a token can be found here. If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur."
+    description: "The GitHub access token. Instruction for creating a token can be found here: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token. If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur."
     required: false
 
   github_base_url:

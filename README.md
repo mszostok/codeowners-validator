@@ -15,6 +15,48 @@ The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.
 
 ![usage](./docs/assets/usage.svg)
 
+## Usage
+
+#### Docker
+
+```bash
+export GH_TOKEN=<your_token>
+docker run --rm -v $(pwd):/repo -w /repo \
+  -e REPOSITORY_PATH="." \
+  -e GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
+  -e EXPERIMENTAL_CHECKS="notowned" \
+  -e OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
+  mszostok/codeowners-validator:v0.4.0
+```
+
+#### Command line
+
+```bash
+export GH_TOKEN=<your_token>
+env REPOSITORY_PATH="." \
+    GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
+    EXPERIMENTAL_CHECKS="notowned" \
+    OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
+  codeowners-validator
+```
+
+#### GitHub Action
+
+```yaml
+- uses: mszostok/codeowners-validator@v0.4.0
+  with:
+    checks: "files,owners,duppatterns"
+    experimental_checks: "notowned"
+    # GitHub access token is required only if the `owners` check is enabled
+    github_access_token: "${{ secrets.OWNERS_VALIDATOR_GITHUB_SECRET }}"
+```
+
+Check [this](./docs/gh-action.md) document for more information about GitHub Action.
+
+----
+
+Check the [Configuration](#configuration) section for more info on how to enable and configure given checks.
+
 ## Installation
 
 It's highly recommended to install a fixed version of ` codeowners-validator`. Releases are available on the [releases page](https://github.com/mszostok/codeowners-validator/releases).
@@ -46,38 +88,6 @@ You can install `codeowners-validator` with `env GO111MODULE=on go get -u github
 > NOTE: please use the latest Go to do this, ideally Go 1.12 or greater.
 
 This will put `codeowners-validator` in `$(go env GOPATH)/bin`
-
-## Usage
-
-#### Docker
-
-```bash
-export GH_TOKEN=<your_token>
-docker run --rm -v $(pwd):/repo -w /repo \
-  -e REPOSITORY_PATH="." \
-  -e GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
-  -e EXPERIMENTAL_CHECKS="notowned" \
-  -e OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
-  mszostok/codeowners-validator:v0.4.0
-```
-
-#### Command line
-
-```bash
-export GH_TOKEN=<your_token>
-env REPOSITORY_PATH="." \
-    GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
-    EXPERIMENTAL_CHECKS="notowned" \
-    OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
-  codeowners-validator
-```
-
-#### GitHub Action
-
-Coming soon 😎 Stay tuned!
-
-
-Check the [Configuration](#configuration) section for more info on how to enable and configure given checks.
 
 ## Configuration
 
