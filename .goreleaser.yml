@@ -1,6 +1,9 @@
 builds:
 - env:
   - CGO_ENABLED=0
+  hooks:
+    # Install upx first, https://github.com/upx/upx/releases
+    post: ./hack/ci/compress.sh
   goos:
   - linux
   - darwin
