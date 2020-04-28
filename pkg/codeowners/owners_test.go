@@ -20,6 +20,51 @@ pkg/github.com/**	@myk
 
 `
 
+func TestParseCodeownersFailure(t *testing.T) {
+	// given
+	givenCodeownerPath := "workspace/go/repo-name"
+	badInputs := []string{
+		`# one token
+*
+`,
+		`# bad username
+* @myk
+pkg/github.com/** @-
+`,
+		`# bad org
+* @bad+org
+`,
+		`# comment mid line
+* @org/hakuna-matata # this should be an error
+`,
+		`# bad team name second place
+* @org/hakuna-matata @org/-a-team
+`,
+		`# bad team first
+* @org/+not+a+good+name
+`,
+		`# doesn't look like username, team name, nor email
+* something_weird
+`,
+	}
+
+	for _, input := range badInputs {
+		tFS := afero.NewMemMapFs()
+		revert := codeowners.SetFS(tFS)
+		defer revert()
+
+		f, _ := tFS.Create(path.Join(givenCodeownerPath, "CODEOWNERS"))
+		_, err := f.WriteString(input)
+		require.NoError(t, err)
+
+		// when
+		_, err = codeowners.NewFromPath(givenCodeownerPath)
+
+		// then
+		require.Error(t, err)
+	}
+}
+
 func TestParseCodeownersSuccess(t *testing.T) {
 	// given
 	givenCodeownerPath := "workspace/go/repo-name"
