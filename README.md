@@ -1,15 +1,19 @@
+<br/>
+<br/>
 <p align="center">
-  <h3 align="center">GitHub CODEOWNERS Validator</h3>
+  <img alt="logo" src="./docs/assets/logo.png" width="320px"/>
   <p align="center">Ensures the correctness of your CODEOWNERS file.</p>
-  <p align="center">
-    <a href="/LICENSE"><img alt="Software License" src="https://img.shields.io/badge/license-Apache-brightgreen.svg?style=flat-square"></a>
-    <a href="https://goreportcard.com/report/github.com/goreleaser/godownloader"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator?style=flat-square"></a>
-    <a href="https://travis-ci.org/goreleaser/godownloader"><img alt="Travis" src="https://img.shields.io/travis/com/mszostok/codeowners-validator/master.svg?style=flat-square"></a>
-    <!-- <a href="http://godoc.org/github.com/mszostok/codeowners-validator"><img alt="Go Doc" src="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square"></a> --> 
-  </p>
 </p>
+<br/>
+<br/>
+<br/>
+<br/>
 
----
+## Codeowners Validator
+
+<a href="/LICENSE"><img alt="Software License" src="https://img.shields.io/badge/license-Apache-brightgreen.svg?style=flat-square"/></a>
+<a href="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator?style=flat-square"/></a>
+<a href="https://travis-ci.com/github/mszostok/codeowners-validator"><img alt="Travis" src="https://img.shields.io/travis/com/mszostok/codeowners-validator/master.svg?style=flat-square"/></a>
 
 The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file using [those checks](#checks). It supports public and private GitHub repositories and also GitHub Enterprise installations.
 
@@ -96,7 +100,7 @@ Use the following environment variables to configure the application:
 | Name | Default | Description |
 |-----|:--------|:------------|
 | <tt>REPOSITORY_PATH</tt> <b>*</b> | | The repository path to your repository on your local machine. |
-| <tt>GITHUB_ACCESS_TOKEN</tt>| | The GitHub access token. Instruction for creating a token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token). If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur. |
+| <tt>GITHUB_ACCESS_TOKEN</tt>| | The GitHub access token. Instruction for creating a token can be found [here](./docs/gh-token.md). If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur. |
 | <tt>GITHUB_BASE_URL</tt>| https://api.github.com/ | The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. |
 | <tt>GITHUB_UPLOAD_URL</tt> | https://uploads.github.com/ | The GitHub upload URL for uploading files. <br> <br>It is taken into account only when the `GITHUB_BASE_URL` is also set. If only the `GITHUB_BASE_URL` is provided then this parameter defaults to the `GITHUB_BASE_URL` value. |
 | <tt>CHECKS</tt>| - |  The list of checks that will be executed. By default, all checks are executed. Possible values: `files`,`owners`,`duppatterns` |

@@ -1,3 +1,5 @@
+[← back to docs](./README.md)
+
 # Release process
 
 The release of the codeowners-validator tool is performed by the [GoReleaser](https://github.com/goreleaser/goreleaser) which builds Go binaries for several platforms and then creates a GitHub release.

@@ -1,3 +1,5 @@
+[← back to docs](./README.md)
+
 <p align="center">
   <h3 align="center">GitHub Action for CODEOWNERS Validator</h3>
   <p align="center">Ensures the correctness of your CODEOWNERS file.</p>
@@ -6,8 +8,7 @@
   </p>
 </p>
 
----
-
+##
 The [Codeowners Validator](https://github.com/mszostok/codeowners-validator) is available as a GitHub Action.
                                                                                    
 <p align="center">
