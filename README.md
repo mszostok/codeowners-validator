@@ -15,7 +15,7 @@
 <a href="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator?style=flat-square"/></a>
 <a href="https://travis-ci.com/github/mszostok/codeowners-validator"><img alt="Travis" src="https://img.shields.io/travis/com/mszostok/codeowners-validator/master.svg?style=flat-square"/></a>
 
-The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file using [those checks](#checks). It supports public and private GitHub repositories and also GitHub Enterprise installations.
+The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file based on [specified checks](#checks). It supports public and private GitHub repositories and also GitHub Enterprise installations.
 
 ![usage](./docs/assets/usage.svg)
 
@@ -99,11 +99,11 @@ Use the following environment variables to configure the application:
 
 | Name | Default | Description |
 |-----|:--------|:------------|
-| <tt>REPOSITORY_PATH</tt> <b>*</b> | | The repository path to your repository on your local machine. |
-| <tt>GITHUB_ACCESS_TOKEN</tt>| | The GitHub access token. Instruction for creating a token can be found [here](./docs/gh-token.md). If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur. |
-| <tt>GITHUB_BASE_URL</tt>| https://api.github.com/ | The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. |
-| <tt>GITHUB_UPLOAD_URL</tt> | https://uploads.github.com/ | The GitHub upload URL for uploading files. <br> <br>It is taken into account only when the `GITHUB_BASE_URL` is also set. If only the `GITHUB_BASE_URL` is provided then this parameter defaults to the `GITHUB_BASE_URL` value. |
-| <tt>CHECKS</tt>| - |  The list of checks that will be executed. By default, all checks are executed. Possible values: `files`,`owners`,`duppatterns` |
+| <tt>REPOSITORY_PATH</tt> <b>*</b> | | Path to your repository on your local machine. |
+| <tt>GITHUB_ACCESS_TOKEN</tt>| | GitHub access token. Instruction for creating a token can be found [here](./docs/gh-token.md). If not provided, the owners validating functionality may not work properly. For example, you may reach the API calls quota or, if you are setting GitHub Enterprise base URL, an unauthorized error may occur. |
+| <tt>GITHUB_BASE_URL</tt>| https://api.github.com/ | GitHub base URL for API requests. Defaults to the public GitHub API but can be set to a domain endpoint to use with GitHub Enterprise. |
+| <tt>GITHUB_UPLOAD_URL</tt> | https://uploads.github.com/ | GitHub upload URL for uploading files. <br> <br>It is taken into account only when `GITHUB_BASE_URL` is also set. If only `GITHUB_BASE_URL` is provided, this parameter defaults to the `GITHUB_BASE_URL` value. |
+| <tt>CHECKS</tt>| - |  List of checks to be executed. By default, all checks are executed. Possible values: `files`,`owners`,`duppatterns`. |
 | <tt>EXPERIMENTAL_CHECKS</tt> | - | The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: `notowned`.|
 | <tt>CHECK_FAILURE_LEVEL</tt> | `warning` | Defines the level on which the application should treat check issues as failures. Defaults to `warning`, which treats both errors and warnings as failures, and exits with error code 3. Possible values are `error` and `warning`. |
 | <tt>OWNER_CHECKER_REPOSITORY</tt>  <b>*</b>| | The owner and repository name separated by slash. For example, gh-codeowners/codeowners-samples. Used to check if GitHub owner is in the given organization. |
