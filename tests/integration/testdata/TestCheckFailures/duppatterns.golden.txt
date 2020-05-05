@@ -1,0 +1,6 @@
+==> Executing Duplicated Pattern Checker (<duration>)
+    [err] Pattern "/some/awesome/dir" is defined 2 times in lines: 
+            * 10: with owners: [@mszostok @owner-a]
+            * 11: with owners: [@octocat]
+
+1 check(s) executed, 1 failure(s)

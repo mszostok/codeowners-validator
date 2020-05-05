@@ -1,0 +1,42 @@
+==> Executing Valid Owner Checker (<duration>)
+    [err] line 10: User "@owner-a" does not have github account
+    [err] line 11: User "@octocat" is not a member of the organization
+    [err] line 15: Team "amigos" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "avengers" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "bannermen" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "best-of-the-best" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "bosses" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "champions" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "crew" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "dominators" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "dream-team" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "elite" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "force" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "goal-diggers" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "heatwave" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "hot-shots" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "hustle" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "icons" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "justice-league" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "legends" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "lightning" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "masters" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "monarchy" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "naturals" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "outliers" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "peak-performers" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "power" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "rebels" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "revolution" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "ringmasters" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "rule-breakers" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "shakedown" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "squad" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "titans" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "tribe" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "united" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "warriors" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 15: Team "wolf-pack" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+    [err] line 17: Team "not-existing-team" does not exist in organization "gh-codeowners" or has no permissions associated with the repository.
+
+1 check(s) executed, 1 failure(s)

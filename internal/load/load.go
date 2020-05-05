@@ -58,12 +58,14 @@ func loadExperimentalChecks(experimentalChecks []string) ([]check.Checker, error
 	var checks []check.Checker
 
 	if contains(experimentalChecks, "notowned") {
-		var cfg check.NotOwnedFileConfig
+		var cfg struct {
+			NotOwnedChecker check.NotOwnedFileConfig
+		}
 		if err := envconfig.Init(&cfg); err != nil {
 			return nil, errors.Wrapf(err, "while loading config for %s", "notowned")
 		}
 
-		checks = append(checks, check.NewNotOwnedFile(cfg))
+		checks = append(checks, check.NewNotOwnedFile(cfg.NotOwnedChecker))
 	}
 
 	return checks, nil

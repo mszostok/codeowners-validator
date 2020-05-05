@@ -2,3 +2,4 @@ scripts/
 .idea
 codeowners-validator
 dist/
+tmp/
