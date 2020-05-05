@@ -10,12 +10,16 @@ The [valid_owner.go](./../internal/check/valid_owner.go) check requires the GitH
 
 Instructions for creating a token can be found [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token). The minimal scope required for the token is **read-only**, but the definition of this scope differs between public and private repositories.
 
-#### For the public repositories you should select `public_repo` and `read:org`:
+#### Public repositories 
+
+For public repositories, select `public_repo` and `read:org`:
 
 ![token-public.png](./assets/token-public.png) 
 
-#### For the private repositories you should select `repo` and `read:org`:
+#### Private repositories 
+
+For private repositories, select `repo` and `read:org`:
 
 ![token-public.png](./assets/token-private.png) 
 
-The Codeowners Validator source code is available on the GitHub. You can always perform a security audit against that code base and build your own version from the source code if your organization is more strict about the running software in infrastructure.
+The Codeowners Validator source code is available on GitHub. You can always perform a security audit against its code base and build your own version from the source code if your organization is more strict about the software run in its infrastructure.
