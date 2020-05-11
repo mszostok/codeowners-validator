@@ -3,3 +3,4 @@ scripts/
 codeowners-validator
 dist/
 tmp/
+coverage.txt

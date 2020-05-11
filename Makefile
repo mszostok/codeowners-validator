@@ -32,7 +32,6 @@ test-hammer:
 	go test -count=100 ./...
 .PHONY: test-hammer
 
-cover-html:
-	go test -v -coverprofile=./tmp/coverage.out ./...
-	go tool cover -html=./tmp/coverage.out
+cover-html: test-unit
+	go tool cover -html=./coverage.txt
 .PHONY: cover-html
