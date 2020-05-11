@@ -3,6 +3,7 @@ package github
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/mszostok/codeowners-validator/pkg/url"
 
@@ -11,9 +12,10 @@ import (
 )
 
 type ClientConfig struct {
-	AccessToken string `envconfig:"optional"`
-	BaseURL     string `envconfig:"optional"`
-	UploadURL   string `envconfig:"optional"`
+	AccessToken        string        `envconfig:"optional"`
+	BaseURL            string        `envconfig:"optional"`
+	UploadURL          string        `envconfig:"optional"`
+	HTTPRequestTimeout time.Duration `envconfig:"default=30s"`
 }
 
 func NewClient(ctx context.Context, cfg ClientConfig) (ghClient *github.Client, err error) {
@@ -23,6 +25,7 @@ func NewClient(ctx context.Context, cfg ClientConfig) (ghClient *github.Client, 
 			&oauth2.Token{AccessToken: cfg.AccessToken},
 		))
 	}
+	httpClient.Timeout = cfg.HTTPRequestTimeout
 
 	baseURL, uploadURL := cfg.BaseURL, cfg.UploadURL
 
