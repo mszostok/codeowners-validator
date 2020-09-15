@@ -35,7 +35,7 @@ shout "? go mod tidy"
 go mod tidy
 STATUS=$( git status --porcelain go.mod go.sum )
 if [ ! -z "$STATUS" ]; then
-    echo "${RED}✗ go mod tidy modified go.mod and/or go.sum${NC}"
+    echo -e "${RED}✗ go mod tidy modified go.mod and/or go.sum${NC}"
     exit 1
 else echo -e "${GREEN}√ go mod tidy${NC}"
 fi
