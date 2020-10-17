@@ -36,7 +36,7 @@ func (d *DuplicatedPattern) Check(ctx context.Context, in Input) (Output, error)
 
 	for name, entries := range patterns {
 		if len(entries) > 1 {
-			msg := fmt.Sprintf("Pattern %q is defined %d times in lines: \n%s", name, len(entries), ListFormatFunc(entries))
+			msg := fmt.Sprintf("Pattern %q is defined %d times in lines: \n%s", name, len(entries), d.listFormatFunc(entries))
 			output.ReportIssue(msg)
 		}
 	}
@@ -44,8 +44,8 @@ func (d *DuplicatedPattern) Check(ctx context.Context, in Input) (Output, error)
 	return output, nil
 }
 
-// ListFormatFunc is a basic formatter that outputs a bullet point list of the pattern.
-func ListFormatFunc(es []codeowners.Entry) string {
+// listFormatFunc is a basic formatter that outputs a bullet point list of the pattern.
+func (d *DuplicatedPattern) listFormatFunc(es []codeowners.Entry) string {
 	points := make([]string, len(es))
 	for i, err := range es {
 		points[i] = fmt.Sprintf("            * %d: with owners: %s", err.LineNo, err.Owners)

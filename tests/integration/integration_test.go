@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sebdah/goldie/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gotest.tools/golden"
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 // to the golden file.
 //
 // To update golden file, run:
-//   go test ./tests/integration/... -v -test.update-golden -tags=integration -run=^TestCheckHappyPath$
+//   go test ./tests/integration/... -v -update -tags=integration -run=^TestCheckHappyPath$
 func TestCheckSuccess(t *testing.T) {
 	type Envs map[string]string
 	tests := []struct {
@@ -83,7 +83,9 @@ func TestCheckSuccess(t *testing.T) {
 			require.NoError(t, err)
 			assert.Equal(t, result.ExitCode, 0)
 			normalizedOutput := normalizeTimeDurations(result.Stdout)
-			golden.Assert(t, normalizedOutput, t.Name()+".golden.txt")
+
+			g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
+			g.Assert(t, t.Name(), []byte(normalizedOutput))
 		})
 	}
 }
@@ -95,7 +97,7 @@ func TestCheckSuccess(t *testing.T) {
 // to the golden file.
 //
 // To update golden file, run:
-//   go test ./tests/integration/... -v -test.update-golden -tags=integration -run=^TestCheckFailures$
+//   go test ./tests/integration/... -v -update -tags=integration -run=^TestCheckFailures$
 func TestCheckFailures(t *testing.T) {
 	type Envs map[string]string
 	tests := []struct {
@@ -157,7 +159,9 @@ func TestCheckFailures(t *testing.T) {
 			assert.Equal(t, 3, result.ExitCode)
 
 			normalizedOutput := normalizeTimeDurations(result.Stdout)
-			golden.Assert(t, normalizedOutput, t.Name()+".golden.txt")
+
+			g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
+			g.Assert(t, t.Name(), []byte(normalizedOutput))
 		})
 	}
 }
