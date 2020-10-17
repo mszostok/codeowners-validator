@@ -2,7 +2,6 @@ package check_test
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -92,7 +91,7 @@ func TestFileExists(t *testing.T) {
 				"/somewhere/over/the/rainbow/here/it/is.js",
 			},
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"!/codeowners-validator" does not match any files in repository`),
+				newErrIssue(`"!/codeowners-validator" does not match any files in repository`),
 			},
 		},
 		"Should not found JS file": {
@@ -100,7 +99,7 @@ func TestFileExists(t *testing.T) {
 					*.js @pico
 			`,
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"*.js" does not match any files in repository`),
+				newErrIssue(`"*.js" does not match any files in repository`),
 			},
 		},
 		"Should not match directory 'foo' anywhere": {
@@ -108,7 +107,7 @@ func TestFileExists(t *testing.T) {
 					**/foo @pico
 			`,
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"**/foo" does not match any files in repository`),
+				newErrIssue(`"**/foo" does not match any files in repository`),
 			},
 		},
 		"Should not match file 'foo' anywhere": {
@@ -116,7 +115,7 @@ func TestFileExists(t *testing.T) {
 					**/foo.js @pico
 			`,
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"**/foo.js" does not match any files in repository`),
+				newErrIssue(`"**/foo.js" does not match any files in repository`),
 			},
 		},
 		"Should no match directory 'bar' anywhere that is directly under directory 'foo'": {
@@ -124,7 +123,7 @@ func TestFileExists(t *testing.T) {
 					**/foo/bar @bello
 			`,
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"**/foo/bar" does not match any files in repository`),
+				newErrIssue(`"**/foo/bar" does not match any files in repository`),
 			},
 		},
 		"Should not match file 'bar' anywhere that is directly under directory 'foo'": {
@@ -132,7 +131,7 @@ func TestFileExists(t *testing.T) {
 					**/foo/bar.js @bello
 			`,
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"**/foo/bar.js" does not match any files in repository`),
+				newErrIssue(`"**/foo/bar.js" does not match any files in repository`),
 			},
 		},
 		"Should not match all files inside directory 'abc'": {
@@ -140,7 +139,7 @@ func TestFileExists(t *testing.T) {
 					abc/** @bello
 			`,
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"abc/**" does not match any files in repository`),
+				newErrIssue(`"abc/**" does not match any files in repository`),
 			},
 		},
 		"Should not match 'a/**/b'": {
@@ -148,7 +147,7 @@ func TestFileExists(t *testing.T) {
 					a/**/b @bello
 			`,
 			expectedIssues: []check.Issue{
-				newErrIssue(2, `"a/**/b" does not match any files in repository`),
+				newErrIssue(`"a/**/b" does not match any files in repository`),
 			},
 		},
 	}
@@ -158,7 +157,9 @@ func TestFileExists(t *testing.T) {
 			// given
 			tmp, err := ioutil.TempDir("", "file-checker")
 			require.NoError(t, err)
-			defer os.RemoveAll(tmp)
+			defer func() {
+				assert.NoError(t, os.RemoveAll(tmp))
+			}()
 
 			initFSStructure(t, tmp, tc.paths)
 
@@ -174,17 +175,15 @@ func TestFileExists(t *testing.T) {
 
 			// then
 			require.NoError(t, err)
-			if !assert.ElementsMatch(t, tc.expectedIssues, out.Issues) {
-				fmt.Println(out.Issues)
-			}
+			assert.ElementsMatch(t, tc.expectedIssues, out.Issues)
 		})
 	}
 }
 
-func newErrIssue(lineNo uint64, msg string) check.Issue {
+func newErrIssue(msg string) check.Issue {
 	return check.Issue{
 		Severity: check.Error,
-		LineNo:   ptr.Uint64Ptr(lineNo),
+		LineNo:   ptr.Uint64Ptr(2),
 		Message:  msg,
 	}
 }
@@ -201,7 +200,7 @@ func initFSStructure(t *testing.T, base string, paths []string) {
 			err := os.MkdirAll(filepath.Join(base, dir), 0755)
 			require.NoError(t, err)
 
-			err = ioutil.WriteFile(filepath.Join(base, p), []byte("hakuna-matata"), 0644)
+			err = ioutil.WriteFile(filepath.Join(base, p), []byte("hakuna-matata"), 0600)
 			require.NoError(t, err)
 		}
 	}

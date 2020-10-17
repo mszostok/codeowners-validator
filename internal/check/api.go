@@ -24,13 +24,17 @@ type (
 	}
 
 	Input struct {
-		RepoDir          string
-		CodeownerEntries []codeowners.Entry
+		RepoDir           string
+		CodeownersEntries []codeowners.Entry
 	}
 
 	Output struct {
-		mux    sync.Mutex
 		Issues []Issue
+	}
+
+	OutputBuilder struct {
+		mux    sync.Mutex
+		issues []Issue
 	}
 )
 
@@ -48,11 +52,9 @@ func WithEntry(e codeowners.Entry) ReportIssueOpt {
 	}
 }
 
-func (out *Output) ReportIssue(msg string, opts ...ReportIssueOpt) Issue {
-	out.mux.Lock()
-	defer out.mux.Unlock()
-	if out == nil { // TODO: error?
-		return Issue{}
+func (bldr *OutputBuilder) ReportIssue(msg string, opts ...ReportIssueOpt) *OutputBuilder {
+	if bldr == nil { // TODO: error?
+		return nil
 	}
 
 	i := Issue{
@@ -64,9 +66,15 @@ func (out *Output) ReportIssue(msg string, opts ...ReportIssueOpt) Issue {
 		opt(&i)
 	}
 
-	out.Issues = append(out.Issues, i)
+	bldr.mux.Lock()
+	defer bldr.mux.Unlock()
+	bldr.issues = append(bldr.issues, i)
 
-	return i
+	return bldr
+}
+
+func (bldr *OutputBuilder) Output() Output {
+	return Output{Issues: bldr.issues}
 }
 
 type SeverityType int

@@ -52,10 +52,11 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, 
 // - if github user then check if he/she is in organization
 // - if org team then check if exists in organization
 func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
-	var output Output
+	var bldr OutputBuilder
+
 	checkedOwners := map[string]struct{}{}
 
-	for _, entry := range in.CodeownerEntries {
+	for _, entry := range in.CodeownersEntries {
 		for _, ownerName := range entry.Owners {
 			if ctxutil.ShouldExit(ctx) {
 				return Output{}, ctx.Err()
@@ -67,16 +68,16 @@ func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 
 			validFn := v.selectValidateFn(ownerName)
 			if err := validFn(ctx, ownerName); err != nil {
-				output.ReportIssue(err.msg, WithEntry(entry))
+				bldr.ReportIssue(err.msg, WithEntry(entry))
 				if err.permanent { // Doesn't make sense to process further
-					return output, nil
+					return bldr.Output(), nil
 				}
 			}
 			checkedOwners[ownerName] = struct{}{}
 		}
 	}
 
-	return output, nil
+	return bldr.Output(), nil
 }
 
 func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string) *validateError {

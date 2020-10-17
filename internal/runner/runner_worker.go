@@ -65,8 +65,8 @@ func (r *CheckRunner) Run(ctx context.Context) {
 			defer wg.Done()
 			startTime := time.Now()
 			out, err := c.Check(ctx, check.Input{
-				CodeownerEntries: r.codeowners,
-				RepoDir:          r.repoPath,
+				CodeownersEntries: r.codeowners,
+				RepoDir:           r.repoPath,
 			})
 			if err != nil {
 				// TODO(mszostok): add err handling (logging it internally is not enough)

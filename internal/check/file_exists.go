@@ -19,9 +19,9 @@ func NewFileExist() *FileExist {
 }
 
 func (f *FileExist) Check(ctx context.Context, in Input) (Output, error) {
-	var output Output
+	var bldr OutputBuilder
 
-	for _, entry := range in.CodeownerEntries {
+	for _, entry := range in.CodeownersEntries {
 		if ctxutil.ShouldExit(ctx) {
 			return Output{}, ctx.Err()
 		}
@@ -32,7 +32,7 @@ func (f *FileExist) Check(ctx context.Context, in Input) (Output, error) {
 		case err == nil:
 		case errors.Is(err, os.ErrNotExist):
 			msg := fmt.Sprintf("%q does not match any files in repository", entry.Pattern)
-			output.ReportIssue(msg, WithEntry(entry))
+			bldr.ReportIssue(msg, WithEntry(entry))
 			continue
 		default:
 			return Output{}, errors.Wrapf(err, "while checking if there is any file in %s matching pattern %s", in.RepoDir, entry.Pattern)
@@ -40,11 +40,11 @@ func (f *FileExist) Check(ctx context.Context, in Input) (Output, error) {
 
 		if len(matches) == 0 {
 			msg := fmt.Sprintf("%q does not match any files in repository", entry.Pattern)
-			output.ReportIssue(msg, WithEntry(entry))
+			bldr.ReportIssue(msg, WithEntry(entry))
 		}
 	}
 
-	return output, nil
+	return bldr.Output(), nil
 }
 
 func (*FileExist) fnmatchPattern(pattern string) string {
