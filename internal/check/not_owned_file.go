@@ -35,7 +35,9 @@ func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
 }
 
 func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err error) {
-	patterns, err := c.patternsToBeIgnored(ctx, in.CodeownerEntries)
+	var bldr OutputBuilder
+
+	patterns, err := c.patternsToBeIgnored(ctx, in.CodeownersEntries)
 	if err != nil {
 		return Output{}, err
 	}
@@ -72,10 +74,10 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 	if lsOut != "" {
 		lines := strings.Split(lsOut, "\n")
 		msg := fmt.Sprintf("Found %d not owned files (skipped patterns: %q): \n%s", len(lines), c.skipPatternsList(), c.ListFormatFunc(lines))
-		output.ReportIssue(msg)
+		bldr.ReportIssue(msg)
 	}
 
-	return output, nil
+	return bldr.Output(), nil
 }
 
 func (c *NotOwnedFile) patternsToBeIgnored(ctx context.Context, entries []codeowners.Entry) ([]string, error) {

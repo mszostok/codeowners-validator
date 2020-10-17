@@ -25,6 +25,6 @@ func loadInput(in string) check.Input {
 	r := strings.NewReader(in)
 
 	return check.Input{
-		CodeownerEntries: codeowners.ParseCodeowners(r),
+		CodeownersEntries: codeowners.ParseCodeowners(r),
 	}
 }

@@ -20,13 +20,13 @@ func NewDuplicatedPattern() *DuplicatedPattern {
 
 // Check searches for doubles paths(patterns) in CODEOWNERS file.
 func (d *DuplicatedPattern) Check(ctx context.Context, in Input) (Output, error) {
-	var output Output
+	var bldr OutputBuilder
 
-	// TODO(mszostok): decide if the `CodeownerEntries` entry by default should be
+	// TODO(mszostok): decide if the `CodeownersEntries` entry by default should be
 	//  indexed by pattern (`map[string][]codeowners.Entry{}`)
 	//  Required changes in pkg/codeowners/owners.go.
 	patterns := map[string][]codeowners.Entry{}
-	for _, entry := range in.CodeownerEntries {
+	for _, entry := range in.CodeownersEntries {
 		if ctxutil.ShouldExit(ctx) {
 			return Output{}, ctx.Err()
 		}
@@ -37,11 +37,11 @@ func (d *DuplicatedPattern) Check(ctx context.Context, in Input) (Output, error)
 	for name, entries := range patterns {
 		if len(entries) > 1 {
 			msg := fmt.Sprintf("Pattern %q is defined %d times in lines: \n%s", name, len(entries), d.listFormatFunc(entries))
-			output.ReportIssue(msg)
+			bldr.ReportIssue(msg)
 		}
 	}
 
-	return output, nil
+	return bldr.Output(), nil
 }
 
 // listFormatFunc is a basic formatter that outputs a bullet point list of the pattern.

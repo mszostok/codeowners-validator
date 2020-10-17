@@ -1,0 +1,6 @@
+github.com/bmatcuk/doublestar/v2 v2.0.1 h1:EFT91DmIMRcrUEcYUW7AqSAwKvNzP5+CoDmNVBbcQOU=
+github.com/bmatcuk/doublestar/v2 v2.0.1/go.mod h1:QMmcs3H2AUQICWhfzLXz+IYln8lRQmTZRptLie8RgRw=
+github.com/mattn/go-zglob v0.0.4-0.20201017022353-70beb5203ba6 h1:nw6OKTHiQIVOSaT4xJ5STrLfUFs3xlU5dc6H4pT5bVQ=
+github.com/mattn/go-zglob v0.0.4-0.20201017022353-70beb5203ba6/go.mod h1:MxxjyoXXnMxfIpxTK2GAkw1w8glPsQILx3N5wrKakiY=
+github.com/yargevad/filepathx v0.0.0-20161019152617-907099cb5a62 h1:pZlTNPEY1N9n4Frw+wiRy9goxBru/H5KaBxJ4bFt89w=
+github.com/yargevad/filepathx v0.0.0-20161019152617-907099cb5a62/go.mod h1:VtdjfTSVslSOB39qCxkH9K3m2qUauaJk/6y+pNkvCQY=
