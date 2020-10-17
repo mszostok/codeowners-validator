@@ -17,30 +17,30 @@ jobs:
   include:
     - stage: test
       name: "Build and unit-test with Go 1.12.x"
-      go: 1.12.x
+      go: 1.14.x
       script: make test-unit
     - stage: test
       name: "Build and unit-test with Go 1.13.x"
-      go: 1.13.x
+      go: 1.15.x
       script: make test-unit
     - stage: test
       name: "Hammer unit-test with Go 1.13.x"
-      go: 1.13.x
+      go: 1.15.x
       script: make test-hammer
     - stage: test
       name: "Code Quality Analysis"
       script: make test-lint
-      go: 1.13.x
+      go: 1.15.x
     - stage: test-integration
       name: "Integration testing on OSX"
       script: make test-integration
       os: osx
-      go: 1.13.x
+      go: 1.15.x
     - stage: test-integration
       name: "Integration testing on Linux"
       script: make test-integration
       os: linux
-      go: 1.13.x
+      go: 1.15.x
 #    Currently skipped as the new line encoding differs between linux and windows
 #    - stage: test-integration
 #      name: "Integration testing on Windows"
@@ -51,7 +51,7 @@ jobs:
 #        - echo $(pwd)
 #        - go test ./tests/integration/... -v -tags=integration
 #      os: windows
-#      go: 1.13.x
+#      go: 1.15.x
 
 # push results to CodeCov
 after_success:
