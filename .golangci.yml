@@ -2,3 +2,32 @@ issues:
   exclude:
     # Check this issue for more info: https://github.com/kyoh86/scopelint/issues/4
     - Using the variable on range scope `tc` in function literal
+
+run:
+  tests: true
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - golint
+    - gofmt
+    - misspell
+    - gochecknoinits
+    - unparam
+    - scopelint
+    - gosec
+    - goimports
+    - whitespace
+    - bodyclose
+    - gocyclo
+
+  fast: false

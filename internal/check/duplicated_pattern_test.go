@@ -61,5 +61,4 @@ func TestDuplicatedPattern(t *testing.T) {
 			assert.ElementsMatch(t, tc.expectedIssues, out.Issues)
 		})
 	}
-
 }

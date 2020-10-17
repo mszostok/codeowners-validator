@@ -9,7 +9,7 @@ branches:
 env:
   global:
     - GO111MODULE=on
-    - RUN_ON_CI=true
+    - INSTALL_DEPS=true
 
 script: skip
 

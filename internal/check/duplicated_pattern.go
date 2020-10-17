@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
+	"github.com/mszostok/codeowners-validator/internal/ctxutil"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 )
 

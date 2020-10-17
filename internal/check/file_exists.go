@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	ctxutil "github.com/mszostok/codeowners-validator/internal/context"
+	"github.com/mszostok/codeowners-validator/internal/ctxutil"
 
 	"github.com/mattn/go-zglob"
 	"github.com/pkg/errors"
