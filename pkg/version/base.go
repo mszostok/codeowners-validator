@@ -5,7 +5,7 @@ package version
 // This is the fallback data used when version information from git is not
 // provided via go ldflags.
 var (
-	version   = "dev"
-	commit    = "none"
+	version   = "unknown"
+	commit    = "unknown"
 	buildDate = "unknown"
 )

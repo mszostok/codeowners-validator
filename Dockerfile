@@ -1,7 +1,8 @@
 # Get latest CA certs & git
-FROM alpine:latest as deps
-RUN apk --update add ca-certificates
-RUN apk --update add git
+FROM alpine:3.12.0 as deps
+
+# hadolint ignore=DL3018
+RUN apk --no-cache add ca-certificates git
 
 FROM scratch
 
@@ -16,4 +17,3 @@ COPY --from=deps /lib /lib
 COPY --from=deps /usr/lib /usr/lib
 
 CMD ["/codeowners-validator"]
-

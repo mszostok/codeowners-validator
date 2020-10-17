@@ -1,10 +1,10 @@
-package context_test
+package ctxutil_test
 
 import (
 	"context"
 	"testing"
 
-	contextutil "github.com/mszostok/codeowners-validator/internal/context"
+	contextutil "github.com/mszostok/codeowners-validator/internal/ctxutil"
 	"github.com/stretchr/testify/assert"
 )
 
