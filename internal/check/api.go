@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 
+	"github.com/mszostok/codeowners-validator/internal/ptr"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 )
 
@@ -27,6 +29,7 @@ type (
 	}
 
 	Output struct {
+		mux    sync.Mutex
 		Issues []Issue
 	}
 )
@@ -41,16 +44,13 @@ func WithSeverity(s SeverityType) ReportIssueOpt {
 
 func WithEntry(e codeowners.Entry) ReportIssueOpt {
 	return func(i *Issue) {
-		i.LineNo = uint64Ptr(e.LineNo)
+		i.LineNo = ptr.Uint64Ptr(e.LineNo)
 	}
 }
 
-func uint64Ptr(u uint64) *uint64 {
-	c := u
-	return &c
-}
-
 func (out *Output) ReportIssue(msg string, opts ...ReportIssueOpt) Issue {
+	out.mux.Lock()
+	defer out.mux.Unlock()
 	if out == nil { // TODO: error?
 		return Issue{}
 	}
