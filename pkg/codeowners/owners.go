@@ -32,7 +32,7 @@ func NewFromPath(path string) ([]Entry, error) {
 		return nil, err
 	}
 
-	entries := parseCodeowners(r)
+	entries := ParseCodeowners(r)
 	return entries, nil
 }
 
@@ -66,7 +66,7 @@ func openCodeownersFile(dir string) (io.Reader, error) {
 	return nil, fmt.Errorf("No CODEOWNERS found in the root, docs/, or .github/ directory of the repository %s", dir)
 }
 
-func parseCodeowners(r io.Reader) []Entry {
+func ParseCodeowners(r io.Reader) []Entry {
 	var e []Entry
 	s := bufio.NewScanner(r)
 	no := uint64(0)
