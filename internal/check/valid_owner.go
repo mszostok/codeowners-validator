@@ -39,7 +39,7 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, 
 	}, nil
 }
 
-// Check checks if defined owners are the valid ones.
+// Check if defined owners are the valid ones.
 // Allowed owner syntax:
 // @username
 // @org/team-name
