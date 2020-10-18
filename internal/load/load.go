@@ -17,6 +17,10 @@ import (
 func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []string) ([]check.Checker, error) {
 	var checks []check.Checker
 
+	if isEnabled(enabledChecks, "syntax") {
+		checks = append(checks, check.NewValidSyntax())
+	}
+
 	if isEnabled(enabledChecks, "duppatterns") {
 		checks = append(checks, check.NewDuplicatedPattern())
 	}
