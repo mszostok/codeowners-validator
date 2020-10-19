@@ -10,9 +10,8 @@
 <br/>
 
 ## Codeowners Validator
-
 <a href="/LICENSE"><img alt="Software License" src="https://img.shields.io/badge/license-Apache-brightgreen.svg?style=flat-square"/></a>
-<a href="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator?style=flat-square"/></a>
+<a href="https://goreportcard.com/report/github.com/mszostok/codeowners-validator"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator?style=flat-square"/></a>
 <a href="https://travis-ci.com/github/mszostok/codeowners-validator"><img alt="Travis" src="https://img.shields.io/travis/com/mszostok/codeowners-validator/master.svg?style=flat-square"/></a>
 
 The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file based on [specified checks](#checks). It supports public and private GitHub repositories and also GitHub Enterprise installations.
