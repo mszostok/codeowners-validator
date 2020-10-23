@@ -74,6 +74,9 @@ func (bldr *OutputBuilder) ReportIssue(msg string, opts ...ReportIssueOpt) *Outp
 }
 
 func (bldr *OutputBuilder) Output() Output {
+	if bldr == nil {
+		return Output{}
+	}
 	return Output{Issues: bldr.issues}
 }
 
