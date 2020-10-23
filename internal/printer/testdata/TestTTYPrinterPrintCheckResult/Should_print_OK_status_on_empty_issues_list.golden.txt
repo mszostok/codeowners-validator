@@ -1,0 +1,2 @@
+==> Executing Foo Checker (1s)
+    Check OK

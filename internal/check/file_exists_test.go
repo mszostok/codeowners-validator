@@ -180,6 +180,31 @@ func TestFileExists(t *testing.T) {
 	}
 }
 
+func TestFileExistCheckFileSystemFailure(t *testing.T) {
+	// given
+	tmpdir, err := ioutil.TempDir("", "file-checker")
+	require.NoError(t, err)
+	defer func() {
+		assert.NoError(t, os.RemoveAll(tmpdir))
+	}()
+
+	err = os.MkdirAll(filepath.Join(tmpdir, "foo"), 0222)
+	require.NoError(t, err)
+
+	in := loadInput("* @pico")
+	in.RepoDir = tmpdir
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Millisecond)
+	defer cancel()
+
+	// when
+	out, err := check.NewFileExist().Check(ctx, in)
+
+	// then
+	require.Error(t, err)
+	assert.Empty(t, out)
+}
+
 func newErrIssue(msg string) check.Issue {
 	return check.Issue{
 		Severity: check.Error,

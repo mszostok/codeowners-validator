@@ -1,0 +1,5 @@
+==> Executing Foo Checker (1s)
+    [err] line 42: Simulate error in line 42
+    [war] line 2020: Simulate warning in line 2020
+    [err] Error without line number
+    [war] Warning without line number

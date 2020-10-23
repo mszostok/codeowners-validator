@@ -2,6 +2,8 @@ package printer
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -9,6 +11,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/mszostok/codeowners-validator/internal/check"
 )
+
+// writer used for test purpose
+var writer io.Writer = os.Stdout
 
 type TTYPrinter struct {
 	m sync.RWMutex
@@ -18,27 +23,27 @@ func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration
 	tty.m.Lock()
 	defer tty.m.Unlock()
 
-	header := color.New(color.Bold).PrintfFunc()
-	issueBody := color.New(color.FgWhite).PrintfFunc()
-	okCheck := color.New(color.FgGreen).PrintlnFunc()
+	header := color.New(color.Bold).FprintfFunc()
+	issueBody := color.New(color.FgWhite).FprintfFunc()
+	okCheck := color.New(color.FgGreen).FprintlnFunc()
 
-	header("==> Executing %s (%v)\n", checkName, duration)
+	header(writer, "==> Executing %s (%v)\n", checkName, duration)
 	for _, i := range checkOut.Issues {
 		issueSeverity := tty.severityPrintfFunc(i.Severity)
 
-		issueSeverity("    [%s]", strings.ToLower(i.Severity.String()[:3]))
+		issueSeverity(writer, "    [%s]", strings.ToLower(i.Severity.String()[:3]))
 		if i.LineNo != nil {
-			issueBody(" line %d:", *i.LineNo)
+			issueBody(writer, " line %d:", *i.LineNo)
 		}
-		issueBody(" %s\n", i.Message)
+		issueBody(writer, " %s\n", i.Message)
 	}
 
 	if len(checkOut.Issues) == 0 {
-		okCheck("    Check OK")
+		okCheck(writer, "    Check OK")
 	}
 }
 
-func (*TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(format string, a ...interface{}) {
+func (*TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(w io.Writer, format string, a ...interface{}) {
 	p := color.New()
 	switch severity {
 	case check.Warning:
@@ -47,7 +52,7 @@ func (*TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(format s
 		p.Add(color.FgRed)
 	}
 
-	return p.PrintfFunc()
+	return p.FprintfFunc()
 }
 
 func (*TTYPrinter) PrintSummary(allCheck, failedChecks int) {
@@ -55,5 +60,5 @@ func (*TTYPrinter) PrintSummary(allCheck, failedChecks int) {
 	if failedChecks > 0 {
 		failures = fmt.Sprintf("%d", failedChecks)
 	}
-	fmt.Printf("\n%d check(s) executed, %s failure(s)\n", allCheck, failures)
+	fmt.Fprintf(writer, "\n%d check(s) executed, %s failure(s)\n", allCheck, failures)
 }
