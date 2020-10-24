@@ -3,7 +3,7 @@ builds:
   - CGO_ENABLED=0
   hooks:
     # Install upx first, https://github.com/upx/upx/releases
-    post: ./hack/ci/compress.sh
+    post: ./hack/compress.sh
   goos:
   - linux
   - darwin
@@ -13,6 +13,11 @@ builds:
   - 386
   ldflags:
     - -s -w -X github.com/mszostok/codeowners-validator/pkg/version.version={{.Version}} -X  github.com/mszostok/codeowners-validator/pkg/version.commit={{.ShortCommit}} -X github.com/mszostok/codeowners-validator/pkg/version.buildDate={{.Date}}
+  # List of combinations of GOOS + GOARCH + GOARM to ignore.
+  # Default is empty.
+  ignore:
+    - goos: darwin
+      goarch: 386
 archive:
   replacements:
     darwin: Darwin
@@ -21,8 +26,8 @@ archive:
     386: i386
     amd64: x86_64
   format_overrides:
-  - goos: windows
-    format: zip
+    - goos: windows
+      format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
