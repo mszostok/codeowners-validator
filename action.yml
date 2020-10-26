@@ -21,7 +21,7 @@ inputs:
     required: false
 
   checks:
-    description: "The list of checks that will be executed. By default, all checks are executed. Possible values: files,owners,duppatterns"
+    description: "The list of checks that will be executed. By default, all checks are executed. Possible values: files,owners,duppatterns,syntax"
     required: false
     default: ""
 
