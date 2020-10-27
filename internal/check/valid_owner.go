@@ -161,7 +161,6 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 }
 
 func (v *ValidOwner) validateGithubUser(ctx context.Context, name string) *validateError {
-
 	// Ignore @ghost user
 	// https://github.community/t5/How-to-use-Git-and-GitHub/CODEOWNERS-file-with-a-NOT-file-type-condition/m-p/31013/highlight/true#M8523
 	if IsGithubGhostUser(name) {
