@@ -127,7 +127,7 @@ Use the following environment variables to configure the application:
 | <tt>EXPERIMENTAL_CHECKS</tt> | - | The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: `notowned`.|
 | <tt>CHECK_FAILURE_LEVEL</tt> | `warning` | Defines the level on which the application should treat check issues as failures. Defaults to `warning`, which treats both errors and warnings as failures, and exits with error code 3. Possible values are `error` and `warning`. |
 | <tt>OWNER_CHECKER_REPOSITORY</tt>  <b>*</b>| | The owner and repository name separated by slash. For example, gh-codeowners/codeowners-samples. Used to check if GitHub owner is in the given organization. |
-| <tt>OWNER_CHECKER_IGNORED_OWNERS</tt> | `@ghost`| The comma-separated list of owners that should not be validated. Example: `"@owner1,@owner2,@org/team1,example@email.com"` |
+| <tt>OWNER_CHECKER_IGNORED_OWNERS</tt> | `@ghost`| The comma-separated list of owners that should not be validated. Example: `"@owner1,@owner2,@org/team1,example@email.com"`. |
 | <tt>NOT_OWNED_CHECKER_SKIP_PATTERNS</tt>| - | The comma-separated list of patterns that should be ignored by `not-owned-checker`. For example, you can specify `*` and as a result, the `*` pattern from the **CODEOWNERS** file will be ignored and files owned by this pattern will be reported as unowned unless a later specific pattern will match that path. It's useful because often we have default owners entry at the begging of the CODOEWNERS file, e.g. `*       @global-owner1 @global-owner2` |
 
  <b>*</b> - Required
