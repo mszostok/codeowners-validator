@@ -3,7 +3,6 @@ package check
 import (
 	"context"
 	"net/http"
-	"net/mail"
 	"strings"
 
 	"github.com/mszostok/codeowners-validator/internal/ctxutil"
@@ -82,11 +81,11 @@ func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 
 func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string) *validateError {
 	switch {
-	case isGithubUser(name):
+	case IsGithubUser(name):
 		return v.validateGithubUser
-	case isGithubTeam(name):
+	case IsGithubTeam(name):
 		return v.validateTeam
-	case isEmailAddress(name):
+	case IsEmailAddress(name):
 		// TODO(mszostok): try to check if e-mail really exists
 		return func(context.Context, string) *validateError { return nil }
 	default:
@@ -162,6 +161,12 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 }
 
 func (v *ValidOwner) validateGithubUser(ctx context.Context, name string) *validateError {
+	// Ignore @ghost user
+	// https://github.community/t5/How-to-use-Git-and-GitHub/CODEOWNERS-file-with-a-NOT-file-type-condition/m-p/31013/highlight/true#M8523
+	if IsGithubGhostUser(name) {
+		return nil
+	}
+
 	if v.orgMembers == nil { //TODO(mszostok): lazy init, make it more robust.
 		if err := v.initOrgListMembers(ctx); err != nil {
 			return newValidateError("Cannot initialize organization member list: %v", err).AsPermanent()
@@ -220,31 +225,6 @@ func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func isEmailAddress(s string) bool {
-	_, err := mail.ParseAddress(s)
-
-	return err == nil
-}
-
-func isGithubTeam(s string) bool {
-	hasPrefix := strings.HasPrefix(s, "@")
-	containsSlash := strings.Contains(s, "/")
-	split := strings.SplitN(s, "/", 3) // 3 is enough to confirm that is invalid + will not overflow the buffer
-
-	if hasPrefix && containsSlash && len(split) == 2 {
-		return true
-	}
-
-	return false
-}
-
-func isGithubUser(s string) bool {
-	if strings.HasPrefix(s, "@") && !strings.Contains(s, "/") {
-		return true
-	}
-	return false
 }
 
 // Name returns human readable name of the validator
