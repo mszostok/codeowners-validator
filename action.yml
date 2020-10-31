@@ -43,6 +43,10 @@ inputs:
     required: false
     default: "${{ github.repository }}"
 
+  owner_checker_ignored_owners:
+    description:  "The comma-separated list of owners that should not be validated. Example: @owner1,@owner2,@org/team1,example@email.com."
+    required: false
+
 runs:
   using: 'docker'
   image: 'docker://mszostok/codeowners-validator:v0.5.0'

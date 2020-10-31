@@ -169,7 +169,7 @@ func TestFileExists(t *testing.T) {
 			defer cancel()
 
 			// when
-			in := loadInput(tc.codeownersInput)
+			in := check.LoadInput(tc.codeownersInput)
 			in.RepoDir = tmp
 			out, err := fchecker.Check(ctx, in)
 
@@ -191,7 +191,7 @@ func TestFileExistCheckFileSystemFailure(t *testing.T) {
 	err = os.MkdirAll(filepath.Join(tmpdir, "foo"), 0222)
 	require.NoError(t, err)
 
-	in := loadInput("* @pico")
+	in := check.LoadInput("* @pico")
 	in.RepoDir = tmpdir
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Millisecond)

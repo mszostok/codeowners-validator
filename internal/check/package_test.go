@@ -33,7 +33,7 @@ func TestRespectingCanceledContext(t *testing.T) {
 			cancel()
 
 			// when
-			out, err := sut.Check(ctx, loadInput(validCODEOWNERS))
+			out, err := sut.Check(ctx, check.LoadInput(check.FixtureValidCODEOWNERS))
 
 			// then
 			assert.True(t, errors.Is(err, context.Canceled))
