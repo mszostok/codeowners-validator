@@ -62,7 +62,7 @@ Check the [Configuration](#configuration) section for more info on how to enable
 
 ## Installation
 
-It's highly recommended to install a fixed version of ` codeowners-validator`. Releases are available on the [releases page](https://github.com/mszostok/codeowners-validator/releases).
+It's highly recommended to install a fixed version of `codeowners-validator`. Releases are available on the [releases page](https://github.com/mszostok/codeowners-validator/releases).
 
 #### From Release
 
@@ -90,25 +90,7 @@ You can install `codeowners-validator` with `env GO111MODULE=on go get -u github
 
 > NOTE: please use the latest Go to do this, ideally Go 1.15 or greater.
 
-This will put `codeowners-validator` in `$(go env GOPATH)/bin`
-
-## Configuration
-
-Use the following environment variables to configure the application:
-
-| Name | Default | Description |
-|-----|:--------|:------------|
-| <tt>REPOSITORY_PATH</tt> <b>*</b> | | Path to your repository on your local machine. |
-| <tt>GITHUB_ACCESS_TOKEN</tt>| | GitHub access token. Instruction for creating a token can be found [here](./docs/gh-token.md). If not provided, the owners validating functionality may not work properly. For example, you may reach the API calls quota or, if you are setting GitHub Enterprise base URL, an unauthorized error may occur. |
-| <tt>GITHUB_BASE_URL</tt>| https://api.github.com/ | GitHub base URL for API requests. Defaults to the public GitHub API but can be set to a domain endpoint to use with GitHub Enterprise. |
-| <tt>GITHUB_UPLOAD_URL</tt> | https://uploads.github.com/ | GitHub upload URL for uploading files. <br> <br>It is taken into account only when `GITHUB_BASE_URL` is also set. If only `GITHUB_BASE_URL` is provided, this parameter defaults to the `GITHUB_BASE_URL` value. |
-| <tt>CHECKS</tt>| - |  List of checks to be executed. By default, all checks are executed. Possible values: `files`,`owners`,`duppatterns`,`syntax`. |
-| <tt>EXPERIMENTAL_CHECKS</tt> | - | The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: `notowned`.|
-| <tt>CHECK_FAILURE_LEVEL</tt> | `warning` | Defines the level on which the application should treat check issues as failures. Defaults to `warning`, which treats both errors and warnings as failures, and exits with error code 3. Possible values are `error` and `warning`. |
-| <tt>OWNER_CHECKER_REPOSITORY</tt>  <b>*</b>| | The owner and repository name separated by slash. For example, gh-codeowners/codeowners-samples. Used to check if GitHub owner is in the given organization. |
-| <tt>NOT_OWNED_CHECKER_SKIP_PATTERNS</tt>| - | The comma-separated list of patterns that should be ignored by `not-owned-checker`. For example, you can specify `*` and as a result, the `*` pattern from the **CODEOWNERS** file will be ignored and files owned by this pattern will be reported as unowned unless a later specific pattern will match that path. It's useful because often we have default owners entry at the begging of the CODOEWNERS file, e.g. `*       @global-owner1 @global-owner2` |
-
- <b>*</b> - Required
+This will put `codeowners-validator` in `$(go env GOPATH)/bin`.
 
 ## Checks
 
@@ -130,6 +112,25 @@ The experimental checks are disabled by default:
 To enable experimental check set `EXPERIMENTAL_CHECKS=notowned` environment variable. 
 
 Check the [Configuration](#configuration) section for more info on how to enable and configure given checks.
+
+## Configuration
+
+Use the following environment variables to configure the application:
+
+| Name | Default | Description |
+|-----|:--------|:------------|
+| <tt>REPOSITORY_PATH</tt> <b>*</b> | | Path to your repository on your local machine. |
+| <tt>GITHUB_ACCESS_TOKEN</tt>| | GitHub access token. Instruction for creating a token can be found [here](./docs/gh-token.md). If not provided, the owners validating functionality may not work properly. For example, you may reach the API calls quota or, if you are setting GitHub Enterprise base URL, an unauthorized error may occur. |
+| <tt>GITHUB_BASE_URL</tt>| https://api.github.com/ | GitHub base URL for API requests. Defaults to the public GitHub API but can be set to a domain endpoint to use with GitHub Enterprise. |
+| <tt>GITHUB_UPLOAD_URL</tt> | https://uploads.github.com/ | GitHub upload URL for uploading files. <br> <br>It is taken into account only when `GITHUB_BASE_URL` is also set. If only `GITHUB_BASE_URL` is provided, this parameter defaults to the `GITHUB_BASE_URL` value. |
+| <tt>CHECKS</tt>| - |  List of checks to be executed. By default, all checks are executed. Possible values: `files`,`owners`,`duppatterns`,`syntax`. |
+| <tt>EXPERIMENTAL_CHECKS</tt> | - | The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: `notowned`.|
+| <tt>CHECK_FAILURE_LEVEL</tt> | `warning` | Defines the level on which the application should treat check issues as failures. Defaults to `warning`, which treats both errors and warnings as failures, and exits with error code 3. Possible values are `error` and `warning`. |
+| <tt>OWNER_CHECKER_REPOSITORY</tt>  <b>*</b>| | The owner and repository name separated by slash. For example, gh-codeowners/codeowners-samples. Used to check if GitHub owner is in the given organization. |
+| <tt>OWNER_CHECKER_IGNORED_OWNERS</tt> | `@ghost`| The comma-separated list of owners that should not be validated. Example: `"@owner1,@owner2,@org/team1,example@email.com"` |
+| <tt>NOT_OWNED_CHECKER_SKIP_PATTERNS</tt>| - | The comma-separated list of patterns that should be ignored by `not-owned-checker`. For example, you can specify `*` and as a result, the `*` pattern from the **CODEOWNERS** file will be ignored and files owned by this pattern will be reported as unowned unless a later specific pattern will match that path. It's useful because often we have default owners entry at the begging of the CODOEWNERS file, e.g. `*       @global-owner1 @global-owner2` |
+
+ <b>*</b> - Required
 
 #### Exit status codes
 

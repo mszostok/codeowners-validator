@@ -78,7 +78,7 @@ func TestValidSyntaxChecker(t *testing.T) {
 		t.Run(tn, func(t *testing.T) {
 			// when
 			out, err := check.NewValidSyntax().
-				Check(context.Background(), loadInput(tc.codeowners))
+				Check(context.Background(), check.LoadInput(tc.codeowners))
 
 			// then
 			require.NoError(t, err)

@@ -43,7 +43,7 @@ func TestDuplicatedPattern(t *testing.T) {
 			},
 		},
 		"Should not report any issues with correct CODEOWNERS file": {
-			codeownersInput: validCODEOWNERS,
+			codeownersInput: check.FixtureValidCODEOWNERS,
 			expectedIssues:  nil,
 		},
 	}
@@ -54,7 +54,7 @@ func TestDuplicatedPattern(t *testing.T) {
 			sut := check.NewDuplicatedPattern()
 
 			// when
-			out, err := sut.Check(context.TODO(), loadInput(tc.codeownersInput))
+			out, err := sut.Check(context.TODO(), check.LoadInput(tc.codeownersInput))
 
 			// then
 			require.NoError(t, err)

@@ -1,13 +1,12 @@
-package check_test
+package check
 
 import (
 	"strings"
 
-	"github.com/mszostok/codeowners-validator/internal/check"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 )
 
-var validCODEOWNERS = `
+var FixtureValidCODEOWNERS = `
 		# These owners will be the default owners for everything
 		*       @global-owner1 @global-owner2
 
@@ -21,10 +20,10 @@ var validCODEOWNERS = `
 		/script m.t@g.com
 `
 
-func loadInput(in string) check.Input {
+func LoadInput(in string) Input {
 	r := strings.NewReader(in)
 
-	return check.Input{
+	return Input{
 		CodeownersEntries: codeowners.ParseCodeowners(r),
 	}
 }

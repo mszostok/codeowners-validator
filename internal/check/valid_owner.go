@@ -3,6 +3,7 @@ package check
 import (
 	"context"
 	"net/http"
+	"net/mail"
 	"strings"
 
 	"github.com/mszostok/codeowners-validator/internal/ctxutil"
@@ -13,6 +14,11 @@ import (
 
 type ValidOwnerConfig struct {
 	Repository string
+	// IgnoredOwners contains a list of owners that should not be validated.
+	// Defaults to @ghost.
+	// More info about the @ghost user: https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/deleting-your-user-account
+	// Tip on how @ghost can be used: https://github.community/t5/How-to-use-Git-and-GitHub/CODEOWNERS-file-with-a-NOT-file-type-condition/m-p/31013/highlight/true#M8523
+	IgnoredOwners []string `envconfig:"default=@ghost"`
 }
 
 // ValidOwner validates each owner
@@ -22,6 +28,7 @@ type ValidOwner struct {
 	orgName     string
 	orgTeams    []*github.Team
 	orgRepoName string
+	ignOwners   map[string]struct{}
 }
 
 // NewValidOwner returns new instance of the ValidOwner
@@ -31,10 +38,16 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, 
 		return nil, errors.Errorf("Wrong repository name. Expected pattern 'owner/repository', got '%s'", cfg.Repository)
 	}
 
+	ignOwners := map[string]struct{}{}
+	for _, n := range cfg.IgnoredOwners {
+		ignOwners[n] = struct{}{}
+	}
+
 	return &ValidOwner{
 		ghClient:    ghClient,
 		orgName:     split[0],
 		orgRepoName: split[1],
+		ignOwners:   ignOwners,
 	}, nil
 }
 
@@ -61,6 +74,10 @@ func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 				return Output{}, ctx.Err()
 			}
 
+			if v.isIgnoredOwner(ownerName) {
+				continue
+			}
+
 			if _, alreadyChecked := checkedOwners[ownerName]; alreadyChecked {
 				continue
 			}
@@ -79,13 +96,34 @@ func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 	return bldr.Output(), nil
 }
 
+func isEmailAddress(s string) bool {
+	_, err := mail.ParseAddress(s)
+	return err == nil
+}
+
+func isGithubTeam(s string) bool {
+	hasPrefix := strings.HasPrefix(s, "@")
+	containsSlash := strings.Contains(s, "/")
+	split := strings.SplitN(s, "/", 3) // 3 is enough to confirm that is invalid + will not overflow the buffer
+	return hasPrefix && containsSlash && len(split) == 2 && len(split[1]) > 0
+}
+
+func isGithubUser(s string) bool {
+	return !strings.Contains(s, "/") && strings.HasPrefix(s, "@")
+}
+
+func (v *ValidOwner) isIgnoredOwner(name string) bool {
+	_, found := v.ignOwners[name]
+	return found
+}
+
 func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string) *validateError {
 	switch {
-	case IsGithubUser(name):
+	case isGithubUser(name):
 		return v.validateGithubUser
-	case IsGithubTeam(name):
+	case isGithubTeam(name):
 		return v.validateTeam
-	case IsEmailAddress(name):
+	case isEmailAddress(name):
 		// TODO(mszostok): try to check if e-mail really exists
 		return func(context.Context, string) *validateError { return nil }
 	default:
@@ -161,12 +199,6 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 }
 
 func (v *ValidOwner) validateGithubUser(ctx context.Context, name string) *validateError {
-	// Ignore @ghost user
-	// https://github.community/t5/How-to-use-Git-and-GitHub/CODEOWNERS-file-with-a-NOT-file-type-condition/m-p/31013/highlight/true#M8523
-	if IsGithubGhostUser(name) {
-		return nil
-	}
-
 	if v.orgMembers == nil { //TODO(mszostok): lazy init, make it more robust.
 		if err := v.initOrgListMembers(ctx); err != nil {
 			return newValidateError("Cannot initialize organization member list: %v", err).AsPermanent()
