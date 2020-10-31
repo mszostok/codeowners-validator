@@ -142,6 +142,10 @@ Application exits with different status codes which allow you to easily distingu
 | **2** | The application was closed because the OS sends a termination signal (SIGINT or SIGTERM). |
 | **3** | The CODEOWNERS validation failed - executed checks found some issues. |
 
+## Contributing
+
+Contributions are greatly appreciated! The project follows the typical GitHub pull request model. See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.  
+
 ## Roadmap
 
 The [codeowners-validator roadmap uses Github milestones](https://github.com/mszostok/codeowners-validator/milestone/1) to track the progress of the project.

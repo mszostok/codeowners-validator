@@ -3,7 +3,7 @@
     Codeowners Validator - contributing
 </h1>
 
-🎉🚀🤘 Thanks for your interest in the Codeowners Validator project!🤘🚀🎉 
+🎉🚀🤘 Thanks for your interest in the Codeowners Validator project! 🤘🚀🎉 
 
 This document contains contribution guidelines for this repository. Read it before you start contributing.
 
@@ -11,9 +11,9 @@ This document contains contribution guidelines for this repository. Read it befo
 
 Before proposing or adding changes, check the [existing issues](https://github.com/mszostok/codeowners-validator/issues) and make sure the discussion/work has not already been started to avoid duplication. 
 
-If you'd like to see a new feature implemented, use this [feature request template](./.github/ISSUE_TEMPLATE/feature_request.md) to create an issue. 
+If you'd like to see a new feature implemented, use this [feature request template](https://github.com/mszostok/codeowners-validator/issues/new?assignees=&labels=&template=feature_request.md) to create an issue. 
 
-Similarly, if you spot a bug, use this [bug report template](./.github/ISSUE_TEMPLATE/bug_report.md) to let us know!
+Similarly, if you spot a bug, use this [bug report template](https://github.com/mszostok/codeowners-validator/issues/new?assignees=mszostok&labels=bug&template=bug_report.md) to let us know!
 
 ### Ready for action? Start developing! 
 
@@ -43,4 +43,4 @@ To start contributing, follow these steps:
     git branch -u upstream/master master
     ```
 
-You're all set! 🚀 Read the [development](./docs/development.md) document for further instructions.
+You're all set! 🚀  Read the [development](./docs/development.md) document for further instructions.

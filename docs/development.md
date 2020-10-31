@@ -4,6 +4,8 @@
 
 This document contains development instructions. Read it to learn how to develop this project.
 
+# Table of Contents
+
 <!-- toc -->
 
 - [Prerequisites](#prerequisites)
@@ -69,7 +71,7 @@ make fix-lint-issues
 
 ### Integration tests
 
-This project supports the integration tests that are defined in the [test](./test) package. The tests are executed against [`gh-codeowners/codeowners-samples`](https://github.com/gh-codeowners/codeowners-samples).
+This project supports the integration tests that are defined in the [tests](../tests) package. The tests are executed against [`gh-codeowners/codeowners-samples`](https://github.com/gh-codeowners/codeowners-samples).
 
 > **CAUTION:** Currently, running the integration tests both on external PRs and locally by external contributors is not supported, as the teams used for testing are visible only to the organization members. 
 > At the moment, the `codeowners-validator` repository owner is responsible for running these tests. 
