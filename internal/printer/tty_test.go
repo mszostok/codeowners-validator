@@ -44,7 +44,6 @@ func TestTTYPrinterPrintCheckResult(t *testing.T) {
 				},
 			},
 		})
-
 		// then
 		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
 		g.Assert(t, t.Name(), buff.Bytes())
@@ -86,7 +85,7 @@ func TestTTYPrinterPrintSummary(t *testing.T) {
 		g.Assert(t, t.Name(), buff.Bytes())
 	})
 
-	t.Run("Should print 'no' when there is no failures", func(t *testing.T) {
+	t.Run("Should print no when there is no failures", func(t *testing.T) {
 		// given
 		tty := TTYPrinter{}
 
