@@ -139,7 +139,7 @@ func (v *ValidOwner) initOrgListTeams(ctx context.Context) *validateError {
 		PerPage: 100,
 	}
 	for {
-		resultPage, resp, err := v.ghClient.Repositories.ListTeams(ctx, v.orgName, v.orgRepoName, req)
+		resultPage, resp, err := v.ghClient.Teams.ListTeams(ctx, v.orgName, req)
 		if err != nil { // TODO(mszostok): implement retry?
 			switch err := err.(type) {
 			case *github.ErrorResponse:
@@ -192,7 +192,52 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	}
 
 	if !teamExists() {
-		return newValidateError("Team %q does not exist in organization %q or has no permissions associated with the repository.", team, org)
+		return newValidateError("Team %q does not exist in organization %q.", team, org)
+	}
+
+	// repo contains the permissions for the team slug given
+	repo, _, err := v.ghClient.Teams.IsTeamRepoBySlug(ctx, v.orgName, team, org, v.orgRepoName)
+	if err != nil { // TODO(mszostok): implement retry?
+		switch err := err.(type) {
+		case *github.ErrorResponse:
+			if err.Response.StatusCode == http.StatusUnauthorized {
+				return newValidateError("Team permissions information for %q/%q could not be queried. Requires GitHub authorization.", org, v.orgRepoName)
+			} else if err.Response.StatusCode == http.StatusNotFound {
+				return newValidateError("Team %q does not have permissions associated with the repository %q.", team, v.orgRepoName)
+			} else {
+				return newValidateError("HTTP error occurred while calling GitHub: %v", err)
+			}
+		case *github.RateLimitError:
+			return newValidateError("GitHub rate limit reached: %v", err.Message)
+		default:
+			return newValidateError("Unknown error occurred while calling GitHub: %v", err)
+		}
+	}
+
+	teamHasWritePermission := func() bool {
+		for k, v := range *repo.Permissions {
+			if v == false {
+				continue
+			}
+
+			switch k {
+			case
+				"admin",
+				"maintain",
+				"push",
+				"triage":
+				return true
+			case
+				"pull":
+				continue
+			}
+		}
+
+		return false
+	}
+
+	if !teamHasWritePermission() {
+		return newValidateError("Team %q cannot review PRs on %q.", team, v.orgRepoName)
 	}
 
 	return nil
