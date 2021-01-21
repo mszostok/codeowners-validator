@@ -196,14 +196,20 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	}
 
 	// repo contains the permissions for the team slug given
+	// TODO(mszostok): Switch to GraphQL API, see:
+	//   https://github.com/mszostok/codeowners-validator/pull/62#discussion_r561273525
 	repo, _, err := v.ghClient.Teams.IsTeamRepoBySlug(ctx, v.orgName, team, org, v.orgRepoName)
 	if err != nil { // TODO(mszostok): implement retry?
 		switch err := err.(type) {
 		case *github.ErrorResponse:
 			if err.Response.StatusCode == http.StatusUnauthorized {
-				return newValidateError("Team permissions information for %q/%q could not be queried. Requires GitHub authorization.", org, v.orgRepoName)
+				return newValidateError(
+					"Team permissions information for %q/%q could not be queried. Requires GitHub authorization.",
+					org, v.orgRepoName)
 			} else if err.Response.StatusCode == http.StatusNotFound {
-				return newValidateError("Team %q does not have permissions associated with the repository %q.", team, v.orgRepoName)
+				return newValidateError(
+					"Team %q does not have permissions associated with the repository %q.",
+					team, v.orgRepoName)
 			} else {
 				return newValidateError("HTTP error occurred while calling GitHub: %v", err)
 			}
@@ -215,8 +221,8 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	}
 
 	teamHasWritePermission := func() bool {
-		for k, v := range *repo.Permissions {
-			if v == false {
+		for k, v := range repo.GetPermissions() {
+			if !v {
 				continue
 			}
 
@@ -224,12 +230,11 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 			case
 				"admin",
 				"maintain",
-				"push",
-				"triage":
+				"push":
 				return true
 			case
-				"pull":
-				continue
+				"pull",
+				"triage":
 			}
 		}
 
@@ -237,7 +242,9 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	}
 
 	if !teamHasWritePermission() {
-		return newValidateError("Team %q cannot review PRs on %q.", team, v.orgRepoName)
+		return newValidateError(
+			"Team %q cannot review PRs on %q as neither it nor any parent team does not have write permissions.",
+			team, v.orgRepoName)
 	}
 
 	return nil
