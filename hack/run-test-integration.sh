@@ -32,13 +32,20 @@ function test::integration() {
   shout "? go test integration"
 
   # Check if tests passed
-  if ! go test -v -tags=integration ./tests/integration/...;
+  # shellcheck disable=SC2046
+  if ! go test -v -tags=integration ./tests/integration/... $(test::update_golden);
   then
     echo -e "${RED}✗ go test integration\n${NC}"
     exit 1
   else
     echo -e "${GREEN}√ go test integration${NC}"
   fi
+}
+
+function test::update_golden() {
+    if [[ "${UPDATE_GOLDEN:-"false"}" == "true" ]]; then
+      echo "-update"
+    fi
 }
 
 function main() {
