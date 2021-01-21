@@ -24,7 +24,7 @@ const (
 // to the golden file.
 //
 // To update golden file, run:
-//   go test ./tests/integration/... -v -update -tags=integration -run=^TestCheckHappyPath$
+//   UPDATE_GOLDEN=true make test-integration
 func TestCheckSuccess(t *testing.T) {
 	type Envs map[string]string
 	tests := []struct {
@@ -81,7 +81,7 @@ func TestCheckSuccess(t *testing.T) {
 
 			// then
 			require.NoError(t, err)
-			assert.Equal(t, result.ExitCode, 0)
+			assert.Equal(t, 0, result.ExitCode)
 			normalizedOutput := normalizeTimeDurations(result.Stdout)
 
 			g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
@@ -97,7 +97,7 @@ func TestCheckSuccess(t *testing.T) {
 // to the golden file.
 //
 // To update golden file, run:
-//   go test ./tests/integration/... -v -update -tags=integration -run=^TestCheckFailures$
+//   UPDATE_GOLDEN=true make test-integration
 func TestCheckFailures(t *testing.T) {
 	type Envs map[string]string
 	tests := []struct {
