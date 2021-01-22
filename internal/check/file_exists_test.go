@@ -163,7 +163,7 @@ func TestFileExists(t *testing.T) {
 
 			initFSStructure(t, tmp, tc.paths)
 
-			fchecker := check.NewFileExist()
+			fchecker := check.NewFileExist(check.FileExistsConfig{})
 
 			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Millisecond)
 			defer cancel()
@@ -198,7 +198,7 @@ func TestFileExistCheckFileSystemFailure(t *testing.T) {
 	defer cancel()
 
 	// when
-	out, err := check.NewFileExist().Check(ctx, in)
+	out, err := check.NewFileExist(check.FileExistsConfig{}).Check(ctx, in)
 
 	// then
 	require.Error(t, err)

@@ -26,7 +26,13 @@ func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []st
 	}
 
 	if isEnabled(enabledChecks, "files") {
-		checks = append(checks, check.NewFileExist())
+		var cfg struct {
+			FilesChecker check.FileExistsConfig
+		}
+		if err := envconfig.Init(&cfg); err != nil {
+			return nil, errors.Wrapf(err, "while loading config for %s", "files")
+		}
+		checks = append(checks, check.NewFileExist(cfg.FilesChecker))
 	}
 
 	if isEnabled(enabledChecks, "owners") {

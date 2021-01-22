@@ -19,7 +19,7 @@ func TestRespectingCanceledContext(t *testing.T) {
 
 	checkers := []check.Checker{
 		check.NewDuplicatedPattern(),
-		check.NewFileExist(),
+		check.NewFileExist(check.FileExistsConfig{}),
 		check.NewValidSyntax(),
 		check.NewNotOwnedFile(check.NotOwnedFileConfig{}),
 		must(check.NewValidOwner(check.ValidOwnerConfig{Repository: "org/repo"}, nil)),

@@ -12,15 +12,24 @@ import (
 	"github.com/pkg/errors"
 )
 
-type FileExist struct{}
+type FileExistsConfig struct {
+	FailureLevel SeverityType `envconfig:"default=error"`
+}
 
-func NewFileExist() *FileExist {
-	return &FileExist{}
+type FileExist struct {
+	cfg FileExistsConfig
+}
+
+func NewFileExist(cfg FileExistsConfig) *FileExist {
+	return &FileExist{
+		cfg: cfg,
+	}
 }
 
 func (f *FileExist) Check(ctx context.Context, in Input) (Output, error) {
 	var bldr OutputBuilder
 
+	errTemplate := "%q does not match any files in repository"
 	for _, entry := range in.CodeownersEntries {
 		if ctxutil.ShouldExit(ctx) {
 			return Output{}, ctx.Err()
@@ -31,16 +40,17 @@ func (f *FileExist) Check(ctx context.Context, in Input) (Output, error) {
 		switch {
 		case err == nil:
 		case errors.Is(err, os.ErrNotExist):
-			msg := fmt.Sprintf("%q does not match any files in repository", entry.Pattern)
-			bldr.ReportIssue(msg, WithEntry(entry))
+			msg := fmt.Sprintf(errTemplate, entry.Pattern)
+			bldr.ReportIssue(msg, WithEntry(entry), WithSeverity(f.cfg.FailureLevel))
 			continue
 		default:
-			return Output{}, errors.Wrapf(err, "while checking if there is any file in %s matching pattern %s", in.RepoDir, entry.Pattern)
+			errTemplate := "while checking if there is any file in %s matching pattern %s"
+			return Output{}, errors.Wrapf(err, errTemplate, in.RepoDir, entry.Pattern)
 		}
 
 		if len(matches) == 0 {
-			msg := fmt.Sprintf("%q does not match any files in repository", entry.Pattern)
-			bldr.ReportIssue(msg, WithEntry(entry))
+			msg := fmt.Sprintf(errTemplate, entry.Pattern)
+			bldr.ReportIssue(msg, WithEntry(entry), WithSeverity(f.cfg.FailureLevel))
 		}
 	}
 
