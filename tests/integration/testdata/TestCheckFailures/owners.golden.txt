@@ -22,7 +22,7 @@
     [err] line 15: Team "masters" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "monarchy" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "naturals" does not have permissions associated with the repository "codeowners-samples".
-    [err] line 15: Team "ninjas" cannot review PRs on "codeowners-samples" as neither it nor any parent team does not have write permissions.
+    [err] line 15: Team "ninjas" cannot review PRs on "codeowners-samples" as neither it nor any parent team has write permissions.
     [err] line 15: Team "outliers" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "peak-performers" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "power" does not have permissions associated with the repository "codeowners-samples".
@@ -35,7 +35,7 @@
     [err] line 15: Team "titans" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "tribe" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "united" does not have permissions associated with the repository "codeowners-samples".
-    [err] line 15: Team "vikings" cannot review PRs on "codeowners-samples" as neither it nor any parent team does not have write permissions.
+    [err] line 15: Team "vikings" cannot review PRs on "codeowners-samples" as neither it nor any parent team has write permissions.
     [err] line 15: Team "warriors" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "wolf-pack" does not have permissions associated with the repository "codeowners-samples".
     [err] line 17: Team "not-existing-team" does not exist in organization "gh-codeowners".

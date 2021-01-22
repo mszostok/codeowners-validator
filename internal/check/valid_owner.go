@@ -243,7 +243,7 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 
 	if !teamHasWritePermission() {
 		return newValidateError(
-			"Team %q cannot review PRs on %q as neither it nor any parent team does not have write permissions.",
+			"Team %q cannot review PRs on %q as neither it nor any parent team has write permissions.",
 			team, v.orgRepoName)
 	}
 
