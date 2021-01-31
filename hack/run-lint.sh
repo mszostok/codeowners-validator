@@ -8,13 +8,20 @@ set -E         # needs to be set if we want the ERR trap
 readonly CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 readonly ROOT_PATH=$( cd "${CURRENT_DIR}/.." && pwd )
 readonly GOLANGCI_LINT_VERSION="v1.31.0"
+readonly TMP_DIR=$(mktemp -d)
 
 # shellcheck source=./hack/lib/utilities.sh
 source "${CURRENT_DIR}/lib/utilities.sh" || { echo 'Cannot load CI utilities.'; exit 1; }
 
 host::install::golangci() {
-  shout "Install the golangci-lint in version ${GOLANGCI_LINT_VERSION}"
-  curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s -- -b "$GOPATH"/bin ${GOLANGCI_LINT_VERSION}
+  mkdir -p "${TMP_DIR}/bin"
+  export PATH="${TMP_DIR}/bin:${PATH}"
+
+  shout "Install the golangci-lint ${GOLANGCI_LINT_VERSION} locally to a tempdir..."
+  curl -sfSL -o "${TMP_DIR}/golangci-lint.sh" https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
+  chmod 700 "${TMP_DIR}/golangci-lint.sh"
+
+  "${TMP_DIR}/golangci-lint.sh" -b "${TMP_DIR}/bin" ${GOLANGCI_LINT_VERSION}
 
   echo -e "${GREEN}√ install golangci-lint${NC}"
 }

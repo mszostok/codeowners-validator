@@ -4,6 +4,7 @@ package integration
 
 import (
 	"os"
+	"runtime"
 	"testing"
 	"time"
 
@@ -28,8 +29,9 @@ const (
 func TestCheckSuccess(t *testing.T) {
 	type Envs map[string]string
 	tests := []struct {
-		name string
-		envs Envs
+		name   string
+		envs   Envs
+		skipOS string
 	}{
 		{
 			name: "files",
@@ -58,10 +60,15 @@ func TestCheckSuccess(t *testing.T) {
 				"CHECKS":              "disable-all",
 				"EXPERIMENTAL_CHECKS": "notowned",
 			},
+			skipOS: "windows",
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			if runtime.GOOS == tc.skipOS {
+				t.Skip("this test is marked as skipped for this OS")
+			}
+
 			// given
 			repoDir, cleanup := CloneRepo(t, codeownersSamplesRepo, "happy-path")
 			defer cleanup()
