@@ -21,7 +21,7 @@ import (
 )
 
 func normalizeTimeDurations(in string) string {
-	duration := regexp.MustCompile(`\([0-9]+.[0-9]+(ns|us|µs|ms|s|m|h)\)`)
+	duration := regexp.MustCompile(`\(\d+(\.\d+)?(ns|us|µs|ms|s|m|h)\)`)
 	return duration.ReplaceAllString(in, "(<duration>)")
 }
 

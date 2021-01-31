@@ -1,5 +1,7 @@
 .DEFAULT_GOAL = all
 
+ROOT_DIR:=$(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+
 # enable module support across all go commands.
 export GO111MODULE = on
 # enable consistent Go 1.12/1.13 GOPROXY behavior.
@@ -8,12 +10,17 @@ export GOPROXY = https://proxy.golang.org
 all: build-race test-unit test-integration test-lint
 .PHONY: all
 
+# When running integration tests on windows machine
+# it cannot execute binary without extension.
+# It needs to be parametrized, so we can override it on CI.
+export BINARY_PATH = $(ROOT_DIR)/codeowners-validator$(BINARY_EXT)
+
 ############
 # Building #
 ############
 
 build:
-	go build -o codeowners-validator ./main.go
+	go build -o $(BINARY_PATH) ./main.go
 .PHONY: build
 
 build-race:
@@ -29,7 +36,7 @@ test-unit:
 .PHONY: test-unit
 
 test-integration: build
-	env BINARY_PATH=$(PWD)/codeowners-validator ./hack/run-test-integration.sh
+	./hack/run-test-integration.sh
 .PHONY: test-integration
 
 test-lint:
