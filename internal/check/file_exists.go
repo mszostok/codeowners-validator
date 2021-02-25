@@ -68,19 +68,24 @@ func (*FileExist) fnmatchPattern(pattern string) string {
 		return "**/" + pattern
 	}
 
-	if noOfChars > 1 && pattern[:1] != "/" {
+	if noOfChars > 1 && pattern[:1] != "/" && !strings.HasSuffix(pattern, "*") {
 		return "**/" + pattern + "**/*"
 	}
 
 	lastIdx := strings.LastIndex(pattern, "/")
-	// handle such pattern: **/foo @pico
+	// handle such pattern: `**/foo`
 	// we need to add the **/* to find all files, without that Glob
 	// will return only the first match which can be still a directory
-	if lastIdx != -1 && filepath.Ext(pattern[lastIdx+1:]) == "" {
+	if lastIdx != -1 && !hasSingleAsterisk(pattern) {
 		return pattern + "**/*"
 	}
 
 	return pattern
+}
+
+// do not match patterns like `docs/*` but match `docs/**`
+func hasSingleAsterisk(pattern string) bool {
+	return strings.HasSuffix(pattern, "*") && !strings.HasSuffix(pattern, "**")
 }
 
 func (*FileExist) Name() string {

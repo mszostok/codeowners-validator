@@ -170,6 +170,9 @@ func TestFileExists(t *testing.T) {
 			codeownersInput: `
 					docs/*  docs@example.com
 			`,
+			paths: []string{
+				"/docs/build-app/troubleshooting.md",
+			},
 			expectedIssues: []check.Issue{
 				newErrIssue(`"docs/*" does not match any files in repository`),
 			},
