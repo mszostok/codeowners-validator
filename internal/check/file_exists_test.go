@@ -150,6 +150,30 @@ func TestFileExists(t *testing.T) {
 				newErrIssue(`"a/**/b" does not match any files in repository`),
 			},
 		},
+		"Should match any file in an `apps` directory anywhere in your repository": {
+			codeownersInput: `
+					apps/ @octocat
+			`,
+			paths: []string{
+				"a/somewhere/apps/the/a/the/b/the/c/the/d/the/e/z/somewhere/appz/the/f/the/g/the/h/the/i/the/j/foo.js",
+			},
+		},
+		"Should match files like `docs/getting-started.md`": {
+			codeownersInput: `
+					docs/*  docs@example.com
+			`,
+			paths: []string{
+				"/docs/getting-started.md",
+			},
+		},
+		"Should not match nested files like `docs/build-app/troubleshooting.md`": {
+			codeownersInput: `
+					docs/*  docs@example.com
+			`,
+			expectedIssues: []check.Issue{
+				newErrIssue(`"docs/*" does not match any files in repository`),
+			},
+		},
 	}
 
 	for tn, tc := range tests {
