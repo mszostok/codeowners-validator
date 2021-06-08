@@ -5,10 +5,15 @@ set -o nounset # treat unset variables as an error and exit immediately.
 set -o errexit # exit immediately when a command fails.
 set -E         # needs to be set if we want the ERR trap
 
-readonly CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-readonly ROOT_PATH=$( cd "${CURRENT_DIR}/.." && pwd )
-readonly GOLANGCI_LINT_VERSION="v1.31.0"
-readonly TMP_DIR=$(mktemp -d)
+CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+ROOT_PATH=$( cd "${CURRENT_DIR}/.." && pwd )
+GOLANGCI_LINT_VERSION="v1.31.0"
+TMP_DIR=$(mktemp -d)
+
+readonly CURRENT_DIR
+readonly GOLANGCI_LINT_VERSION
+readonly ROOT_PATH
+readonly TMP_DIR
 
 # shellcheck source=./hack/lib/utilities.sh
 source "${CURRENT_DIR}/lib/utilities.sh" || { echo 'Cannot load CI utilities.'; exit 1; }
