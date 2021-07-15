@@ -88,9 +88,9 @@ You can also download [latest version](https://github.com/mszostok/codeowners-va
 
 #### From Sources
 
-You can install `codeowners-validator` with `env GO111MODULE=on go get -u github.com/mszostok/codeowners-validator`.
+You can install `codeowners-validator` with `go install github.com/mszostok/codeowners-validator@v0.6.0`.
 
-> NOTE: please use the latest Go to do this, ideally Go 1.15 or greater.
+> NOTE: please use Go 1.16 or greater.
 
 This will put `codeowners-validator` in `$(go env GOPATH)/bin`.
 
