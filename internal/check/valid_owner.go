@@ -172,6 +172,8 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 		}
 	}
 
+	// GitHub normalizes name before comparison
+	name = strings.ToLower(name)
 	// called after validation it's safe to work on `parts` slice
 	parts := strings.SplitN(name, "/", 2)
 	org := parts[0]
