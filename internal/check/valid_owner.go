@@ -180,13 +180,13 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	org = strings.TrimPrefix(org, "@")
 	team := parts[1]
 
-	if org != v.orgName {
+	if !strings.EqualFold(org, v.orgName) {
 		return newValidateError("Team %q does not belongs to %q organization.", team, v.orgName)
 	}
 
 	teamExists := func() bool {
 		for _, v := range v.orgTeams {
-			if v.GetSlug() == team {
+			if strings.EqualFold(v.GetSlug(), team) {
 				return true
 			}
 		}
