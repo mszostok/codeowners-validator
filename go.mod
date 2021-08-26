@@ -13,7 +13,7 @@ require (
 	github.com/sebdah/goldie/v2 v2.3.0
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
-	github.com/spf13/afero v1.2.2
+	github.com/spf13/afero v1.6.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.5.1
 	github.com/vrischmann/envconfig v1.2.0
