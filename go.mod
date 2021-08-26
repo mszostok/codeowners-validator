@@ -3,7 +3,7 @@ module github.com/mszostok/codeowners-validator
 go 1.13
 
 require (
-	github.com/fatih/color v1.9.0
+	github.com/fatih/color v1.12.0
 	github.com/google/go-github/v29 v29.0.3
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/kr/text v0.2.0 // indirect
