@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/fatih/color v1.9.0
 	github.com/google/go-github/v29 v29.0.3
-	github.com/hashicorp/go-multierror v1.0.0
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-zglob v0.0.4-0.20201017022353-70beb5203ba6
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
