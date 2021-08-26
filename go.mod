@@ -15,7 +15,7 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.5.1
+	github.com/stretchr/testify v1.7.0
 	github.com/vrischmann/envconfig v1.2.0
 	golang.org/x/crypto v0.0.0-20200320181102-891825fb96df // indirect
 	golang.org/x/net v0.0.0-20200320220750-118fecf932d8 // indirect
