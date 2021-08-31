@@ -3,19 +3,19 @@ module github.com/mszostok/codeowners-validator
 go 1.13
 
 require (
-	github.com/fatih/color v1.9.0
+	github.com/fatih/color v1.12.0
 	github.com/google/go-github/v29 v29.0.3
-	github.com/hashicorp/go-multierror v1.0.0
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-zglob v0.0.4-0.20201017022353-70beb5203ba6
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sebdah/goldie/v2 v2.3.0
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/sirupsen/logrus v1.4.2
-	github.com/spf13/afero v1.2.2
+	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/afero v1.6.0
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.5.1
+	github.com/stretchr/testify v1.7.0
 	github.com/vrischmann/envconfig v1.2.0
 	golang.org/x/crypto v0.0.0-20200320181102-891825fb96df // indirect
 	golang.org/x/net v0.0.0-20200320220750-118fecf932d8 // indirect
