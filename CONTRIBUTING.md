@@ -37,10 +37,10 @@ To start contributing, follow these steps:
     git fetch --all 
     ```
    
-5. Set the master branch to point to upstream:
+5. Set the `main` branch to point to upstream:
 
     ```bash
-    git branch -u upstream/master master
+    git branch -u upstream/main main
     ```
 
 You're all set! 🚀  Read the [development](./docs/development.md) document for further instructions.

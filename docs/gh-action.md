@@ -12,7 +12,7 @@
 The [Codeowners Validator](https://github.com/mszostok/codeowners-validator) is available as a GitHub Action.
                                                                                    
 <p align="center">
-    <img src="https://raw.githack.com/mszostok/codeowners-validator/master/docs/assets/action-output.png" width="600px" alt="demo">
+    <img src="https://raw.githack.com/mszostok/codeowners-validator/main/docs/assets/action-output.png" width="600px" alt="demo">
 </p>
 
 
