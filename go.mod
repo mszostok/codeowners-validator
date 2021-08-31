@@ -1,6 +1,6 @@
 module github.com/mszostok/codeowners-validator
 
-go 1.13
+go 1.17
 
 require (
 	github.com/fatih/color v1.12.0
@@ -25,4 +25,26 @@ require (
 	gopkg.in/pipe.v2 v2.0.0-20140414041502-3c2ca4d52544
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gotest.tools v2.2.0+incompatible
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/emirpasic/gods v1.12.0 // indirect
+	github.com/golang/protobuf v1.3.2 // indirect
+	github.com/google/go-cmp v0.3.0 // indirect
+	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
+	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect
+	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/mattn/go-isatty v0.0.12 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/src-d/gcfg v1.4.0 // indirect
+	github.com/xanzy/ssh-agent v0.2.1 // indirect
+	golang.org/x/text v0.3.3 // indirect
+	google.golang.org/appengine v1.4.0 // indirect
+	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
+	gopkg.in/warnings.v0 v0.1.2 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )
