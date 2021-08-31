@@ -2,7 +2,7 @@ name: Pull request
 
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ main ]
 
 env:
   GO111MODULE: on
