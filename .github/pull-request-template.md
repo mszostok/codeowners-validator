@@ -4,9 +4,7 @@
 
 Changes proposed in this pull request:
 
-- ...
-- ...
-- ...
+- 
 
 **Related issue(s)**
 
