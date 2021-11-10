@@ -44,10 +44,6 @@ func (ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
 			bldr.ReportIssue("Missing pattern", WithEntry(entry))
 		}
 
-		if len(entry.Owners) == 0 {
-			bldr.ReportIssue("Missing owner, at least one owner is required", WithEntry(entry))
-		}
-
 	ownersLoop:
 		for _, item := range entry.Owners {
 			switch {

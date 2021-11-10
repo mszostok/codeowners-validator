@@ -17,14 +17,6 @@ func TestValidSyntaxChecker(t *testing.T) {
 		codeowners string
 		issue      check.Issue
 	}{
-		"No owners": {
-			codeowners: `*`,
-			issue: check.Issue{
-				Severity: check.Error,
-				LineNo:   ptr.Uint64Ptr(1),
-				Message:  "Missing owner, at least one owner is required",
-			},
-		},
 		"Bad username": {
 			codeowners: `pkg/github.com/** @-`,
 			issue: check.Issue{
@@ -106,11 +98,6 @@ func TestValidSyntaxZeroValueEntry(t *testing.T) {
 			Severity: check.Error,
 			Message:  "Missing pattern",
 		},
-		{
-			LineNo:   ptr.Uint64Ptr(0),
-			Severity: check.Error,
-			Message:  "Missing owner, at least one owner is required",
-		},
 	}
 
 	// when
@@ -120,6 +107,6 @@ func TestValidSyntaxZeroValueEntry(t *testing.T) {
 	// then
 	require.NoError(t, err)
 
-	require.Len(t, out.Issues, 2)
+	require.Len(t, out.Issues, 1)
 	assert.EqualValues(t, expIssues, out.Issues)
 }
