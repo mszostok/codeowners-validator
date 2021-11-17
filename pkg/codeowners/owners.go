@@ -27,12 +27,45 @@ func (e Entry) String() string {
 
 // NewFromPath returns entries from codeowners
 func NewFromPath(path string) ([]Entry, error) {
+	err := checkMultipleCodeownersFiles(path)
+	if err != nil {
+		return nil, err
+	}
+
 	r, err := openCodeownersFile(path)
 	if err != nil {
 		return nil, err
 	}
 
 	return ParseCodeowners(r), nil
+}
+
+func checkMultipleCodeownersFiles(dir string) error {
+	var codeownerFileCount int
+	for _, p := range []string{".", "docs", ".github"} {
+		pth := path.Join(dir, p)
+		exists, err := afero.DirExists(fs, pth)
+		if err != nil {
+			return err
+		}
+
+		if !exists {
+			continue
+		}
+
+		f := path.Join(pth, "CODEOWNERS")
+		_, err = fs.Stat(f)
+		switch {
+		case os.IsNotExist(err):
+			continue
+		case codeownerFileCount > 0:
+			return fmt.Errorf("Multiple CODEOWNERS files found in root, docs/, or .github/ directory of the repository %s", dir)
+		case err == nil:
+			codeownerFileCount++
+		}
+	}
+
+	return nil
 }
 
 // openCodeownersFile finds a CODEOWNERS file and returns content.
