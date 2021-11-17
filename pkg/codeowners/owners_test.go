@@ -113,3 +113,25 @@ func TestFindCodeownersFileFailure(t *testing.T) {
 	assert.EqualError(t, err, expErrMsg)
 	assert.Nil(t, entries)
 }
+
+func TestMultipleCodeownersFileFailure(t *testing.T) {
+	// given
+	tFS := afero.NewMemMapFs()
+	revert := codeowners.SetFS(tFS)
+	defer revert()
+
+	givenRepoPath := "/workspace/go/repo-with-multiple-codeowners/"
+	expErrMsg := fmt.Sprintf("Multiple CODEOWNERS files found in root, docs/, or .github/ directory of the repository %s", givenRepoPath)
+
+	_, err := tFS.Create(path.Join(givenRepoPath, "CODEOWNERS"))
+	require.NoError(t, err)
+	_, err = tFS.Create(path.Join(givenRepoPath, "docs/", "CODEOWNERS"))
+	require.NoError(t, err)
+
+	// when
+	entries, err := codeowners.NewFromPath(givenRepoPath)
+
+	// then
+	assert.EqualError(t, err, expErrMsg)
+	assert.Nil(t, entries)
+}

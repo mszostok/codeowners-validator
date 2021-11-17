@@ -38,6 +38,8 @@ func NewFromPath(path string) ([]Entry, error) {
 // openCodeownersFile finds a CODEOWNERS file and returns content.
 // see: https://help.github.com/articles/about-code-owners/#codeowners-file-location
 func openCodeownersFile(dir string) (io.Reader, error) {
+	var fileReader io.Reader = nil
+
 	for _, p := range []string{".", "docs", ".github"} {
 		pth := path.Join(dir, p)
 		exists, err := afero.DirExists(fs, pth)
@@ -58,8 +60,13 @@ func openCodeownersFile(dir string) (io.Reader, error) {
 		default:
 			return nil, err
 		}
-
-		return fs.Open(f)
+		if fileReader != nil {
+			return nil, fmt.Errorf("Multiple CODEOWNERS files found in root, docs/, or .github/ directory of the repository %s", dir)
+		}
+		fileReader, err = fs.Open(f)
+	}
+	if fileReader != nil {
+		return fileReader, nil
 	}
 
 	return nil, fmt.Errorf("No CODEOWNERS found in the root, docs/, or .github/ directory of the repository %s", dir)
