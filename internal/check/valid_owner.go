@@ -2,6 +2,7 @@ package check
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/mail"
 	"strings"
@@ -184,16 +185,15 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 		return newValidateError("Team %q does not belongs to %q organization.", team, v.orgName)
 	}
 
-	teamExists := func() bool {
-		for _, v := range v.orgTeams {
-			if v.GetSlug() == team {
-				return true
-			}
+	var orgTeam *github.Team
+	for _, v := range v.orgTeams {
+		if v.GetSlug() == team {
+			orgTeam = v
+			break
 		}
-		return false
 	}
 
-	if !teamExists() {
+	if orgTeam == nil {
 		return newValidateError("Team %q does not exist in organization %q.", team, org)
 	}
 
@@ -244,6 +244,11 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	}
 
 	if !teamHasWritePermission() {
+		// Check if inheriting from Parent team
+		if orgTeam != nil && orgTeam.Parent != nil {
+			parentName := fmt.Sprintf("@%s/%s", org, orgTeam.Parent.GetSlug())
+			return v.validateTeam(ctx, parentName)
+		}
 		return newValidateError(
 			"Team %q cannot review PRs on %q as neither it nor any parent team has write permissions.",
 			team, v.orgRepoName)
