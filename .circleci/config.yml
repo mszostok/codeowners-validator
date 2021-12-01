@@ -1,0 +1,56 @@
+version: 2
+jobs: # basic units of work in a run
+  build: # runs not using Workflows must have a `build` job as entry point
+    environment:
+      TEST_RESULTS: /tmp/test-results
+      DATABASE_URL: "postgres://stitchfix_owner:@localhost/circle_test?sslmode=disable"
+      TRANSMETROPOLITAN_ENG_REPLICA_DATABASE_URL: "postgres://stitchfix_owner:@localhost/codeowners_validator"
+      PORT: 3000
+      GOLANGCI_LINT_VERSION: "v1.42.1"
+    docker: # run the steps with Docker
+      - image: cimg/golang:1.17
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+      - image: postgres:9.6
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+        environment:
+          - POSTGRES_USER: stitchfix_owner
+          - POSTGRES_DB: circle_test
+          - POSTGRES_HOST_AUTH_METHOD: "trust"
+    steps:
+      - stitchfix_build/eng_go_dependency_auth
+      - checkout
+      - run: mkdir -p $TEST_RESULTS
+      - run: go mod download
+      - run:
+          name: Install golangci-lint
+          command: wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /home/circleci/go/bin $GOLANGCI_LINT_VERSION
+      - run: make lint
+      - run: sudo apt update
+      - run: sudo apt install postgresql-client
+      - run: make tools
+      - run: make all
+      - run: goose -dir migrations postgres $DATABASE_URL up
+      # - run:
+      #     name: Run unit and integration tests
+      #     command: make test | tee ${TEST_RESULTS}/go-test.out
+      - store_artifacts:
+          path: spec/pacts
+          destination: /pacts
+      - stitchfix_build/notify_ci_completed
+
+orbs:
+  stitchfix_build: stitchfix/build@dev:master
+  stitchfix_security: stitchfix/security@dev:master
+
+workflows:
+  version: 2
+  on-commit:
+    jobs:
+      - build:
+          context: org-global
+      - stitchfix_security/eng_ruby_checks:
+          context: org-global
