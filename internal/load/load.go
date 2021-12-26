@@ -32,13 +32,13 @@ func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []st
 	if isEnabled(enabledChecks, "owners") {
 		var cfg struct {
 			OwnerChecker check.ValidOwnerConfig
-			Github       github.ClientConfig
+			GitHub       github.ClientConfig
 		}
 		if err := envconfig.Init(&cfg); err != nil {
 			return nil, errors.Wrapf(err, "while loading config for %s", "owners")
 		}
 
-		ghClient, err := github.NewClient(ctx, cfg.Github)
+		ghClient, err := github.NewClient(ctx, cfg.GitHub)
 		if err != nil {
 			return nil, errors.Wrap(err, "while creating GitHub client")
 		}

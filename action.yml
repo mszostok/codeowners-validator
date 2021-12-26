@@ -1,5 +1,5 @@
 name: "GitHub CODEOWNERS Validator"
-description: "Github action to ensure the correctness of your CODEOWNERS file."
+description: "GitHub action to ensure the correctness of your CODEOWNERS file."
 author: "szostok.mateusz@gmail.com"
 
 inputs:

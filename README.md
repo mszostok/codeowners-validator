@@ -149,6 +149,6 @@ Contributions are greatly appreciated! The project follows the typical GitHub pu
 
 ## Roadmap
 
-The [codeowners-validator roadmap uses Github milestones](https://github.com/mszostok/codeowners-validator/milestone/1) to track the progress of the project.
+The [codeowners-validator roadmap uses GitHub milestones](https://github.com/mszostok/codeowners-validator/milestone/1) to track the progress of the project.
 
 They are sorted with priority. First are most important.
