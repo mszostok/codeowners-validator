@@ -8,6 +8,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/dustin/go-humanize/english"
 	"github.com/spf13/afero"
 )
 
@@ -38,6 +39,7 @@ func NewFromPath(path string) ([]Entry, error) {
 // openCodeownersFile finds a CODEOWNERS file and returns content.
 // see: https://help.github.com/articles/about-code-owners/#codeowners-file-location
 func openCodeownersFile(dir string) (io.Reader, error) {
+	var detectedFiles []string
 	for _, p := range []string{".", "docs", ".github"} {
 		pth := path.Join(dir, p)
 		exists, err := afero.DirExists(fs, pth)
@@ -59,10 +61,26 @@ func openCodeownersFile(dir string) (io.Reader, error) {
 			return nil, err
 		}
 
-		return fs.Open(f)
+		detectedFiles = append(detectedFiles, f)
 	}
 
-	return nil, fmt.Errorf("No CODEOWNERS found in the root, docs/, or .github/ directory of the repository %s", dir)
+	switch l := len(detectedFiles); l {
+	case 0:
+		return nil, fmt.Errorf("No CODEOWNERS found in the root, docs/, or .github/ directory of the repository %s", dir)
+	case 1:
+		return fs.Open(detectedFiles[0])
+	default:
+		return nil, fmt.Errorf("Multiple CODEOWNERS files found in the %s locations of the repository %s",
+			english.OxfordWordSeries(replacePrefix(detectedFiles, dir, "./"), "and"),
+			dir)
+	}
+}
+
+func replacePrefix(in []string, prefix string, s string) []string {
+	for idx := range in {
+		in[idx] = fmt.Sprintf("%s%s", s, strings.TrimPrefix(in[idx], prefix))
+	}
+	return in
 }
 
 func ParseCodeowners(r io.Reader) []Entry {

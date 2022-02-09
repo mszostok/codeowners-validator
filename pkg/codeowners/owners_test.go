@@ -113,3 +113,52 @@ func TestFindCodeownersFileFailure(t *testing.T) {
 	assert.EqualError(t, err, expErrMsg)
 	assert.Nil(t, entries)
 }
+
+func TestMultipleCodeownersFileFailure(t *testing.T) {
+	const givenRepoPath = "/workspace/go/repo-without-codeowners/"
+	tests := map[string]struct {
+		expErrMsg                string
+		givenCodeownersLocations []string
+	}{
+		"Should report that no CODEOWNERS file was found": {
+			expErrMsg:                fmt.Sprintf("No CODEOWNERS found in the root, docs/, or .github/ directory of the repository %s", givenRepoPath),
+			givenCodeownersLocations: nil,
+		},
+		"Should report that CODEOWNERS file was found on root and docs/": {
+			expErrMsg:                fmt.Sprintf("Multiple CODEOWNERS files found in the ./CODEOWNERS and ./docs/CODEOWNERS locations of the repository %s", givenRepoPath),
+			givenCodeownersLocations: []string{"CODEOWNERS", path.Join("docs", "CODEOWNERS")},
+		},
+		"Should report that CODEOWNERS file was found on root and .github/": {
+			expErrMsg:                fmt.Sprintf("Multiple CODEOWNERS files found in the ./CODEOWNERS and ./.github/CODEOWNERS locations of the repository %s", givenRepoPath),
+			givenCodeownersLocations: []string{"CODEOWNERS", path.Join(".github/", "CODEOWNERS")},
+		},
+		"Should report that CODEOWNERS file was found in docs/ and .github/": {
+			expErrMsg:                fmt.Sprintf("Multiple CODEOWNERS files found in the ./docs/CODEOWNERS and ./.github/CODEOWNERS locations of the repository %s", givenRepoPath),
+			givenCodeownersLocations: []string{path.Join(".github", "CODEOWNERS"), path.Join("docs", "CODEOWNERS")},
+		},
+		"Should report that CODEOWNERS file was found on root, docs/ and .github/": {
+			expErrMsg:                fmt.Sprintf("Multiple CODEOWNERS files found in the ./CODEOWNERS, ./docs/CODEOWNERS, and ./.github/CODEOWNERS locations of the repository %s", givenRepoPath),
+			givenCodeownersLocations: []string{"CODEOWNERS", path.Join(".github", "CODEOWNERS"), path.Join("docs", "CODEOWNERS")},
+		},
+	}
+	for tn, tc := range tests {
+		t.Run(tn, func(t *testing.T) {
+			// given
+			tFS := afero.NewMemMapFs()
+			revert := codeowners.SetFS(tFS)
+			defer revert()
+
+			for _, location := range tc.givenCodeownersLocations {
+				_, err := tFS.Create(path.Join(givenRepoPath, location))
+				require.NoError(t, err)
+			}
+
+			// when
+			entries, err := codeowners.NewFromPath(givenRepoPath)
+
+			// then
+			assert.EqualError(t, err, tc.expErrMsg)
+			assert.Nil(t, entries)
+		})
+	}
+}
