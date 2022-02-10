@@ -47,6 +47,10 @@ inputs:
     description:  "The comma-separated list of owners that should not be validated. Example: @owner1,@owner2,@org/team1,example@email.com."
     required: false
 
+  syntax_checker_allow_unowned_patterns:
+    description:  "Specifies whether CODEOWNERS may have unowned files. For example, `/infra/oncall-rotator/oncall-config.yml` doesn't have owner and this is not reported."
+    required: false
+
 runs:
   using: 'docker'
   image: 'docker://mszostok/codeowners-validator:v0.6.0'

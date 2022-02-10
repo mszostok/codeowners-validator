@@ -20,19 +20,34 @@ var (
 	emailRegexp = regexp.MustCompile(`.+@.+\..+`)
 )
 
+// ValidSyntaxConfig holds configuration for ValidSyntax.
+type ValidSyntaxConfig struct {
+	// AllowUnownedPatterns specifies whether CODEOWNERS may have unowned files. For example:
+	//
+	//  /infra/oncall-rotator/                    @sre-team
+	//  /infra/oncall-rotator/oncall-config.yml
+	//
+	//  The `/infra/oncall-rotator/oncall-config.yml` this file is not owned by anyone.
+	AllowUnownedPatterns bool
+}
+
 // ValidSyntax provides a syntax validation for CODEOWNERS file.
 //
 // If any line in your CODEOWNERS file contains invalid syntax, the file will not be detected and will
 // not be used to request reviews. Invalid syntax includes inline comments and user or team names that do not exist on GitHub.
-type ValidSyntax struct{}
+type ValidSyntax struct {
+	allEmptyOwners bool
+}
 
 // NewValidSyntax returns new ValidSyntax instance.
-func NewValidSyntax() *ValidSyntax {
-	return &ValidSyntax{}
+func NewValidSyntax(cfg ValidSyntaxConfig) *ValidSyntax {
+	return &ValidSyntax{
+		allEmptyOwners: cfg.AllowUnownedPatterns,
+	}
 }
 
 // Check for syntax issues in your CODEOWNERS file.
-func (ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
+func (v *ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
 	var bldr OutputBuilder
 
 	for _, entry := range in.CodeownersEntries {
@@ -44,7 +59,7 @@ func (ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
 			bldr.ReportIssue("Missing pattern", WithEntry(entry))
 		}
 
-		if len(entry.Owners) == 0 {
+		if len(entry.Owners) == 0 && !v.allEmptyOwners {
 			bldr.ReportIssue("Missing owner, at least one owner is required", WithEntry(entry))
 		}
 
