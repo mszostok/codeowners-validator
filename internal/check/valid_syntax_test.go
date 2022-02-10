@@ -14,22 +14,12 @@ import (
 
 func TestValidSyntaxChecker(t *testing.T) {
 	tests := map[string]struct {
-		codeowners     string
-		issue          *check.Issue
-		allEmptyOwners bool
+		codeowners string
+		issue      *check.Issue
 	}{
 		"No owners": {
 			codeowners: `*`,
-			issue: &check.Issue{
-				Severity: check.Error,
-				LineNo:   ptr.Uint64Ptr(1),
-				Message:  "Missing owner, at least one owner is required",
-			},
-		},
-		"No owners but allow empty": {
-			codeowners:     `*`,
-			issue:          nil,
-			allEmptyOwners: true,
+			issue:      nil,
 		},
 		"Bad username": {
 			codeowners: `pkg/github.com/** @-`,
@@ -83,20 +73,13 @@ func TestValidSyntaxChecker(t *testing.T) {
 	for tn, tc := range tests {
 		t.Run(tn, func(t *testing.T) {
 			// when
-			out, err := check.NewValidSyntax(check.ValidSyntaxConfig{
-				AllowUnownedPatterns: tc.allEmptyOwners,
-			}).
-				Check(context.Background(), check.LoadInput(tc.codeowners))
+			out, err := check.NewValidSyntax().
+				Check(context.Background(), LoadInput(tc.codeowners))
 
 			// then
 			require.NoError(t, err)
 
-			if tc.issue != nil {
-				require.Len(t, out.Issues, 1)
-				assert.EqualValues(t, *tc.issue, out.Issues[0])
-			} else {
-				assert.Empty(t, out.Issues)
-			}
+			assertIssue(t, tc.issue, out.Issues)
 		})
 	}
 }
@@ -118,17 +101,10 @@ func TestValidSyntaxZeroValueEntry(t *testing.T) {
 			Severity: check.Error,
 			Message:  "Missing pattern",
 		},
-		{
-			LineNo:   ptr.Uint64Ptr(0),
-			Severity: check.Error,
-			Message:  "Missing owner, at least one owner is required",
-		},
 	}
 
 	// when
-	out, err := check.NewValidSyntax(check.ValidSyntaxConfig{
-		AllowUnownedPatterns: false,
-	}).
+	out, err := check.NewValidSyntax().
 		Check(context.Background(), zeroValueInput)
 
 	// then

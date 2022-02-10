@@ -18,14 +18,7 @@ func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []st
 	var checks []check.Checker
 
 	if isEnabled(enabledChecks, "syntax") {
-		var cfg struct {
-			SyntaxChecker check.ValidSyntaxConfig
-		}
-		if err := envconfig.Init(&cfg); err != nil {
-			return nil, errors.Wrap(err, "while loading config for syntax")
-		}
-
-		checks = append(checks, check.NewValidSyntax(cfg.SyntaxChecker))
+		checks = append(checks, check.NewValidSyntax())
 	}
 
 	if isEnabled(enabledChecks, "duppatterns") {

@@ -1,5 +1,5 @@
 ==> Executing [Experimental] Not Owned File Checker (<duration>)
-    [err] Found 3 not owned files (skipped patterns: "*"): 
+    [err] Found 3 not owned files (skipped patterns: "*"):
             * .github/workflows/cron.yml
             * .gitignore
             * CODEOWNERS

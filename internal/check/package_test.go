@@ -20,7 +20,7 @@ func TestRespectingCanceledContext(t *testing.T) {
 	checkers := []check.Checker{
 		check.NewDuplicatedPattern(),
 		check.NewFileExist(),
-		check.NewValidSyntax(check.ValidSyntaxConfig{}),
+		check.NewValidSyntax(),
 		check.NewNotOwnedFile(check.NotOwnedFileConfig{}),
 		must(check.NewValidOwner(check.ValidOwnerConfig{Repository: "org/repo"}, nil)),
 	}
@@ -33,7 +33,7 @@ func TestRespectingCanceledContext(t *testing.T) {
 			cancel()
 
 			// when
-			out, err := sut.Check(ctx, check.LoadInput(check.FixtureValidCODEOWNERS))
+			out, err := sut.Check(ctx, LoadInput(FixtureValidCODEOWNERS))
 
 			// then
 			assert.True(t, errors.Is(err, context.Canceled))

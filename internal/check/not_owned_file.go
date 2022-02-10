@@ -73,7 +73,7 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 	lsOut := strings.TrimSpace(out)
 	if lsOut != "" {
 		lines := strings.Split(lsOut, "\n")
-		msg := fmt.Sprintf("Found %d not owned files (skipped patterns: %q): \n%s", len(lines), c.skipPatternsList(), c.ListFormatFunc(lines))
+		msg := fmt.Sprintf("Found %d not owned files (skipped patterns: %q):\n%s", len(lines), c.skipPatternsList(), c.ListFormatFunc(lines))
 		bldr.ReportIssue(msg)
 	}
 

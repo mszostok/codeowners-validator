@@ -19,16 +19,24 @@ type ValidOwnerConfig struct {
 	// More info about the @ghost user: https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/deleting-your-user-account
 	// Tip on how @ghost can be used: https://github.community/t5/How-to-use-Git-and-GitHub/CODEOWNERS-file-with-a-NOT-file-type-condition/m-p/31013/highlight/true#M8523
 	IgnoredOwners []string `envconfig:"default=@ghost"`
+	// AllowUnownedPatterns specifies whether CODEOWNERS may have unowned files. For example:
+	//
+	//  /infra/oncall-rotator/                    @sre-team
+	//  /infra/oncall-rotator/oncall-config.yml
+	//
+	//  The `/infra/oncall-rotator/oncall-config.yml` this file is not owned by anyone.
+	AllowUnownedPatterns bool `envconfig:"default=false"`
 }
 
 // ValidOwner validates each owner
 type ValidOwner struct {
-	ghClient    *github.Client
-	orgMembers  *map[string]struct{}
-	orgName     string
-	orgTeams    []*github.Team
-	orgRepoName string
-	ignOwners   map[string]struct{}
+	ghClient             *github.Client
+	orgMembers           *map[string]struct{}
+	orgName              string
+	orgTeams             []*github.Team
+	orgRepoName          string
+	ignOwners            map[string]struct{}
+	allowUnownedPatterns bool
 }
 
 // NewValidOwner returns new instance of the ValidOwner
@@ -44,10 +52,11 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, 
 	}
 
 	return &ValidOwner{
-		ghClient:    ghClient,
-		orgName:     split[0],
-		orgRepoName: split[1],
-		ignOwners:   ignOwners,
+		ghClient:             ghClient,
+		orgName:              split[0],
+		orgRepoName:          split[1],
+		ignOwners:            ignOwners,
+		allowUnownedPatterns: cfg.AllowUnownedPatterns,
 	}, nil
 }
 
@@ -69,6 +78,11 @@ func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 	checkedOwners := map[string]struct{}{}
 
 	for _, entry := range in.CodeownersEntries {
+		if len(entry.Owners) == 0 && !v.allowUnownedPatterns {
+			bldr.ReportIssue("Missing owner, at least one owner is required", WithEntry(entry), WithSeverity(Warning))
+			continue
+		}
+
 		for _, ownerName := range entry.Owners {
 			if ctxutil.ShouldExit(ctx) {
 				return Output{}, ctx.Err()
