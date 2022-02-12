@@ -25,7 +25,7 @@ type ValidOwnerConfig struct {
 	//  /infra/oncall-rotator/oncall-config.yml
 	//
 	//  The `/infra/oncall-rotator/oncall-config.yml` this file is not owned by anyone.
-	AllowUnownedPatterns bool `envconfig:"default=false"`
+	AllowUnownedPatterns bool `envconfig:"default=true"`
 }
 
 // ValidOwner validates each owner

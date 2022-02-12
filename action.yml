@@ -49,7 +49,7 @@ inputs:
 
   owner_checker_allow_unowned_patterns:
     description:  "Specifies whether CODEOWNERS may have unowned files. For example, `/infra/oncall-rotator/oncall-config.yml` doesn't have owner and this is not reported."
-    default: "false"
+    default: "true"
     required: false
 
 runs:

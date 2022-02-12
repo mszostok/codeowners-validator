@@ -43,10 +43,9 @@ func TestCheckSuccess(t *testing.T) {
 		{
 			name: "owners",
 			envs: Envs{
-				"CHECKS":                               "owners",
-				"OWNER_CHECKER_REPOSITORY":             "gh-codeowners/codeowners-samples",
-				"OWNER_CHECKER_ALLOW_UNOWNED_PATTERNS": "true",
-				"GITHUB_ACCESS_TOKEN":                  os.Getenv("GITHUB_TOKEN"),
+				"CHECKS":                   "owners",
+				"OWNER_CHECKER_REPOSITORY": "gh-codeowners/codeowners-samples",
+				"GITHUB_ACCESS_TOKEN":      os.Getenv("GITHUB_TOKEN"),
 			},
 		},
 		{
@@ -122,9 +121,10 @@ func TestCheckFailures(t *testing.T) {
 		{
 			name: "owners",
 			envs: Envs{
-				"CHECKS":                   "owners",
-				"OWNER_CHECKER_REPOSITORY": "gh-codeowners/codeowners-samples",
-				"GITHUB_ACCESS_TOKEN":      os.Getenv("GITHUB_TOKEN"),
+				"CHECKS":                               "owners",
+				"OWNER_CHECKER_REPOSITORY":             "gh-codeowners/codeowners-samples",
+				"OWNER_CHECKER_ALLOW_UNOWNED_PATTERNS": "false",
+				"GITHUB_ACCESS_TOKEN":                  os.Getenv("GITHUB_TOKEN"),
 			},
 		},
 		{
