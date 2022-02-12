@@ -27,7 +27,7 @@ jobs:
 
           # --strip-components=number - Strip given number of leading components from file names before extraction.
           # and extract only ./upx-3.96-amd64_linux/upx file
-          tar --strip-components 1 -xf upx-3.96-amd64_linux.tar.xz ./upx-3.96-amd64_linux/upx
+          tar --strip-components 1 -xf upx-3.96-amd64_linux.tar.xz upx-3.96-amd64_linux/upx
 
           mv ./upx /usr/local/bin/upx
           upx -V
