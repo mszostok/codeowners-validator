@@ -115,14 +115,14 @@ func isEmailAddress(s string) bool {
 	return err == nil
 }
 
-func isGithubTeam(s string) bool {
+func isGitHubTeam(s string) bool {
 	hasPrefix := strings.HasPrefix(s, "@")
 	containsSlash := strings.Contains(s, "/")
 	split := strings.SplitN(s, "/", 3) // 3 is enough to confirm that is invalid + will not overflow the buffer
 	return hasPrefix && containsSlash && len(split) == 2 && len(split[1]) > 0
 }
 
-func isGithubUser(s string) bool {
+func isGitHubUser(s string) bool {
 	return !strings.Contains(s, "/") && strings.HasPrefix(s, "@")
 }
 
@@ -133,9 +133,9 @@ func (v *ValidOwner) isIgnoredOwner(name string) bool {
 
 func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string) *validateError {
 	switch {
-	case isGithubUser(name):
-		return v.validateGithubUser
-	case isGithubTeam(name):
+	case isGitHubUser(name):
+		return v.validateGitHubUser
+	case isGitHubTeam(name):
 		return v.validateTeam
 	case isEmailAddress(name):
 		// TODO(mszostok): try to check if e-mail really exists
@@ -266,7 +266,7 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	return nil
 }
 
-func (v *ValidOwner) validateGithubUser(ctx context.Context, name string) *validateError {
+func (v *ValidOwner) validateGitHubUser(ctx context.Context, name string) *validateError {
 	if v.orgMembers == nil { //TODO(mszostok): lazy init, make it more robust.
 		if err := v.initOrgListMembers(ctx); err != nil {
 			return newValidateError("Cannot initialize organization member list: %v", err).AsPermanent()
