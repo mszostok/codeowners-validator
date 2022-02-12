@@ -32,12 +32,17 @@ jobs:
           mv ./upx /usr/local/bin/upx
           rm upx-3.96-amd64_linux.tar.xz
           upx -V
-      - name: Docker Login
+      - name: GHCR Login
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker Hub Login
+        uses: docker/login-action@v1
+        with:
+          username: mszostok
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
