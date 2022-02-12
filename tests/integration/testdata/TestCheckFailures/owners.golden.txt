@@ -38,7 +38,8 @@
     [err] line 15: Team "vikings" cannot review PRs on "codeowners-samples" as neither it nor any parent team has write permissions.
     [err] line 15: Team "warriors" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "wolf-pack" does not have permissions associated with the repository "codeowners-samples".
-    [err] line 17: Team "not-existing-team" does not exist in organization "gh-codeowners".
+    [err] line 17: Team "@gh-codeowners/not-existing-team" does not exist in organization "gh-codeowners".
+    [err] line 17: Team "@wrong-org/a-team" does not belong to "gh-codeowners" organization.
     [war] line 23: Missing owner, at least one owner is required
 
 1 check(s) executed, 1 failure(s)
