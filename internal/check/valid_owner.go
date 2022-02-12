@@ -194,8 +194,8 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	org = strings.TrimPrefix(org, "@")
 	team := parts[1]
 
-	if !strings.EqualFold(org, v.orgName) {
-		return newValidateError("Team %q does not belong to %q organization.", team, v.orgName)
+	if org != v.orgName {
+		return newValidateError("Team %q does not belong to %q organization.", name, v.orgName)
 	}
 
 	teamExists := func() bool {
@@ -208,7 +208,7 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	}
 
 	if !teamExists() {
-		return newValidateError("Team %q does not exist in organization %q.", team, org)
+		return newValidateError("Team %q does not exist in organization %q.", name, org)
 	}
 
 	// repo contains the permissions for the team slug given
