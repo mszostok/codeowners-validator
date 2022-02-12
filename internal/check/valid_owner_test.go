@@ -1,8 +1,10 @@
-package check
+package check_test
 
 import (
 	"context"
 	"testing"
+
+	"github.com/mszostok/codeowners-validator/internal/check"
 
 	"github.com/mszostok/codeowners-validator/internal/ptr"
 	"github.com/stretchr/testify/require"
@@ -43,7 +45,7 @@ func TestValidOwnerChecker(t *testing.T) {
 	for tn, tc := range tests {
 		t.Run(tn, func(t *testing.T) {
 			// when
-			result := isValidOwner(tc.owner)
+			result := check.IsValidOwner(tc.owner)
 			assert.Equal(t, tc.isValid, result)
 		})
 	}
@@ -52,7 +54,7 @@ func TestValidOwnerChecker(t *testing.T) {
 func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 	t.Run("Should ignore owner", func(t *testing.T) {
 		// given
-		ownerCheck, err := NewValidOwner(ValidOwnerConfig{
+		ownerCheck, err := check.NewValidOwner(check.ValidOwnerConfig{
 			Repository:    "org/repo",
 			IgnoredOwners: []string{"@owner1"},
 		}, nil)
@@ -69,31 +71,50 @@ func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 	})
 
 	t.Run("Should ignore user only and check the remaining owners", func(t *testing.T) {
-		// given
-		ownerCheck, err := NewValidOwner(ValidOwnerConfig{
-			Repository:    "org/repo",
-			IgnoredOwners: []string{"@owner1"},
-		}, nil)
-		require.NoError(t, err)
-
-		givenCodeowners := `*	@owner1 badOwner`
-
-		expIssue := Issue{
-			Severity: Error,
-			LineNo:   ptr.Uint64Ptr(1),
-			Message:  `Not valid owner definition "badOwner"`,
+		tests := map[string]struct {
+			codeowners           string
+			issue                *check.Issue
+			allowUnownedPatterns bool
+		}{
+			"No owners": {
+				codeowners: `*`,
+				issue: &check.Issue{
+					Severity: check.Warning,
+					LineNo:   ptr.Uint64Ptr(1),
+					Message:  "Missing owner, at least one owner is required",
+				},
+			},
+			"Bad owner definition": {
+				codeowners: `*	badOwner @owner1`,
+				issue: &check.Issue{
+					Severity: check.Error,
+					LineNo:   ptr.Uint64Ptr(1),
+					Message:  `Not valid owner definition "badOwner"`,
+				},
+			},
+			"No owners but allow empty": {
+				codeowners:           `*`,
+				issue:                nil,
+				allowUnownedPatterns: true,
+			},
 		}
+		for tn, tc := range tests {
+			t.Run(tn, func(t *testing.T) {
+				// given
+				ownerCheck, err := check.NewValidOwner(check.ValidOwnerConfig{
+					Repository:           "org/repo",
+					AllowUnownedPatterns: tc.allowUnownedPatterns,
+					IgnoredOwners:        []string{"@owner1"},
+				}, nil)
+				require.NoError(t, err)
 
-		// when
-		out, err := ownerCheck.Check(context.Background(), LoadInput(givenCodeowners))
+				// when
+				out, err := ownerCheck.Check(context.Background(), LoadInput(tc.codeowners))
 
-		// then
-		require.NoError(t, err)
-		require.Len(t, out.Issues, 1)
-		require.EqualValues(t, expIssue, out.Issues[0])
+				// then
+				require.NoError(t, err)
+				assertIssue(t, tc.issue, out.Issues)
+			})
+		}
 	})
-}
-
-func isValidOwner(owner string) bool {
-	return isEmailAddress(owner) || isGithubUser(owner) || isGithubTeam(owner)
 }

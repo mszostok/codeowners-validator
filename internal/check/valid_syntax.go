@@ -32,7 +32,7 @@ func NewValidSyntax() *ValidSyntax {
 }
 
 // Check for syntax issues in your CODEOWNERS file.
-func (ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
+func (v *ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
 	var bldr OutputBuilder
 
 	for _, entry := range in.CodeownersEntries {
@@ -42,10 +42,6 @@ func (ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
 
 		if entry.Pattern == "" {
 			bldr.ReportIssue("Missing pattern", WithEntry(entry))
-		}
-
-		if len(entry.Owners) == 0 {
-			bldr.ReportIssue("Missing owner, at least one owner is required", WithEntry(entry))
 		}
 
 	ownersLoop:

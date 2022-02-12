@@ -18,7 +18,7 @@ func TestDuplicatedPattern(t *testing.T) {
 		"Should report info about duplicated entries": {
 			codeownersInput: `
 					*       @global-owner1 @global-owner2
-					
+
 					/build/logs/ @doctocat
 					/build/logs/ @doctocat
 
@@ -29,21 +29,21 @@ func TestDuplicatedPattern(t *testing.T) {
 				{
 					Severity: check.Error,
 					LineNo:   nil,
-					Message: `Pattern "/build/logs/" is defined 2 times in lines: 
+					Message: `Pattern "/build/logs/" is defined 2 times in lines:
             * 4: with owners: [@doctocat]
             * 5: with owners: [@doctocat]`,
 				},
 				{
 					Severity: check.Error,
 					LineNo:   nil,
-					Message: `Pattern "/script" is defined 2 times in lines: 
+					Message: `Pattern "/script" is defined 2 times in lines:
             * 7: with owners: [@mszostok]
             * 8: with owners: [m.t@g.com]`,
 				},
 			},
 		},
 		"Should not report any issues with correct CODEOWNERS file": {
-			codeownersInput: check.FixtureValidCODEOWNERS,
+			codeownersInput: FixtureValidCODEOWNERS,
 			expectedIssues:  nil,
 		},
 	}
@@ -54,7 +54,7 @@ func TestDuplicatedPattern(t *testing.T) {
 			sut := check.NewDuplicatedPattern()
 
 			// when
-			out, err := sut.Check(context.TODO(), check.LoadInput(tc.codeownersInput))
+			out, err := sut.Check(context.TODO(), LoadInput(tc.codeownersInput))
 
 			// then
 			require.NoError(t, err)

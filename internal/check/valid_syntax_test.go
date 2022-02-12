@@ -15,19 +15,15 @@ import (
 func TestValidSyntaxChecker(t *testing.T) {
 	tests := map[string]struct {
 		codeowners string
-		issue      check.Issue
+		issue      *check.Issue
 	}{
 		"No owners": {
 			codeowners: `*`,
-			issue: check.Issue{
-				Severity: check.Error,
-				LineNo:   ptr.Uint64Ptr(1),
-				Message:  "Missing owner, at least one owner is required",
-			},
+			issue:      nil,
 		},
 		"Bad username": {
 			codeowners: `pkg/github.com/** @-`,
-			issue: check.Issue{
+			issue: &check.Issue{
 				Severity: check.Warning,
 				LineNo:   ptr.Uint64Ptr(1),
 				Message:  "Owner '@-' does not look like a GitHub username or team name",
@@ -35,7 +31,7 @@ func TestValidSyntaxChecker(t *testing.T) {
 		},
 		"Bad org": {
 			codeowners: `* @bad+org`,
-			issue: check.Issue{
+			issue: &check.Issue{
 				Severity: check.Warning,
 				LineNo:   ptr.Uint64Ptr(1),
 				Message:  "Owner '@bad+org' does not look like a GitHub username or team name",
@@ -43,7 +39,7 @@ func TestValidSyntaxChecker(t *testing.T) {
 		},
 		"Bad team name on first place": {
 			codeowners: `* @org/+not+a+good+name`,
-			issue: check.Issue{
+			issue: &check.Issue{
 				Severity: check.Warning,
 				LineNo:   ptr.Uint64Ptr(1),
 				Message:  "Owner '@org/+not+a+good+name' does not look like a GitHub username or team name",
@@ -51,7 +47,7 @@ func TestValidSyntaxChecker(t *testing.T) {
 		},
 		"Bad team name on second place": {
 			codeowners: `* @org/hakuna-matata @org/-a-team`,
-			issue: check.Issue{
+			issue: &check.Issue{
 				Severity: check.Warning,
 				LineNo:   ptr.Uint64Ptr(1),
 				Message:  "Owner '@org/-a-team' does not look like a GitHub username or team name",
@@ -59,7 +55,7 @@ func TestValidSyntaxChecker(t *testing.T) {
 		},
 		"Doesn't look like username, team name, nor email": {
 			codeowners: `* something_weird`,
-			issue: check.Issue{
+			issue: &check.Issue{
 				Severity: check.Error,
 				LineNo:   ptr.Uint64Ptr(1),
 				Message:  "Owner 'something_weird' does not look like an email",
@@ -67,7 +63,7 @@ func TestValidSyntaxChecker(t *testing.T) {
 		},
 		"Comment in pattern line": {
 			codeowners: `* @org/hakuna-matata # this should be an error`,
-			issue: check.Issue{
+			issue: &check.Issue{
 				Severity: check.Error,
 				LineNo:   ptr.Uint64Ptr(1),
 				Message:  "Comment (# sign) is not allowed in line with pattern entry. The correct format is: pattern owner1 ... ownerN",
@@ -78,13 +74,12 @@ func TestValidSyntaxChecker(t *testing.T) {
 		t.Run(tn, func(t *testing.T) {
 			// when
 			out, err := check.NewValidSyntax().
-				Check(context.Background(), check.LoadInput(tc.codeowners))
+				Check(context.Background(), LoadInput(tc.codeowners))
 
 			// then
 			require.NoError(t, err)
 
-			require.Len(t, out.Issues, 1)
-			assert.EqualValues(t, tc.issue, out.Issues[0])
+			assertIssue(t, tc.issue, out.Issues)
 		})
 	}
 }
@@ -106,11 +101,6 @@ func TestValidSyntaxZeroValueEntry(t *testing.T) {
 			Severity: check.Error,
 			Message:  "Missing pattern",
 		},
-		{
-			LineNo:   ptr.Uint64Ptr(0),
-			Severity: check.Error,
-			Message:  "Missing owner, at least one owner is required",
-		},
 	}
 
 	// when
@@ -120,6 +110,6 @@ func TestValidSyntaxZeroValueEntry(t *testing.T) {
 	// then
 	require.NoError(t, err)
 
-	require.Len(t, out.Issues, 2)
+	require.Len(t, out.Issues, len(expIssues))
 	assert.EqualValues(t, expIssues, out.Issues)
 }

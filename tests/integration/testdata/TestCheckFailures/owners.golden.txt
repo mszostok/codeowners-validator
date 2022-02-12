@@ -39,5 +39,6 @@
     [err] line 15: Team "warriors" does not have permissions associated with the repository "codeowners-samples".
     [err] line 15: Team "wolf-pack" does not have permissions associated with the repository "codeowners-samples".
     [err] line 17: Team "not-existing-team" does not exist in organization "gh-codeowners".
+    [war] line 23: Missing owner, at least one owner is required
 
 1 check(s) executed, 1 failure(s)
