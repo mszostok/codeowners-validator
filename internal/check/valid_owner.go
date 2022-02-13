@@ -186,21 +186,21 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 		}
 	}
 
-	// GitHub normalizes name before comparison
-	name = strings.ToLower(name)
 	// called after validation it's safe to work on `parts` slice
 	parts := strings.SplitN(name, "/", 2)
 	org := parts[0]
 	org = strings.TrimPrefix(org, "@")
 	team := parts[1]
 
-	if org != v.orgName {
+	// GitHub normalizes name before comparison
+	if !strings.EqualFold(org, v.orgName) {
 		return newValidateError("Team %q does not belong to %q organization.", name, v.orgName)
 	}
 
 	teamExists := func() bool {
 		for _, v := range v.orgTeams {
-			if v.GetSlug() == team {
+			// GitHub normalizes name before comparison
+			if strings.EqualFold(v.GetSlug(), team) {
 				return true
 			}
 		}

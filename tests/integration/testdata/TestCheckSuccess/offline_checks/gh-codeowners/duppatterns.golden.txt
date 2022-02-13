@@ -1,0 +1,4 @@
+==> Executing Duplicated Pattern Checker (<duration>)
+    Check OK
+
+1 check(s) executed, no failure(s)
