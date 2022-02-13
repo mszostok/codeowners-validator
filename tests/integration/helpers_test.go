@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -104,4 +105,11 @@ func (s *Executor) WithTimeout(timeout time.Duration) *Executor {
 func (s *Executor) Binary(binaryPath string) *Executor {
 	s.binaryPath = binaryPath
 	return s
+}
+
+func stringDefault(in, def string) string {
+	if in == "" {
+		return def
+	}
+	return in
 }
