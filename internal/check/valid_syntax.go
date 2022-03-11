@@ -48,9 +48,7 @@ func (v *ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
 		for _, item := range entry.Owners {
 			switch {
 			case strings.EqualFold(item, "#"):
-				msg := "Comment (# sign) is not allowed in line with pattern entry. The correct format is: pattern owner1 ... ownerN"
-				bldr.ReportIssue(msg, WithEntry(entry))
-				break ownersLoop // no need to check for the rest items in this line, as the whole line is already marked as invalid
+				break ownersLoop // no need to check for the rest items in this line, as they are ignored
 			case strings.HasPrefix(item, "@"):
 				if !usernameOrTeamRegexp.MatchString(item) {
 					msg := fmt.Sprintf("Owner '%s' does not look like a GitHub username or team name", item)

@@ -9,7 +9,7 @@ import (
 )
 
 func TestAPIBuilder(t *testing.T) {
-	var bldr *check.OutputBuilder = nil
+	var bldr *check.OutputBuilder
 
 	t.Run("Does not panic on ReportIssue when builder is nil", func(t *testing.T) {
 		assert.NotPanics(t, func() {
