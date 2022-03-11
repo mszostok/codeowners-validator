@@ -7,7 +7,7 @@ set -E         # needs to be set if we want the ERR trap
 
 CURRENT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ROOT_PATH=$( cd "${CURRENT_DIR}/.." && pwd )
-GOLANGCI_LINT_VERSION="v1.31.0"
+GOLANGCI_LINT_VERSION="v1.44.2"
 TMP_DIR=$(mktemp -d)
 
 readonly CURRENT_DIR

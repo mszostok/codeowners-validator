@@ -17,6 +17,8 @@ const sampleCodeownerFile = `
 
 src/**	@org/hakuna-matata @pico-bello
 pkg/github.com/**	@myk
+tests/**	@ghost # some comment
+internal/**	@ghost #some comment v2
 
 `
 
@@ -38,6 +40,16 @@ func TestParseCodeownersSuccess(t *testing.T) {
 			LineNo:  6,
 			Pattern: "pkg/github.com/**",
 			Owners:  []string{"@myk"},
+		},
+		{
+			LineNo:  7,
+			Pattern: "tests/**",
+			Owners:  []string{"@ghost"},
+		},
+		{
+			LineNo:  8,
+			Pattern: "internal/**",
+			Owners:  []string{"@ghost"},
 		},
 	}
 

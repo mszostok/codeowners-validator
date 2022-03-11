@@ -62,12 +62,7 @@ func TestValidSyntaxChecker(t *testing.T) {
 			},
 		},
 		"Comment in pattern line": {
-			codeowners: `* @org/hakuna-matata # this should be an error`,
-			issue: &check.Issue{
-				Severity: check.Error,
-				LineNo:   ptr.Uint64Ptr(1),
-				Message:  "Comment (# sign) is not allowed in line with pattern entry. The correct format is: pattern owner1 ... ownerN",
-			},
+			codeowners: `* @org/hakuna-matata # this is allowed`,
 		},
 	}
 	for tn, tc := range tests {

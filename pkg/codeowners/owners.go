@@ -99,9 +99,17 @@ func ParseCodeowners(r io.Reader) []Entry {
 			continue
 		}
 
+		n := len(fields)
+		for idx, x := range fields {
+			if !strings.HasPrefix(x, "#") {
+				continue
+			}
+			n = idx
+		}
+
 		e = append(e, Entry{
 			Pattern: fields[0],
-			Owners:  fields[1:],
+			Owners:  fields[1:n],
 			LineNo:  no,
 		})
 	}
