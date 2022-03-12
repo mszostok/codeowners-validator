@@ -19,13 +19,14 @@ type TTYPrinter struct {
 	m sync.RWMutex
 }
 
-func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output) {
+func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output, checkErr error) {
 	tty.m.Lock()
 	defer tty.m.Unlock()
 
 	header := color.New(color.Bold).FprintfFunc()
 	issueBody := color.New(color.FgWhite).FprintfFunc()
 	okCheck := color.New(color.FgGreen).FprintlnFunc()
+	errCheck := color.New(color.FgRed).FprintfFunc()
 
 	header(writer, "==> Executing %s (%v)\n", checkName, duration)
 	for _, i := range checkOut.Issues {
@@ -38,8 +39,12 @@ func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration
 		issueBody(writer, " %s\n", i.Message)
 	}
 
-	if len(checkOut.Issues) == 0 {
+	switch {
+	case checkErr == nil && len(checkOut.Issues) == 0:
 		okCheck(writer, "    Check OK")
+	case checkErr != nil:
+		errCheck(writer, "    [Internal Error]")
+		issueBody(writer, " %s\n", checkErr)
 	}
 }
 

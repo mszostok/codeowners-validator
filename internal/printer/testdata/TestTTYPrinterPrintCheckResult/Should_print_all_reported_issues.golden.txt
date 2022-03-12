@@ -3,3 +3,4 @@
     [war] line 2020: Simulate warning in line 2020
     [err] Error without line number
     [war] Warning without line number
+    [Internal Error] some check internal error

@@ -35,16 +35,26 @@ func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
 }
 
 func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err error) {
+	if ctxutil.ShouldExit(ctx) {
+		return Output{}, ctx.Err()
+	}
+
 	var bldr OutputBuilder
 
-	patterns, err := c.patternsToBeIgnored(ctx, in.CodeownersEntries)
+	if len(in.CodeownersEntries) == 0 {
+		bldr.ReportIssue("The CODEOWNERS file is empty. The files in the repository don't have any owner.")
+		return bldr.Output(), nil
+	}
+
+	patterns := c.patternsToBeIgnored(in.CodeownersEntries)
+
+	statusOut, err := c.GitCheckStatus(in.RepoDir)
 	if err != nil {
 		return Output{}, err
 	}
-
-	err = c.GitCheckStatus(in.RepoDir)
-	if err != nil {
-		return Output{}, err
+	if string(statusOut) != "" {
+		bldr.ReportIssue("git state is dirty: commit all changes before executing this check")
+		return bldr.Output(), nil
 	}
 
 	defer func() {
@@ -80,20 +90,16 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 	return bldr.Output(), nil
 }
 
-func (c *NotOwnedFile) patternsToBeIgnored(ctx context.Context, entries []codeowners.Entry) ([]string, error) {
+func (c *NotOwnedFile) patternsToBeIgnored(entries []codeowners.Entry) []string {
 	var patterns []string
 	for _, entry := range entries {
-		if ctxutil.ShouldExit(ctx) {
-			return []string{}, ctx.Err()
-		}
-
 		if _, found := c.skipPatterns[entry.Pattern]; found {
 			continue
 		}
 		patterns = append(patterns, entry.Pattern)
 	}
 
-	return patterns, nil
+	return patterns
 }
 
 func (c *NotOwnedFile) AppendToGitignoreFile(repoDir string, patterns []string) error {
@@ -135,7 +141,7 @@ func (c *NotOwnedFile) GitRemoveIgnoredFiles(repoDir string) error {
 	return nil
 }
 
-func (c *NotOwnedFile) GitCheckStatus(repoDir string) error {
+func (c *NotOwnedFile) GitCheckStatus(repoDir string) ([]byte, error) {
 	gitstate := pipe.Script(
 		pipe.ChDir(repoDir),
 		pipe.Exec("git", "status", "--porcelain"),
@@ -143,14 +149,10 @@ func (c *NotOwnedFile) GitCheckStatus(repoDir string) error {
 
 	out, stderr, err := pipe.DividedOutput(gitstate)
 	if err != nil {
-		return errors.Wrap(err, string(stderr))
+		return nil, errors.Wrap(err, string(stderr))
 	}
 
-	if string(out) != "" {
-		return fmt.Errorf("git state is dirty: commit all changes before executing %q", c.Name())
-	}
-
-	return nil
+	return out, nil
 }
 
 func (c *NotOwnedFile) GitResetCurrentBranch(repoDir string) error {
