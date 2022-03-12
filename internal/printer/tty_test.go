@@ -2,6 +2,7 @@ package printer
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"testing"
 	"time"
@@ -43,7 +44,7 @@ func TestTTYPrinterPrintCheckResult(t *testing.T) {
 					Message:  "Warning without line number",
 				},
 			},
-		})
+		}, errors.New("some check internal error"))
 		// then
 		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
 		g.Assert(t, t.Name(), buff.Bytes())
@@ -60,7 +61,7 @@ func TestTTYPrinterPrintCheckResult(t *testing.T) {
 		// when
 		tty.PrintCheckResult("Foo Checker", time.Second, check.Output{
 			Issues: nil,
-		})
+		}, nil)
 
 		// then
 		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))

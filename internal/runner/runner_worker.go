@@ -9,7 +9,6 @@ import (
 	"github.com/mszostok/codeowners-validator/internal/printer"
 	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -22,7 +21,7 @@ const (
 
 // Printer prints the checks results
 type Printer interface {
-	PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output)
+	PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output, err error)
 	PrintSummary(allCheck int, failedChecks int)
 }
 
@@ -68,15 +67,9 @@ func (r *CheckRunner) Run(ctx context.Context) {
 				CodeownersEntries: r.codeowners,
 				RepoDir:           r.repoPath,
 			})
-			if err != nil {
-				// TODO(mszostok): add err handling (logging it internally is not enough)
-				r.log.Errorf(errors.Wrapf(err, "while executing checker %s", c.Name()).Error())
-				return
-			}
 
-			r.collectMetrics(out)
-
-			r.printer.PrintCheckResult(c.Name(), time.Since(startTime), out)
+			r.collectMetrics(out, err)
+			r.printer.PrintCheckResult(c.Name(), time.Since(startTime), out, err)
 		}(c)
 	}
 	wg.Wait()
@@ -95,14 +88,14 @@ func (r *CheckRunner) ShouldExitWithCheckFailure() bool {
 	return higherOccurredIssue <= r.treatedAsFailure
 }
 
-func (r *CheckRunner) collectMetrics(checkOut check.Output) {
+func (r *CheckRunner) collectMetrics(checkOut check.Output, err error) {
 	r.m.Lock()
 	defer r.m.Unlock()
 	for _, i := range checkOut.Issues {
 		r.allFoundIssues[i.Severity]++
 	}
 
-	if len(checkOut.Issues) > 0 {
+	if len(checkOut.Issues) > 0 || err != nil {
 		r.notPassedChecksCnt++
 	}
 }
