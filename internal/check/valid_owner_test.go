@@ -6,8 +6,9 @@ import (
 
 	"github.com/mszostok/codeowners-validator/internal/check"
 
-	"github.com/mszostok/codeowners-validator/internal/ptr"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mszostok/codeowners-validator/internal/ptr"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -117,4 +118,44 @@ func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestValidOwnerCheckerOwnersMustBeTeams(t *testing.T) {
+	tests := map[string]struct {
+		codeowners           string
+		issue                *check.Issue
+		allowUnownedPatterns bool
+	}{
+		"Bad owner definition": {
+			codeowners: `*	@owner1`,
+			issue: &check.Issue{
+				Severity: check.Error,
+				LineNo:   ptr.Uint64Ptr(1),
+				Message:  `Only team owners allowed and "@owner1" is not a team`,
+			},
+		},
+		"No owners but allow empty": {
+			codeowners:           `*`,
+			issue:                nil,
+			allowUnownedPatterns: true,
+		},
+	}
+	for tn, tc := range tests {
+		t.Run(tn, func(t *testing.T) {
+			// given
+			ownerCheck, err := check.NewValidOwner(check.ValidOwnerConfig{
+				Repository:           "org/repo",
+				AllowUnownedPatterns: tc.allowUnownedPatterns,
+				OwnersMustBeTeams:    true,
+			}, nil)
+			require.NoError(t, err)
+
+			// when
+			out, err := ownerCheck.Check(context.Background(), LoadInput(tc.codeowners))
+
+			// then
+			require.NoError(t, err)
+			assertIssue(t, tc.issue, out.Issues)
+		})
+	}
 }

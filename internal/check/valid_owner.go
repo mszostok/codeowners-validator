@@ -137,7 +137,14 @@ func (v *ValidOwner) isIgnoredOwner(name string) bool {
 
 func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string) *validateError {
 	switch {
-	case v.ownersMustBeTeams || isGitHubTeam(name):
+	case v.ownersMustBeTeams:
+		return func(ctx context.Context, s string) *validateError {
+			if !isGitHubTeam(name) {
+				return newValidateError("Only team owners allowed and %q is not a team", name)
+			}
+			return v.validateTeam(ctx, s)
+		}
+	case isGitHubTeam(name):
 		return v.validateTeam
 	case isGitHubUser(name):
 		return v.validateGitHubUser
@@ -188,10 +195,6 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 		if err := v.initOrgListTeams(ctx); err != nil {
 			return err.AsPermanent()
 		}
-	}
-
-	if !isGitHubTeam(name) {
-		return newValidateError("%s is not a team", name)
 	}
 
 	// called after validation it's safe to work on `parts` slice
