@@ -21,7 +21,7 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -37,7 +37,7 @@ jobs:
         go-version: [ 1.17.x ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -56,7 +56,7 @@ jobs:
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
