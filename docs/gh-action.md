@@ -70,6 +70,9 @@ jobs:
 
           # Specifies whether CODEOWNERS may have unowned files. For example, `/infra/oncall-rotator/oncall-config.yml` doesn't have owner and this is not reported.
           owner_checker_allow_unowned_patterns: "true"
+
+          # Specifies whether only teams are allowed as owners of files.
+          owner_checker_owners_must_be_teams: "false"
 ```
 
 The best is to run this as a cron job and not only if you applying changes to CODEOWNERS file itself, e.g. the CODEOWNERS file can be invalidate when you removing someone from the organization.

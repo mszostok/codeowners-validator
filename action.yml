@@ -52,6 +52,11 @@ inputs:
     default: "true"
     required: false
 
+  owner_checker_owners_must_be_teams:
+    description:  "Specifies whether only teams are allowed as owners of files."
+    default: "false"
+    required: false
+
 runs:
   using: 'docker'
   image: 'docker://ghcr.io/mszostok/codeowners-validator:v0.7.1'
