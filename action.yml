@@ -59,7 +59,7 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/mszostok/codeowners-validator:v0.7.1'
+  image: 'docker://ghcr.io/mszostok/codeowners-validator:v0.7.2'
   env:
     ENVS_PREFIX: "INPUT"
 
