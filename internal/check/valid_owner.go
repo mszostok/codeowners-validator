@@ -26,6 +26,8 @@ type ValidOwnerConfig struct {
 	//
 	//  The `/infra/oncall-rotator/oncall-config.yml` this file is not owned by anyone.
 	AllowUnownedPatterns bool `envconfig:"default=true"`
+	// OwnersMustBeTeams specifies whether owners must be teams in the same org as the repository
+	OwnersMustBeTeams bool `envconfig:"default=false"`
 }
 
 // ValidOwner validates each owner
@@ -37,6 +39,7 @@ type ValidOwner struct {
 	orgRepoName          string
 	ignOwners            map[string]struct{}
 	allowUnownedPatterns bool
+	ownersMustBeTeams    bool
 }
 
 // NewValidOwner returns new instance of the ValidOwner
@@ -57,6 +60,7 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, 
 		orgRepoName:          split[1],
 		ignOwners:            ignOwners,
 		allowUnownedPatterns: cfg.AllowUnownedPatterns,
+		ownersMustBeTeams:    cfg.OwnersMustBeTeams,
 	}, nil
 }
 
@@ -133,10 +137,10 @@ func (v *ValidOwner) isIgnoredOwner(name string) bool {
 
 func (v *ValidOwner) selectValidateFn(name string) func(context.Context, string) *validateError {
 	switch {
+	case v.ownersMustBeTeams || isGitHubTeam(name):
+		return v.validateTeam
 	case isGitHubUser(name):
 		return v.validateGitHubUser
-	case isGitHubTeam(name):
-		return v.validateTeam
 	case isEmailAddress(name):
 		// TODO(mszostok): try to check if e-mail really exists
 		return func(context.Context, string) *validateError { return nil }
@@ -184,6 +188,10 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 		if err := v.initOrgListTeams(ctx); err != nil {
 			return err.AsPermanent()
 		}
+	}
+
+	if !isGitHubTeam(name) {
+		return newValidateError("%s is not a team", name)
 	}
 
 	// called after validation it's safe to work on `parts` slice
