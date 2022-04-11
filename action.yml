@@ -57,6 +57,10 @@ inputs:
     default: "false"
     required: false
 
+  not_owned_checker_subdirectories:
+    description:  "Only check listed subdirectories for CODEOWNERS ownership that don't have owners."
+    required: false
+
 runs:
   using: 'docker'
   image: 'docker://ghcr.io/mszostok/codeowners-validator:v0.7.2'

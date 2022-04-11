@@ -17,10 +17,12 @@ import (
 
 type NotOwnedFileConfig struct {
 	SkipPatterns []string `envconfig:"optional"`
+	Subdirectories []string `envconfig:"optional"`
 }
 
 type NotOwnedFile struct {
 	skipPatterns map[string]struct{}
+	subDirectories []string
 }
 
 func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
@@ -29,8 +31,10 @@ func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
 		skip[p] = struct{}{}
 	}
 
+
 	return &NotOwnedFile{
 		skipPatterns: skip,
+		subDirectories: cfg.Subdirectories,
 	}
 }
 
@@ -75,7 +79,7 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 		return Output{}, err
 	}
 
-	out, err := c.GitListFiles(in.RepoDir)
+	out, err := c.GitListFileTree(in.RepoDir)
 	if err != nil {
 		return Output{}, err
 	}
@@ -167,10 +171,12 @@ func (c *NotOwnedFile) GitResetCurrentBranch(repoDir string) error {
 	return nil
 }
 
-func (c *NotOwnedFile) GitListFiles(repoDir string) (string, error) {
+func (c *NotOwnedFile) GitListFileTree(repoDir string) (string, error) {
+	args := append([]string{"ls-tree", "-r", "--name-only", "HEAD"}, c.subDirectories...)
+
 	gitls := pipe.Script(
 		pipe.ChDir(repoDir),
-		pipe.Exec("git", "ls-files"),
+		pipe.Exec("git", args...),
 	)
 
 	stdout, stderr, err := pipe.DividedOutput(gitls)

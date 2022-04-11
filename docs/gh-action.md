@@ -73,6 +73,9 @@ jobs:
 
           # Specifies whether only teams are allowed as owners of files.
           owner_checker_owners_must_be_teams: "false"
+
+          # Only check listed subdirectories for CODEOWNERS ownership that don't have owners.
+          not_owned_checker_subdirectories: ""
 ```
 
 The best is to run this as a cron job and not only if you applying changes to CODEOWNERS file itself, e.g. the CODEOWNERS file can be invalidate when you removing someone from the organization.
