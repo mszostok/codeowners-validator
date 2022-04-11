@@ -79,7 +79,7 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 		return Output{}, err
 	}
 
-	out, err := c.GitListFileTree(in.RepoDir)
+	out, err := c.GitListFiles(in.RepoDir)
 	if err != nil {
 		return Output{}, err
 	}
@@ -171,8 +171,9 @@ func (c *NotOwnedFile) GitResetCurrentBranch(repoDir string) error {
 	return nil
 }
 
-func (c *NotOwnedFile) GitListFileTree(repoDir string) (string, error) {
-	args := append([]string{"ls-tree", "-r", "--name-only", "HEAD"}, c.subDirectories...)
+func (c *NotOwnedFile) GitListFiles(repoDir string) (string, error) {
+	args := []string{"ls-files"}
+	args = append(args, c.subDirectories...)
 
 	gitls := pipe.Script(
 		pipe.ChDir(repoDir),
