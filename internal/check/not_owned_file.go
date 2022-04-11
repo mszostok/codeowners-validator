@@ -134,7 +134,7 @@ func (c *NotOwnedFile) GitRemoveIgnoredFiles(repoDir string) error {
 		pipe.ChDir(repoDir),
 		pipe.Line(
 			pipe.Exec("git", "ls-files", "-ci", "--exclude-standard", "-z"),
-			pipe.Exec("xargs", "-0", "git", "rm", "--cached"),
+			pipe.Exec("xargs", "-0", "-r", "git", "rm", "--cached"),
 		),
 	)
 
