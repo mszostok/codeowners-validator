@@ -55,7 +55,7 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 	if err != nil {
 		return Output{}, err
 	}
-	if string(statusOut) != "" {
+	if len(statusOut) != 0 {
 		bldr.ReportIssue("git state is dirty: commit all changes before executing this check")
 		return bldr.Output(), nil
 	}
@@ -107,7 +107,7 @@ func (c *NotOwnedFile) patternsToBeIgnored(entries []codeowners.Entry) []string 
 
 func (c *NotOwnedFile) AppendToGitignoreFile(repoDir string, patterns []string) error {
 	f, err := os.OpenFile(path.Join(repoDir, ".gitignore"),
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
 		return err
 	}

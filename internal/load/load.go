@@ -14,7 +14,7 @@ import (
 // and do not create clients which will not be used because of the given checker.
 //
 // MAYBE in the future the https://github.com/uber-go/dig will be used.
-func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []string) ([]check.Checker, error) {
+func Checks(ctx context.Context, enabledChecks, experimentalChecks []string) ([]check.Checker, error) {
 	var checks []check.Checker
 
 	if isEnabled(enabledChecks, "syntax") {
@@ -47,6 +47,11 @@ func Checks(ctx context.Context, enabledChecks []string, experimentalChecks []st
 		if err != nil {
 			return nil, errors.Wrap(err, "while enabling 'owners' checker")
 		}
+
+		if err := owners.CheckSatisfied(ctx); err != nil {
+			return nil, errors.Wrap(err, "while checking if 'owners' checker is satisfied")
+		}
+
 		checks = append(checks, owners)
 	}
 

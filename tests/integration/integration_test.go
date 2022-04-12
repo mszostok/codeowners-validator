@@ -12,7 +12,6 @@ import (
 
 	"github.com/sebdah/goldie/v2"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -99,10 +98,9 @@ func TestCheckSuccess(t *testing.T) {
 					}
 
 					// when
-					result, err := codeownersCmd.AwaitResultAtMost(3 * time.Minute)
+					result := codeownersCmd.AwaitResultAtMost(3 * time.Minute)
 
 					// then
-					require.NoError(t, err)
 					assert.Equal(t, 0, result.ExitCode)
 					normalizedOutput := normalizeTimeDurations(result.Stdout)
 
@@ -157,10 +155,9 @@ func TestCheckSuccess(t *testing.T) {
 				}
 
 				// when
-				result, err := codeownersCmd.AwaitResultAtMost(3 * time.Minute)
+				result := codeownersCmd.AwaitResultAtMost(3 * time.Minute)
 
 				// then
-				require.NoError(t, err)
 				assert.Equal(t, 0, result.ExitCode)
 				normalizedOutput := normalizeTimeDurations(result.Stdout)
 
@@ -244,10 +241,9 @@ func TestCheckFailures(t *testing.T) {
 			}
 
 			// when
-			result, err := codeownersCmd.AwaitResultAtMost(3 * time.Minute)
+			result := codeownersCmd.AwaitResultAtMost(3 * time.Minute)
 
 			// then
-			require.NoError(t, err)
 			assert.Equal(t, 3, result.ExitCode)
 
 			normalizedOutput := normalizeTimeDurations(result.Stdout)
@@ -256,6 +252,100 @@ func TestCheckFailures(t *testing.T) {
 			g.Assert(t, t.Name(), []byte(normalizedOutput))
 		})
 	}
+}
+
+// To update golden file, run:
+//  TEST=TestOwnerCheckAuthZAndAuthN TOKEN_WITH_NO_SCOPES=<token_with_no_scopes> UPDATE_GOLDEN=true make test-integration
+func TestOwnerCheckAuthZAndAuthN(t *testing.T) {
+	t.Parallel()
+
+	t.Run("token not specified", func(t *testing.T) {
+		t.Parallel()
+
+		// given
+		codeownersCmd := Exec().
+			Binary(os.Getenv(binaryPathEnvName)).
+			WithEnv("REPOSITORY_PATH", "not-needed").
+			WithEnv("CHECKS", "owners").
+			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/codeowners-samples")
+
+		// when
+		result := codeownersCmd.AwaitResultAtMost(3 * time.Second)
+
+		// then
+		assert.Equal(t, 1, result.ExitCode)
+
+		normalizedOutput := normalizeLogTime(result.Stderr)
+		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
+		g.Assert(t, t.Name(), []byte(normalizedOutput))
+
+	})
+
+	t.Run("invalid token specified", func(t *testing.T) {
+		t.Parallel()
+
+		// given
+		codeownersCmd := Exec().
+			Binary(os.Getenv(binaryPathEnvName)).
+			WithEnv("REPOSITORY_PATH", "not-needed").
+			WithEnv("CHECKS", "owners").
+			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/codeowners-samples").
+			WithEnv("GITHUB_ACCESS_TOKEN", "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")
+
+		// when
+		result := codeownersCmd.AwaitResultAtMost(3 * time.Second)
+
+		// then
+		assert.Equal(t, 1, result.ExitCode)
+
+		normalizedOutput := normalizeLogTime(result.Stderr)
+		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
+		g.Assert(t, t.Name(), []byte(normalizedOutput))
+	})
+
+	t.Run("token specified but without necessary scopes", func(t *testing.T) {
+		t.Parallel()
+
+		// given
+		codeownersCmd := Exec().
+			Binary(os.Getenv(binaryPathEnvName)).
+			WithEnv("REPOSITORY_PATH", "not-needed").
+			WithEnv("CHECKS", "owners").
+			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/codeowners-samples").
+			WithEnv("GITHUB_ACCESS_TOKEN", os.Getenv("TOKEN_WITH_NO_SCOPES"))
+
+		// when
+		result := codeownersCmd.AwaitResultAtMost(3 * time.Second)
+
+		// then
+		assert.Equal(t, 1, result.ExitCode)
+
+		normalizedOutput := normalizeLogTime(result.Stderr)
+		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
+		g.Assert(t, t.Name(), []byte(normalizedOutput))
+	})
+
+	t.Run("token specified but without necessary scopes and against private repo", func(t *testing.T) {
+		t.Parallel()
+
+		// given
+		codeownersCmd := Exec().
+			Binary(os.Getenv(binaryPathEnvName)).
+			WithEnv("REPOSITORY_PATH", "not-needed").
+			WithEnv("CHECKS", "owners").
+			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/private-repo").
+			WithEnv("GITHUB_ACCESS_TOKEN", os.Getenv("TOKEN_WITH_NO_SCOPES"))
+
+		// when
+		result := codeownersCmd.AwaitResultAtMost(3 * time.Second)
+
+		// then
+		assert.Equal(t, 1, result.ExitCode)
+
+		normalizedOutput := normalizeLogTime(result.Stderr)
+		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
+		g.Assert(t, t.Name(), []byte(normalizedOutput))
+	})
 }
 
 func TestMultipleChecksSuccess(t *testing.T) {

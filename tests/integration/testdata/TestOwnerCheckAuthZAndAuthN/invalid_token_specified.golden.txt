@@ -1,0 +1,1 @@
+time="<time>" level=fatal msg="while checking if 'owners' checker is satisfied: HTTP error occurred while calling GitHub: GET https://api.github.com/repos/gh-codeowners/codeowners-samples: 401 Bad credentials []"

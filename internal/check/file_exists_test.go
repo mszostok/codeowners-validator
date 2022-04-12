@@ -188,7 +188,7 @@ func TestFileExistCheckFileSystemFailure(t *testing.T) {
 		assert.NoError(t, os.RemoveAll(tmpdir))
 	}()
 
-	err = os.MkdirAll(filepath.Join(tmpdir, "foo"), 0222)
+	err = os.MkdirAll(filepath.Join(tmpdir, "foo"), 0o222)
 	require.NoError(t, err)
 
 	in := LoadInput("* @pico")
@@ -217,15 +217,15 @@ func initFSStructure(t *testing.T, base string, paths []string) {
 
 	for _, p := range paths {
 		if filepath.Ext(p) == "" {
-			err := os.MkdirAll(filepath.Join(base, p), 0755)
+			err := os.MkdirAll(filepath.Join(base, p), 0o755)
 			require.NoError(t, err)
 		} else {
 			dir := filepath.Dir(p)
 
-			err := os.MkdirAll(filepath.Join(base, dir), 0755)
+			err := os.MkdirAll(filepath.Join(base, dir), 0o755)
 			require.NoError(t, err)
 
-			err = ioutil.WriteFile(filepath.Join(base, p), []byte("hakuna-matata"), 0600)
+			err = os.WriteFile(filepath.Join(base, p), []byte("hakuna-matata"), 0o600)
 			require.NoError(t, err)
 		}
 	}

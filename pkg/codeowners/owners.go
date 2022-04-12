@@ -27,8 +27,8 @@ func (e Entry) String() string {
 }
 
 // NewFromPath returns entries from codeowners
-func NewFromPath(path string) ([]Entry, error) {
-	r, err := openCodeownersFile(path)
+func NewFromPath(repoPath string) ([]Entry, error) {
+	r, err := openCodeownersFile(repoPath)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func openCodeownersFile(dir string) (io.Reader, error) {
 	}
 }
 
-func replacePrefix(in []string, prefix string, s string) []string {
+func replacePrefix(in []string, prefix, s string) []string {
 	for idx := range in {
 		in[idx] = fmt.Sprintf("%s%s", s, strings.TrimPrefix(in[idx], prefix))
 	}

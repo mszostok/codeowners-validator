@@ -42,12 +42,12 @@ func main() {
 	defer cancelFunc()
 	cancelOnInterrupt(ctx, cancelFunc)
 
-	// init codeowners entries
-	codeownersEntries, err := codeowners.NewFromPath(cfg.RepositoryPath)
-	exitOnError(err)
-
 	// init checks
 	checks, err := load.Checks(ctx, cfg.Checks, cfg.ExperimentalChecks)
+	exitOnError(err)
+
+	// init codeowners entries
+	codeownersEntries, err := codeowners.NewFromPath(cfg.RepositoryPath)
 	exitOnError(err)
 
 	// run check runner
@@ -59,9 +59,11 @@ func main() {
 
 	if ctx.Err() != nil {
 		log.Error("Application was interrupted by operating system")
+		//nolint:gocritic
 		os.Exit(2)
 	}
 	if checkRunner.ShouldExitWithCheckFailure() {
+		//nolint:gocritic
 		os.Exit(3)
 	}
 }

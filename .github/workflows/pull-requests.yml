@@ -66,6 +66,7 @@ jobs:
       - name: "Integration testing with ${{ matrix.go-version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_INTEGRATION_TESTS }}
+          TOKEN_WITH_NO_SCOPES: ${{ secrets.TOKEN_WITH_NO_SCOPES }}
         run: |
           echo "${{ env.BINARY_PATH }}"
           make test-integration
