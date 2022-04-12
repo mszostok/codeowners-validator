@@ -1,8 +1,5 @@
 ==> Executing [Experimental] Not Owned File Checker (<duration>)
-    [err] Found 4 not owned files (skipped patterns: "*"):
-            * .gitignore
-            * CODEOWNERS
-            * action.yml
+    [err] Found 1 not owned files (skipped patterns: "*"):
             * notowned/dir/example/sample.txt
 
 1 check(s) executed, 1 failure(s)
