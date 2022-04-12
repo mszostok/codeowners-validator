@@ -35,7 +35,7 @@ jobs:
       # Checks-out your repository, which is validated in the next step
       - uses: actions/checkout@v2
       - name: GitHub CODEOWNERS Validator
-        uses: mszostok/codeowners-validator@v0.7.2
+        uses: mszostok/codeowners-validator@v0.7.3
         # input parameters
         with:
           # "The list of checks that will be executed. By default, all checks are executed. Possible values: files,owners,duppatterns,syntax"
