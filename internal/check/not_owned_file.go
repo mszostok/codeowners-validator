@@ -16,12 +16,12 @@ import (
 )
 
 type NotOwnedFileConfig struct {
-	SkipPatterns []string `envconfig:"optional"`
+	SkipPatterns   []string `envconfig:"optional"`
 	Subdirectories []string `envconfig:"optional"`
 }
 
 type NotOwnedFile struct {
-	skipPatterns map[string]struct{}
+	skipPatterns   map[string]struct{}
 	subDirectories []string
 }
 
@@ -31,9 +31,8 @@ func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
 		skip[p] = struct{}{}
 	}
 
-
 	return &NotOwnedFile{
-		skipPatterns: skip,
+		skipPatterns:   skip,
 		subDirectories: cfg.Subdirectories,
 	}
 }
