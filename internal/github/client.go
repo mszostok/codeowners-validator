@@ -12,7 +12,7 @@ import (
 )
 
 type ClientConfig struct {
-	AccessToken        string        `envconfig:"optional"`
+	AccessToken        string
 	BaseURL            string        `envconfig:"optional"`
 	UploadURL          string        `envconfig:"optional"`
 	HTTPRequestTimeout time.Duration `envconfig:"default=30s"`
@@ -33,7 +33,7 @@ func NewClient(ctx context.Context, cfg ClientConfig) (ghClient *github.Client, 
 		return github.NewClient(httpClient), nil
 	}
 
-	if uploadURL == "" { // often the baseURL are same as the uploadURL, so we do not require to provide both of them
+	if uploadURL == "" { // often the baseURL is same as the uploadURL, so we do not require to provide both of them
 		uploadURL = baseURL
 	}
 

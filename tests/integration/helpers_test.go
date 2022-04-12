@@ -15,7 +15,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
@@ -24,6 +23,11 @@ import (
 func normalizeTimeDurations(in string) string {
 	duration := regexp.MustCompile(`\(\d+(\.\d+)?(ns|us|µs|ms|s|m|h)\)`)
 	return duration.ReplaceAllString(in, "(<duration>)")
+}
+
+func normalizeLogTime(in string) string {
+	duration := regexp.MustCompile(`time="[^"]*"`)
+	return duration.ReplaceAllString(in, `time="<time>"`)
 }
 
 func CloneRepo(t *testing.T, url string, branch string) (string, func()) {
@@ -68,10 +72,12 @@ func (s *Executor) WithEnv(key string, value string) *Executor {
 
 type ExecuteOutput struct {
 	Stdout   string
+	Stderr   string
 	ExitCode int
+	Err      error
 }
 
-func (s *Executor) AwaitResultAtMost(timeout time.Duration) (*ExecuteOutput, error) {
+func (s *Executor) AwaitResultAtMost(timeout time.Duration) *ExecuteOutput {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -86,15 +92,12 @@ func (s *Executor) AwaitResultAtMost(timeout time.Duration) (*ExecuteOutput, err
 	}
 
 	err := cmd.Run()
-	exitCode := cmd.ProcessState.ExitCode()
-	if exitCode != 0 && exitCode != 2 && exitCode != 3 {
-		return nil, errors.Wrapf(err, "while executing binary [stdout: %q] [stderr: %q]",
-			stdout.String(), stderr.String())
-	}
 	return &ExecuteOutput{
-		ExitCode: exitCode,
+		ExitCode: cmd.ProcessState.ExitCode(),
+		Err:      err,
 		Stdout:   stdout.String(),
-	}, nil
+		Stderr:   stderr.String(),
+	}
 }
 
 func (s *Executor) WithTimeout(timeout time.Duration) *Executor {
@@ -105,11 +108,4 @@ func (s *Executor) WithTimeout(timeout time.Duration) *Executor {
 func (s *Executor) Binary(binaryPath string) *Executor {
 	s.binaryPath = binaryPath
 	return s
-}
-
-func stringDefault(in, def string) string {
-	if in == "" {
-		return def
-	}
-	return in
 }

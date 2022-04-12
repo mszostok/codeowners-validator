@@ -2,6 +2,7 @@ package check
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/mail"
 	"strings"
@@ -11,6 +12,12 @@ import (
 	"github.com/google/go-github/v29/github"
 	"github.com/pkg/errors"
 )
+
+const scopeHeader = "X-OAuth-Scopes"
+
+var reqScopes = map[github.Scope]struct{}{
+	github.ScopeReadOrg: {},
+}
 
 type ValidOwnerConfig struct {
 	Repository string
@@ -72,9 +79,9 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, 
 // source: https://help.github.com/articles/about-code-owners/#codeowners-syntax
 //
 // Checks:
-// - if owner is one of: github user, org team, email address
-// - if github user then check if have github account
-// - if github user then check if he/she is in organization
+// - if owner is one of: GitHub user, org team, email address
+// - if GitHub user then check if have GitHub account
+// - if GitHub user then check if he/she is in organization
 // - if org team then check if exists in organization
 func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 	var bldr OutputBuilder
@@ -229,15 +236,16 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 	if err != nil { // TODO(mszostok): implement retry?
 		switch err := err.(type) {
 		case *github.ErrorResponse:
-			if err.Response.StatusCode == http.StatusUnauthorized {
+			switch err.Response.StatusCode {
+			case http.StatusUnauthorized:
 				return newValidateError(
 					"Team permissions information for %q/%q could not be queried. Requires GitHub authorization.",
 					org, v.orgRepoName)
-			} else if err.Response.StatusCode == http.StatusNotFound {
+			case http.StatusNotFound:
 				return newValidateError(
 					"Team %q does not have permissions associated with the repository %q.",
 					team, v.orgRepoName)
-			} else {
+			default:
 				return newValidateError("HTTP error occurred while calling GitHub: %v", err)
 			}
 		case *github.RateLimitError:
@@ -278,7 +286,7 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 }
 
 func (v *ValidOwner) validateGitHubUser(ctx context.Context, name string) *validateError {
-	if v.orgMembers == nil { //TODO(mszostok): lazy init, make it more robust.
+	if v.orgMembers == nil { // TODO(mszostok): lazy init, make it more robust.
 		if err := v.initOrgListMembers(ctx); err != nil {
 			return newValidateError("Cannot initialize organization member list: %v", err).AsPermanent()
 		}
@@ -338,7 +346,49 @@ func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
 	return nil
 }
 
-// Name returns human readable name of the validator
+// Name returns human-readable name of the validator
 func (ValidOwner) Name() string {
 	return "Valid Owner Checker"
+}
+
+// CheckSatisfied checks if this check has all requirements satisfied to be successfully executed.
+func (v *ValidOwner) CheckSatisfied(ctx context.Context) error {
+	_, resp, err := v.ghClient.Repositories.Get(ctx, v.orgName, v.orgRepoName)
+	if err != nil {
+		switch err := err.(type) {
+		case *github.ErrorResponse:
+			if err.Response.StatusCode == http.StatusNotFound {
+				return fmt.Errorf("repository %s/%s not found, or it's private and token doesn't have enough permission", v.orgName, v.orgRepoName)
+			}
+			return fmt.Errorf("HTTP error occurred while calling GitHub: %v", err)
+		case *github.RateLimitError:
+			return fmt.Errorf("GitHub rate limit reached: %v", err.Message)
+		default:
+			return fmt.Errorf("unknown error occurred while calling GitHub: %v", err)
+		}
+	}
+
+	return v.checkRequiredScopes(resp.Header)
+}
+
+func (*ValidOwner) checkRequiredScopes(header http.Header) error {
+	gotScopes := strings.Split(header.Get(scopeHeader), ",")
+	presentScope := map[github.Scope]struct{}{}
+	for _, scope := range gotScopes {
+		presentScope[github.Scope(scope)] = struct{}{}
+	}
+
+	var missing []string
+	for reqScope := range reqScopes {
+		if _, found := presentScope[reqScope]; found {
+			continue
+		}
+		missing = append(missing, string(reqScope))
+	}
+
+	if len(missing) > 0 {
+		return fmt.Errorf("missing scopes: %q", strings.Join(missing, ", "))
+	}
+
+	return nil
 }
