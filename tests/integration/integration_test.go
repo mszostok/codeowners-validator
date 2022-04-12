@@ -215,6 +215,16 @@ func TestCheckFailures(t *testing.T) {
 				"NOT_OWNED_CHECKER_SKIP_PATTERNS": "*",
 			},
 		},
+		{
+			name: "notowned_sub_dirs",
+			envs: Envs{
+				"PATH":                             os.Getenv("PATH"), // need to be set to find the `git` binary
+				"CHECKS":                           "disable-all",
+				"EXPERIMENTAL_CHECKS":              "notowned",
+				"NOT_OWNED_CHECKER_SKIP_PATTERNS":  "*",
+				"NOT_OWNED_CHECKER_SUBDIRECTORIES": "notowned/dir",
+			},
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
