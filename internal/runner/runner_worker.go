@@ -95,6 +95,10 @@ func (r *CheckRunner) collectMetrics(checkOut check.Output, err error) {
 		r.allFoundIssues[i.Severity]++
 	}
 
+	if err != nil {
+		r.allFoundIssues[check.Error]++
+	}
+
 	if len(checkOut.Issues) > 0 || err != nil {
 		r.notPassedChecksCnt++
 	}
