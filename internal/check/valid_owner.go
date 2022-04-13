@@ -375,6 +375,7 @@ func (*ValidOwner) checkRequiredScopes(header http.Header) error {
 	gotScopes := strings.Split(header.Get(scopeHeader), ",")
 	presentScope := map[github.Scope]struct{}{}
 	for _, scope := range gotScopes {
+		scope = strings.TrimSpace(scope)
 		presentScope[github.Scope(scope)] = struct{}{}
 	}
 
