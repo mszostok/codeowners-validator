@@ -371,7 +371,8 @@ func (v *ValidOwner) CheckSatisfied(ctx context.Context) error {
 	}
 
 	if !v.checkScopes {
-		// If the Github client uses an Github App, the headers won't have scope information.
+		// If the GitHub client uses a GitHub App, the headers won't have scope information.
+		// TODO: Call the https://api.github.com/app/installations and check if the `permission` field has `"members": "read"
 		return nil
 	}
 
