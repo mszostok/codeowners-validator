@@ -3,8 +3,10 @@ module github.com/mszostok/codeowners-validator
 go 1.17
 
 require (
+	github.com/bradleyfalzon/ghinstallation/v2 v2.0.4
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.13.0
-	github.com/google/go-github/v29 v29.0.3
+	github.com/google/go-github/v41 v41.0.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/mattn/go-zglob v0.0.4-0.20201017022353-70beb5203ba6
 	github.com/pkg/errors v0.9.1
@@ -24,14 +26,13 @@ require (
 	gotest.tools v2.2.0+incompatible
 )
 
-require github.com/dustin/go-humanize v1.0.0
-
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/go-cmp v0.5.4 // indirect
-	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect

@@ -9,7 +9,7 @@ import (
 
 	"github.com/mszostok/codeowners-validator/internal/ctxutil"
 
-	"github.com/google/go-github/v29/github"
+	"github.com/google/go-github/v41/github"
 	"github.com/pkg/errors"
 )
 
@@ -40,6 +40,7 @@ type ValidOwnerConfig struct {
 // ValidOwner validates each owner
 type ValidOwner struct {
 	ghClient             *github.Client
+	checkScopes          bool
 	orgMembers           *map[string]struct{}
 	orgName              string
 	orgTeams             []*github.Team
@@ -50,7 +51,7 @@ type ValidOwner struct {
 }
 
 // NewValidOwner returns new instance of the ValidOwner
-func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, error) {
+func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client, checkScopes bool) (*ValidOwner, error) {
 	split := strings.Split(cfg.Repository, "/")
 	if len(split) != 2 {
 		return nil, errors.Errorf("Wrong repository name. Expected pattern 'owner/repository', got '%s'", cfg.Repository)
@@ -63,6 +64,7 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client) (*ValidOwner, 
 
 	return &ValidOwner{
 		ghClient:             ghClient,
+		checkScopes:          checkScopes,
 		orgName:              split[0],
 		orgRepoName:          split[1],
 		ignOwners:            ignOwners,
@@ -366,6 +368,11 @@ func (v *ValidOwner) CheckSatisfied(ctx context.Context) error {
 		default:
 			return fmt.Errorf("unknown error occurred while calling GitHub: %v", err)
 		}
+	}
+
+	if !v.checkScopes {
+		// If the Github client uses an Github App, the headers won't have scope information.
+		return nil
 	}
 
 	return v.checkRequiredScopes(resp.Header)

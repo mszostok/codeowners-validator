@@ -58,7 +58,7 @@ func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 		ownerCheck, err := check.NewValidOwner(check.ValidOwnerConfig{
 			Repository:    "org/repo",
 			IgnoredOwners: []string{"@owner1"},
-		}, nil)
+		}, nil, true)
 		require.NoError(t, err)
 
 		givenCodeowners := `*	@owner1`
@@ -106,7 +106,7 @@ func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 					Repository:           "org/repo",
 					AllowUnownedPatterns: tc.allowUnownedPatterns,
 					IgnoredOwners:        []string{"@owner1"},
-				}, nil)
+				}, nil, true)
 				require.NoError(t, err)
 
 				// when
@@ -147,7 +147,7 @@ func TestValidOwnerCheckerOwnersMustBeTeams(t *testing.T) {
 				Repository:           "org/repo",
 				AllowUnownedPatterns: tc.allowUnownedPatterns,
 				OwnersMustBeTeams:    true,
-			}, nil)
+			}, nil, true)
 			require.NoError(t, err)
 
 			// when
