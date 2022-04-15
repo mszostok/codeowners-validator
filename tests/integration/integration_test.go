@@ -43,9 +43,6 @@ var repositories = []struct {
 // This test is based on golden file.
 // If the `-test.update-golden` flag is set then the actual content is written
 // to the golden file.
-//
-// To update golden file, run:
-//   UPDATE_GOLDEN=true make test-integration
 func TestCheckSuccess(t *testing.T) {
 	type (
 		Envs     map[string]string
@@ -57,6 +54,8 @@ func TestCheckSuccess(t *testing.T) {
 		}
 	)
 
+	// To update golden file, run:
+	//   TEST=TestCheckSuccess/offline_checks UPDATE_GOLDEN=true make test-integration
 	t.Run("offline checks", func(t *testing.T) {
 		for _, repoTC := range repositories {
 			// given
@@ -73,6 +72,13 @@ func TestCheckSuccess(t *testing.T) {
 					name: "duppatterns",
 					envs: Envs{
 						"CHECKS": "duppatterns",
+					},
+				},
+				{
+					name: "avoid-shadowing",
+					envs: Envs{
+						"CHECKS":              "disable-all",
+						"EXPERIMENTAL_CHECKS": "avoid-shadowing",
 					},
 				},
 				{
@@ -117,6 +123,8 @@ func TestCheckSuccess(t *testing.T) {
 		}
 	})
 
+	// To update golden file, run:
+	//   GITHUB_TOKEN=<token> TEST=TestCheckSuccess/online_checks UPDATE_GOLDEN=true make test-integration
 	t.Run("online checks", func(t *testing.T) {
 		tests := testCase{
 			{
@@ -179,7 +187,7 @@ func TestCheckSuccess(t *testing.T) {
 // to the golden file.
 //
 // To update golden file, run:
-//   UPDATE_GOLDEN=true make test-integration
+//   TEST=TestCheckFailures UPDATE_GOLDEN=true make test-integration
 func TestCheckFailures(t *testing.T) {
 	type Envs map[string]string
 	tests := []struct {
@@ -205,6 +213,13 @@ func TestCheckFailures(t *testing.T) {
 			name: "duppatterns",
 			envs: Envs{
 				"CHECKS": "duppatterns",
+			},
+		},
+		{
+			name: "avoid-shadowing",
+			envs: Envs{
+				"CHECKS":              "disable-all",
+				"EXPERIMENTAL_CHECKS": "avoid-shadowing",
 			},
 		},
 		{
