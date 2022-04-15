@@ -3,7 +3,9 @@ package github
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
@@ -25,7 +27,34 @@ type ClientConfig struct {
 	HTTPRequestTimeout time.Duration `envconfig:"default=30s"`
 }
 
-func NewClient(ctx context.Context, cfg ClientConfig) (ghClient *github.Client, isApp bool, err error) {
+// Validate validates if provided client options are valid.
+func (c *ClientConfig) Validate() error {
+	fmt.Fprintf(os.Stderr, "%#v", c)
+	if c.AccessToken == "" && c.AppID == 0 {
+		return errors.New("GitHub authorization is required, provide ACCESS_TOKEN or APP_ID")
+	}
+
+	if c.AccessToken != "" && c.AppID != 0 {
+		return errors.New("GitHub ACCESS_TOKEN cannot be provided when APP_ID is specified")
+	}
+
+	if c.AppID != 0 {
+		if c.AppInstallationID == 0 {
+			return errors.New("GitHub APP_INSTALLATION_ID is required with APP_ID")
+		}
+		if c.AppPrivateKey == "" {
+			return errors.New("GitHub APP_PRIVATE_KEY is required with APP_ID")
+		}
+	}
+
+	return nil
+}
+
+func NewClient(ctx context.Context, cfg *ClientConfig) (ghClient *github.Client, isApp bool, err error) {
+	if err := cfg.Validate(); err != nil {
+		return nil, false, err
+	}
+
 	httpClient := http.DefaultClient
 
 	if cfg.AccessToken != "" {
@@ -33,7 +62,7 @@ func NewClient(ctx context.Context, cfg ClientConfig) (ghClient *github.Client, 
 			&oauth2.Token{AccessToken: cfg.AccessToken},
 		))
 	} else if cfg.AppID != 0 {
-		httpClient, err = createAppInstallationHttpClient(ctx, cfg)
+		httpClient, err = createAppInstallationHTTPClient(cfg)
 		isApp = true
 		if err != nil {
 			return
@@ -57,14 +86,7 @@ func NewClient(ctx context.Context, cfg ClientConfig) (ghClient *github.Client, 
 	return
 }
 
-func createAppInstallationHttpClient(ctx context.Context, cfg ClientConfig) (client *http.Client, err error) {
-	if cfg.AppInstallationID == 0 {
-		return nil, errors.New("Github AppInstallationID is required with AppID")
-	}
-	if cfg.AppPrivateKey == "" {
-		return nil, errors.New("Github AppPrivateKey is required with AppID")
-	}
-
+func createAppInstallationHTTPClient(cfg *ClientConfig) (client *http.Client, err error) {
 	tr := http.DefaultTransport
 	itr, err := ghinstallation.New(tr, cfg.AppID, cfg.AppInstallationID, []byte(cfg.AppPrivateKey))
 	if err != nil {
