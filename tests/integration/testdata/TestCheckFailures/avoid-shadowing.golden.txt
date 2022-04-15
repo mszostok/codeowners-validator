@@ -1,0 +1,6 @@
+==> Executing [Experimental] Avoid Shadowing Checker (<duration>)
+    [err] line 11: Pattern "/some/awesome/dir" shadows the following patterns:
+            * 10: "/some/awesome/dir"
+Entries should go from least-specific to most-specific.
+
+1 check(s) executed, 1 failure(s)
