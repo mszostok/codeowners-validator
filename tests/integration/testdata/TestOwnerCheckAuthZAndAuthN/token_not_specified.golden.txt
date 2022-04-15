@@ -1,1 +1,1 @@
-time="<time>" level=fatal msg="while loading config for owners: envconfig: keys GITHUB_ACCESSTOKEN, GITHUB_ACCESS_TOKEN, github_access_token, github_accesstoken not found"
+time="<time>" level=fatal msg="while creating GitHub client: GitHub authorization is required, provide ACCESS_TOKEN or APP_ID"

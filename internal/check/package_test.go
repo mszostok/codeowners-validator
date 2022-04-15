@@ -22,7 +22,7 @@ func TestRespectingCanceledContext(t *testing.T) {
 		check.NewFileExist(),
 		check.NewValidSyntax(),
 		check.NewNotOwnedFile(check.NotOwnedFileConfig{}),
-		must(check.NewValidOwner(check.ValidOwnerConfig{Repository: "org/repo"}, nil)),
+		must(check.NewValidOwner(check.ValidOwnerConfig{Repository: "org/repo"}, nil, true)),
 	}
 
 	for _, checker := range checkers {

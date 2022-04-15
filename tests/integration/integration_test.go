@@ -18,6 +18,10 @@ const (
 	binaryPathEnvName                       = "BINARY_PATH"
 	codeownersSamplesRepo                   = "https://github.com/gh-codeowners/codeowners-samples.git"
 	caseInsensitiveOrgCodeownersSamplesRepo = "https://github.com/GitHubCODEOWNERS/codeowners-samples.git"
+
+	gitHubAppId                = "190766"
+	gitHubAppInstallationId    = "24938181"
+	gitHubAppPrivateKeyEnvName = "APP_PRIVATE_KEY"
 )
 
 var repositories = []struct {
@@ -346,6 +350,35 @@ func TestOwnerCheckAuthZAndAuthN(t *testing.T) {
 		g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
 		g.Assert(t, t.Name(), []byte(normalizedOutput))
 	})
+}
+
+// To update golden file, run:
+// TEST=TestGitHubAppAuth APP_PRIVATE_KEY=`cat private-key.pem` UPDATE_GOLDEN=true make test-integration
+func TestGitHubAppAuth(t *testing.T) {
+	t.Parallel()
+
+	// given
+	repoDir, cleanup := CloneRepo(t, caseInsensitiveOrgCodeownersSamplesRepo, "happy-path")
+	defer cleanup()
+
+	codeownersCmd := Exec().
+		Binary(os.Getenv(binaryPathEnvName)).
+		WithEnv("REPOSITORY_PATH", repoDir).
+		WithEnv("CHECKS", "owners").
+		WithEnv("OWNER_CHECKER_REPOSITORY", "GitHubCODEOWNERS/codeowners-samples").
+		WithEnv("GITHUB_APP_ID", gitHubAppId).
+		WithEnv("GITHUB_APP_INSTALLATION_ID", gitHubAppInstallationId).
+		WithEnv("GITHUB_APP_PRIVATE_KEY", os.Getenv(gitHubAppPrivateKeyEnvName))
+
+	// when
+	result := codeownersCmd.AwaitResultAtMost(time.Minute)
+
+	// then
+	assert.Equal(t, 0, result.ExitCode)
+
+	normalizedOutput := normalizeTimeDurations(result.Stdout)
+	g := goldie.New(t, goldie.WithNameSuffix(".golden.txt"))
+	g.Assert(t, t.Name(), []byte(normalizedOutput))
 }
 
 func TestMultipleChecksSuccess(t *testing.T) {
