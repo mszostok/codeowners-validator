@@ -44,22 +44,27 @@ inputs:
     default: "${{ github.repository }}"
 
   owner_checker_ignored_owners:
-    description:  "The comma-separated list of owners that should not be validated. Example: @owner1,@owner2,@org/team1,example@email.com."
+    description: "The comma-separated list of owners that should not be validated. Example: @owner1,@owner2,@org/team1,example@email.com."
     required: false
 
   owner_checker_allow_unowned_patterns:
-    description:  "Specifies whether CODEOWNERS may have unowned files. For example, `/infra/oncall-rotator/oncall-config.yml` doesn't have owner and this is not reported."
+    description: "Specifies whether CODEOWNERS may have unowned files. For example, `/infra/oncall-rotator/oncall-config.yml` doesn't have owner and this is not reported."
     default: "true"
     required: false
 
   owner_checker_owners_must_be_teams:
-    description:  "Specifies whether only teams are allowed as owners of files."
+    description: "Specifies whether only teams are allowed as owners of files."
     default: "false"
     required: false
 
   not_owned_checker_subdirectories:
-    description:  "Only check listed subdirectories for CODEOWNERS ownership that don't have owners."
+    description: "Only check listed subdirectories for CODEOWNERS ownership that don't have owners."
     required: false
+
+  not_owned_checker_trust_workspace:
+    description: "Specifies whether the repository path should be marked as safe. See: https://github.com/actions/checkout/issues/766"
+    required: false
+    default: "true"
 
 runs:
   using: 'docker'
