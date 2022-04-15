@@ -16,4 +16,4 @@ COPY --from=deps /usr/bin/xargs  /usr/bin/xargs
 COPY --from=deps /lib /lib
 COPY --from=deps /usr/lib /usr/lib
 
-CMD ["/codeowners-validator"]
+ENTRYPOINT ["/codeowners-validator"]

@@ -16,6 +16,10 @@ import (
 )
 
 type NotOwnedFileConfig struct {
+	// TrustWorkspace sets the global gif config
+	// to trust a given repository path
+	// see: https://github.com/actions/checkout/issues/766
+	TrustWorkspace bool     `envconfig:"default=false"`
 	SkipPatterns   []string `envconfig:"optional"`
 	Subdirectories []string `envconfig:"optional"`
 }
@@ -23,6 +27,7 @@ type NotOwnedFileConfig struct {
 type NotOwnedFile struct {
 	skipPatterns   map[string]struct{}
 	subDirectories []string
+	trustWorkspace bool
 }
 
 func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
@@ -34,6 +39,7 @@ func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
 	return &NotOwnedFile{
 		skipPatterns:   skip,
 		subDirectories: cfg.Subdirectories,
+		trustWorkspace: cfg.TrustWorkspace,
 	}
 }
 
@@ -50,6 +56,10 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 	}
 
 	patterns := c.patternsToBeIgnored(in.CodeownersEntries)
+
+	if err := c.trustWorkspaceIfNeeded(in.RepoDir); err != nil {
+		return Output{}, err
+	}
 
 	statusOut, err := c.GitCheckStatus(in.RepoDir)
 	if err != nil {
@@ -187,6 +197,20 @@ func (c *NotOwnedFile) GitListFiles(repoDir string) (string, error) {
 	return string(stdout), nil
 }
 
+func (c *NotOwnedFile) trustWorkspaceIfNeeded(repo string) error {
+	if !c.trustWorkspace {
+		return nil
+	}
+
+	gitadd := pipe.Exec("git", "config", "--global", "--add", "safe.directory", repo)
+	_, stderr, err := pipe.DividedOutput(gitadd)
+	if err != nil {
+		return errors.Wrap(err, string(stderr))
+	}
+
+	return nil
+}
+
 func (c *NotOwnedFile) skipPatternsList() string {
 	list := make([]string, 0, len(c.skipPatterns))
 	for k := range c.skipPatterns {
@@ -206,7 +230,7 @@ func (c *NotOwnedFile) ListFormatFunc(es []string) string {
 	return strings.Join(points, "\n")
 }
 
-// Name returns human readable name of the validator
+// Name returns human-readable name of the validator
 func (NotOwnedFile) Name() string {
 	return "[Experimental] Not Owned File Checker"
 }

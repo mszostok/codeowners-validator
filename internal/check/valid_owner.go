@@ -20,6 +20,9 @@ var reqScopes = map[github.Scope]struct{}{
 }
 
 type ValidOwnerConfig struct {
+	// Repository represents the GitHub repository against which
+	// the external checks like teams and members validation should be executed.
+	// It is in form 'owner/repository'.
 	Repository string
 	// IgnoredOwners contains a list of owners that should not be validated.
 	// Defaults to @ghost.
