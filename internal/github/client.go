@@ -3,12 +3,11 @@ package github
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
+
 	"github.com/mszostok/codeowners-validator/pkg/url"
 
 	"github.com/google/go-github/v41/github"
@@ -29,7 +28,6 @@ type ClientConfig struct {
 
 // Validate validates if provided client options are valid.
 func (c *ClientConfig) Validate() error {
-	fmt.Fprintf(os.Stderr, "%#v", c)
 	if c.AccessToken == "" && c.AppID == 0 {
 		return errors.New("GitHub authorization is required, provide ACCESS_TOKEN or APP_ID")
 	}

@@ -67,6 +67,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_INTEGRATION_TESTS }}
           TOKEN_WITH_NO_SCOPES: ${{ secrets.TOKEN_WITH_NO_SCOPES }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
           echo "${{ env.BINARY_PATH }}"
           make test-integration
