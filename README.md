@@ -105,9 +105,10 @@ The following checks are enabled by default:
 
 The experimental checks are disabled by default:
 
-| Name     | Description                                                                                                                                 |
-|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| notowned | **[Not Owned File Checker]** <br /><br /> Reports if a given repository contain files that do not have specified owners in CODEOWNERS file. |
+| Name            | Description                                                                                                                                               |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| notowned        | **[Not Owned File Checker]** <br /><br /> Reports if a given repository contain files that do not have specified owners in CODEOWNERS file.               |
+| avoid-shadowing | **[Avoid Shadowing Checker]** <br /><br /> Reports if entries go from least specific to most specific. Otherwise, earlier entries are completely ignored. |
 
 To enable experimental check set `EXPERIMENTAL_CHECKS=notowned` environment variable.
 

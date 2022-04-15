@@ -77,6 +77,10 @@ func loadExperimentalChecks(experimentalChecks []string) ([]check.Checker, error
 		checks = append(checks, check.NewNotOwnedFile(cfg.NotOwnedChecker))
 	}
 
+	if contains(experimentalChecks, "avoid-shadowing") {
+		checks = append(checks, check.NewAvoidShadowing())
+	}
+
 	return checks, nil
 }
 
