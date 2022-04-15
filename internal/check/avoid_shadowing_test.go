@@ -5,17 +5,13 @@ import (
 	"testing"
 
 	"github.com/mszostok/codeowners-validator/internal/check"
+	"github.com/mszostok/codeowners-validator/internal/ptr"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestAvoidShadowing(t *testing.T) {
-	getuint64 := func(i int) *uint64 {
-		u := uint64(i)
-		return &u
-	}
-
 	tests := map[string]struct {
 		codeownersInput string
 		expectedIssues  []check.Issue
@@ -39,7 +35,7 @@ func TestAvoidShadowing(t *testing.T) {
 			expectedIssues: []check.Issue{
 				{
 					Severity: check.Error,
-					LineNo:   getuint64(6),
+					LineNo:   ptr.Uint64Ptr(6),
 					Message: `Pattern "*" shadows the following patterns:
             * 2: "/build/logs/"
             * 3: "/script"
@@ -47,14 +43,14 @@ Entries should go from least-specific to most-specific.`,
 				},
 				{
 					Severity: check.Error,
-					LineNo:   getuint64(7),
+					LineNo:   ptr.Uint64Ptr(7),
 					Message: `Pattern "/s*/" shadows the following patterns:
             * 3: "/script"
 Entries should go from least-specific to most-specific.`,
 				},
 				{
 					Severity: check.Error,
-					LineNo:   getuint64(8),
+					LineNo:   ptr.Uint64Ptr(8),
 					Message: `Pattern "/s*" shadows the following patterns:
             * 3: "/script"
             * 7: "/s*/"
@@ -62,14 +58,14 @@ Entries should go from least-specific to most-specific.`,
 				},
 				{
 					Severity: check.Error,
-					LineNo:   getuint64(9),
+					LineNo:   ptr.Uint64Ptr(9),
 					Message: `Pattern "/b*" shadows the following patterns:
             * 2: "/build/logs/"
 Entries should go from least-specific to most-specific.`,
 				},
 				{
 					Severity: check.Error,
-					LineNo:   getuint64(10),
+					LineNo:   ptr.Uint64Ptr(10),
 					Message: `Pattern "/b*/logs" shadows the following patterns:
             * 2: "/build/logs/"
 Entries should go from least-specific to most-specific.`,
