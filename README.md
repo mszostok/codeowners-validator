@@ -29,7 +29,7 @@ docker run --rm -v $(pwd):/repo -w /repo \
   -e GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
   -e EXPERIMENTAL_CHECKS="notowned" \
   -e OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
-  mszostok/codeowners-validator:v0.7.3
+  mszostok/codeowners-validator:v0.7.4
 ```
 
 #### Command line
@@ -46,7 +46,7 @@ env REPOSITORY_PATH="." \
 #### GitHub Action
 
 ```yaml
-- uses: mszostok/codeowners-validator@v0.7.3
+- uses: mszostok/codeowners-validator@v0.7.4
   with:
     checks: "files,owners,duppatterns,syntax"
     experimental_checks: "notowned,avoid-shadowing"
@@ -70,13 +70,13 @@ Here is the recommended way to install `codeowners-validator`:
 
 ```bash
 # binary installed into ./bin/
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s v0.7.3
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s v0.7.4
 
 # binary installed into $(go env GOPATH)/bin/codeowners-validator
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s -- -b $(go env GOPATH)/bin v0.7.3
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s -- -b $(go env GOPATH)/bin v0.7.4
 
 # In alpine linux (as it does not come with curl by default)
-wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s v0.7.3
+wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s v0.7.4
 
 # Print version. Add `--short` to print just the version number.
 codeowners-validator -v
@@ -86,7 +86,7 @@ You can also download [latest version](https://github.com/mszostok/codeowners-va
 
 #### From Sources
 
-You can install `codeowners-validator` with `go install github.com/mszostok/codeowners-validator@v0.7.3`.
+You can install `codeowners-validator` with `go install github.com/mszostok/codeowners-validator@v0.7.4`.
 
 > NOTE: please use Go 1.16 or greater.
 
