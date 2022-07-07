@@ -7,7 +7,7 @@ set -E         # needs to be set if we want the ERR trap
 
 CURRENT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT_PATH=$(cd "${CURRENT_DIR}/.." && pwd)
-GOLANGCI_LINT_VERSION="v1.45.2"
+GOLANGCI_LINT_VERSION="v1.46.2"
 TMP_DIR=$(mktemp -d)
 
 readonly CURRENT_DIR
@@ -26,7 +26,7 @@ host::install::golangci() {
 	export PATH="${TMP_DIR}/bin:${PATH}"
 
 	shout "Install the golangci-lint ${GOLANGCI_LINT_VERSION} locally to a tempdir..."
-	curl -sfSL -o "${TMP_DIR}/golangci-lint.sh" https://install.goreleaser.com/github.com/golangci/golangci-lint.sh
+  curl -sSfL -o "${TMP_DIR}/golangci-lint.sh" https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
 	chmod 700 "${TMP_DIR}/golangci-lint.sh"
 
 	"${TMP_DIR}/golangci-lint.sh" -b "${TMP_DIR}/bin" ${GOLANGCI_LINT_VERSION}

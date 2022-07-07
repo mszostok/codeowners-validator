@@ -38,14 +38,29 @@ jobs:
         uses: mszostok/codeowners-validator@v0.7.4
         # input parameters
         with:
+          # ==== GitHub Auth ====
+
+          ## ==== PAT ====
+          # GitHub access token is required only if the `owners` check is enabled
+          github_access_token: "${{ secrets.OWNERS_VALIDATOR_GITHUB_SECRET }}"
+
+          ## ==== App ====
+          # GitHub App ID for authentication. This replaces the github_access_token.
+          github_app_id: ${{ secrets.APP_ID }}
+
+          # GitHub App Installation ID. Required when github_app_id is set.
+          github_app_installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+
+          # GitHub App private key in PEM format. Required when github_app_id is set.
+          github_app_private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+          # ==== GitHub Auth ====
+
           # "The list of checks that will be executed. By default, all checks are executed. Possible values: files,owners,duppatterns,syntax"
           checks: "files,owners,duppatterns,syntax"
 
-          # "The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: notowned."
-          experimental_checks: "notowned"
-
-          # GitHub access token is required only if the `owners` check is enabled
-          github_access_token: "${{ secrets.OWNERS_VALIDATOR_GITHUB_SECRET }}"
+          # "The comma-separated list of experimental checks that should be executed. By default, all experimental checks are turned off. Possible values: notowned,avoid-shadowing"
+          experimental_checks: "notowned,avoid-shadowing"
 
           # The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise.
           github_base_url: "https://api.github.com/"
@@ -80,7 +95,9 @@ jobs:
 
 The best is to run this as a cron job and not only if you applying changes to CODEOWNERS file itself, e.g. the CODEOWNERS file can be invalidate when you removing someone from the organization.
 
-> **Note**: To execute `owners` check you need to create a [GitHub token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token) and store it as a secret in your repository, see ["Creating and storing encrypted secrets."](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets). Token requires only read-only scope for your repository.
+> **Note**
+>
+> To execute `owners` check you need to create a [GitHub token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token) and store it as a secret in your repository, see ["Creating and storing encrypted secrets."](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets). Token requires only read-only scope for your repository.
 
 <!--- example repository when failed -->
 
