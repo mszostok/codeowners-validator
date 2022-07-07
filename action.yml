@@ -7,6 +7,18 @@ inputs:
     description: "The GitHub access token. Instruction for creating a token can be found here: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token. If not provided then validating owners functionality could not work properly, e.g. you can reach the API calls quota or if you are setting GitHub Enterprise base URL then an unauthorized error can occur."
     required: false
 
+  github_app_id:
+    description: "Github App ID for authentication. This replaces the GITHUB_ACCESS_TOKEN. Instruction for creating a Github App can be found here: https://github.com/mszostok/codeowners-validator/blob/main/docs/gh-token.md"
+    required: false
+
+  github_app_installation_id:
+    description: "Github App Installation ID. Required when GITHUB_APP_ID is set."
+    required: false
+
+  github_app_private_key:
+    description: "Github App private key in PEM format. Required when GITHUB_APP_ID is set."
+    required: false
+
   github_base_url:
     description: "The GitHub base URL for API requests. Defaults to the public GitHub API, but can be set to a domain endpoint to use with GitHub Enterprise. Default: https://api.github.com/"
     required: false
