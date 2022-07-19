@@ -69,3 +69,17 @@ release:
   github:
     owner: mszostok
     name: codeowners-validator
+
+brews:
+  - name: codeowners-validator
+    homepage: https://github.com/mszostok/codeowners-validator
+    description: Ensures the correctness of your CODEOWNERS file.
+    license: "Apache License 2.0"
+    tap:
+      owner: mszostok
+      name: homebrew-tap
+    commit_author:
+      name: Mateusz Szostok
+      email: szostok.mateusz@gmail.com
+    test: |
+      system "#{bin}/codeowners-validator -v --short"
