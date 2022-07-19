@@ -26,6 +26,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
+          cache: true
       - name: "Build and unit-test with Go ${{ matrix.go-version }}"
         run: make test-unit
       - name: "Hammer unit-test with ${{ matrix.go-version }}"
@@ -42,6 +43,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
+          cache: true
       - name: "Code Quality Analysis"
         run: make test-lint
   integration-test:
@@ -61,6 +63,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
+          cache: true
       - if: matrix.os == 'windows-latest'
         run: echo "BINARY_EXT=.exe" >> $GITHUB_ENV
       - name: "Integration testing with ${{ matrix.go-version }}"
