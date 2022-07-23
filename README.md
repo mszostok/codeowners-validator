@@ -66,7 +66,7 @@ It's highly recommended to install a fixed version of `codeowners-validator`. Re
 
 ### macOS & Linux
 
-`codeowners-validator` is available via [Homebrew] and as a downloadable binary from the [releases page](https://github.com/mszostok/codeowners-validator/releases).
+`codeowners-validator` is available via [Homebrew](https://brew.sh/index_pl).
 
 #### Homebrew
 
