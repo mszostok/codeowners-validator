@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mszostok/codeowners-validator/internal/envconfig"
+	"go.szostok.io/codeowners-validator/internal/envconfig"
 
 	"github.com/stretchr/testify/require"
 	"gotest.tools/assert"

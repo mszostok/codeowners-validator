@@ -7,7 +7,7 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/mszostok/codeowners-validator/internal/ctxutil"
+	"go.szostok.io/codeowners-validator/internal/ctxutil"
 
 	"github.com/google/go-github/v41/github"
 	"github.com/pkg/errors"

@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/mszostok/codeowners-validator/internal/check"
-	"github.com/mszostok/codeowners-validator/internal/envconfig"
-	"github.com/mszostok/codeowners-validator/internal/load"
-	"github.com/mszostok/codeowners-validator/internal/runner"
-	"github.com/mszostok/codeowners-validator/pkg/codeowners"
-	"github.com/mszostok/codeowners-validator/pkg/version"
+	"go.szostok.io/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners-validator/internal/envconfig"
+	"go.szostok.io/codeowners-validator/internal/load"
+	"go.szostok.io/codeowners-validator/internal/runner"
+	"go.szostok.io/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners-validator/pkg/version"
 
 	"github.com/sirupsen/logrus"
 )

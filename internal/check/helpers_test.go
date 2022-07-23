@@ -4,11 +4,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mszostok/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners-validator/internal/check"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mszostok/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners-validator/pkg/codeowners"
 )
 
 var FixtureValidCODEOWNERS = `

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mszostok/codeowners-validator/internal/ptr"
-	"github.com/mszostok/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners-validator/internal/ptr"
+	"go.szostok.io/codeowners-validator/pkg/codeowners"
 )
 
 type (

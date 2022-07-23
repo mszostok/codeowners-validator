@@ -3,7 +3,7 @@ package check_test
 import (
 	"testing"
 
-	"github.com/mszostok/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners-validator/internal/check"
 
 	"github.com/stretchr/testify/assert"
 )

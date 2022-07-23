@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	contextutil "github.com/mszostok/codeowners-validator/internal/ctxutil"
 	"github.com/stretchr/testify/assert"
+	contextutil "go.szostok.io/codeowners-validator/internal/ctxutil"
 )
 
 func TestShouldExit(t *testing.T) {

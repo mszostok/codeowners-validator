@@ -3,9 +3,9 @@ package load
 import (
 	"context"
 
-	"github.com/mszostok/codeowners-validator/internal/check"
-	"github.com/mszostok/codeowners-validator/internal/envconfig"
-	"github.com/mszostok/codeowners-validator/internal/github"
+	"go.szostok.io/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners-validator/internal/envconfig"
+	"go.szostok.io/codeowners-validator/internal/github"
 
 	"github.com/pkg/errors"
 )

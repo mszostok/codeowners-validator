@@ -1,4 +1,4 @@
-module github.com/mszostok/codeowners-validator
+module go.szostok.io/codeowners-validator
 
 go 1.18
 

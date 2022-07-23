@@ -6,9 +6,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/mszostok/codeowners-validator/internal/ctxutil"
-	"github.com/mszostok/codeowners-validator/pkg/codeowners"
 	"github.com/pkg/errors"
+	"go.szostok.io/codeowners-validator/internal/ctxutil"
+	"go.szostok.io/codeowners-validator/pkg/codeowners"
 )
 
 type AvoidShadowing struct{}

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mszostok/codeowners-validator/internal/ctxutil"
-	"github.com/mszostok/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners-validator/internal/ctxutil"
+	"go.szostok.io/codeowners-validator/pkg/codeowners"
 )
 
 // DuplicatedPattern validates if CODEOWNERS file does not contain
