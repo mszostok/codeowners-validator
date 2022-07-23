@@ -64,9 +64,17 @@ Check the [Configuration](#configuration) section for more info on how to enable
 
 It's highly recommended to install a fixed version of `codeowners-validator`. Releases are available on the [releases page](https://github.com/mszostok/codeowners-validator/releases).
 
-#### From Release
+### macOS & Linux
 
-Here is the recommended way to install `codeowners-validator`:
+`codeowners-validator` is available via [Homebrew] and as a downloadable binary from the [releases page](https://github.com/mszostok/codeowners-validator/releases).
+
+#### Homebrew
+
+| Install                                          | Upgrade                                          |
+|--------------------------------------------------|--------------------------------------------------|
+| `brew install mszostok/tap/codeowners-validator` | `brew upgrade mszostok/tap/codeowners-validator` |
+
+#### Install script
 
 ```bash
 # binary installed into ./bin/
@@ -86,6 +94,7 @@ You can also download [latest version](https://github.com/mszostok/codeowners-va
 
 #### From Sources
 
+<!--- You can install `codeowners-validator` with `go install go.szostok.io/codeowners-validator@v0.7.5`. --->
 You can install `codeowners-validator` with `go install github.com/mszostok/codeowners-validator@v0.7.4`.
 
 > NOTE: please use Go 1.16 or greater.
