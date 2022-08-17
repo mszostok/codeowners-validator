@@ -3,7 +3,7 @@ module go.szostok.io/codeowners-validator
 go 1.18
 
 require (
-	github.com/bradleyfalzon/ghinstallation/v2 v2.0.4
+	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.13.0
 	github.com/google/go-github/v41 v41.0.0
@@ -38,9 +38,10 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/google/go-github/v45 v45.2.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
