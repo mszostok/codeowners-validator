@@ -5,10 +5,10 @@ import (
 	"path"
 	"testing"
 
-	"go.szostok.io/codeowners-validator/pkg/codeowners"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.szostok.io/codeowners-validator/pkg/codeowners"
 )
 
 const sampleCodeownerFile = `

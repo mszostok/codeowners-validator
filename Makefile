@@ -20,11 +20,11 @@ export BINARY_PATH = $(ROOT_DIR)/codeowners-validator$(BINARY_EXT)
 ############
 
 build:
-	go build -o $(BINARY_PATH) ./main.go
+	go build -o $(BINARY_PATH) .
 .PHONY: build
 
 build-race:
-	go build -race -o codeowners-validator ./main.go
+	go build -race -o $(BINARY_PATH) .
 .PHONY: build-race
 
 ###########
