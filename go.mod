@@ -3,7 +3,7 @@ module go.szostok.io/codeowners-validator
 go 1.18
 
 require (
-	github.com/bradleyfalzon/ghinstallation/v2 v2.0.4
+	github.com/bradleyfalzon/ghinstallation/v2 v2.1.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.13.0
 	github.com/google/go-github/v41 v41.0.0
@@ -12,15 +12,15 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sebdah/goldie/v2 v2.5.3
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/afero v1.8.2
+	github.com/sirupsen/logrus v1.9.0
+	github.com/spf13/afero v1.9.2
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.8.0
 	github.com/vrischmann/envconfig v1.3.0
 	golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa // indirect
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
 	golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99
-	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
+	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	gopkg.in/pipe.v2 v2.0.0-20140414041502-3c2ca4d52544
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gotest.tools v2.2.0+incompatible
@@ -38,9 +38,10 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/google/go-github/v45 v45.2.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
