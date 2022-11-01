@@ -27,7 +27,7 @@ require (
 	gotest.tools v2.2.0+incompatible
 )
 
-require github.com/spf13/cobra v1.5.0
+require github.com/spf13/cobra v1.6.1
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
@@ -49,7 +49,7 @@ require (
 	github.com/hokaccha/go-prettyjson v0.0.0-20211117102719-0474bc63780f // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect
 	github.com/kr/pretty v0.2.1 // indirect
