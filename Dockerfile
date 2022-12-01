@@ -1,5 +1,5 @@
 # Get latest CA certs & git
-FROM alpine:3.16 as deps
+FROM alpine:3.17 as deps
 
 # hadolint ignore=DL3018
 RUN apk --no-cache add ca-certificates git
