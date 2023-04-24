@@ -48,6 +48,7 @@ type ValidOwner struct {
 	orgName              string
 	orgTeams             []*github.Team
 	orgRepoName          string
+	outsideCollaborators map[string]struct{}
 	ignOwners            map[string]struct{}
 	allowUnownedPatterns bool
 	ownersMustBeTeams    bool
@@ -297,6 +298,12 @@ func (v *ValidOwner) validateGitHubUser(ctx context.Context, name string) *valid
 		}
 	}
 
+	if v.outsideCollaborators == nil { // TODO(mszostok): lazy init, make it more robust.
+		if err := v.initOutsideCollaboratorsList(ctx); err != nil {
+			return newValidateError("Cannot initialize outside collaborators list: %v", err).AsPermanent()
+		}
+	}
+
 	userName := strings.TrimPrefix(name, "@")
 	_, _, err := v.ghClient.Users.Get(ctx, userName)
 	if err != nil { // TODO(mszostok): implement retry?
@@ -314,15 +321,18 @@ func (v *ValidOwner) validateGitHubUser(ctx context.Context, name string) *valid
 	}
 
 	_, isMember := (*v.orgMembers)[userName]
-	if !isMember {
-		return newValidateError("User %q is not a member of the organization", name)
+	_, isOutsideCollaborator := (v.outsideCollaborators)[userName]
+	if !(isMember || isOutsideCollaborator) {
+		return newValidateError("The user %q is neither a collaborator nor a member of this repository.", name)
 	}
 
 	return nil
 }
 
 // There is a method to check if user is a org member
-//  client.Organizations.IsMember(context.Background(), "org-name", "user-name")
+//
+//	client.Organizations.IsMember(context.Background(), "org-name", "user-name")
+//
 // But latency is too huge for checking each single user independent
 // better and faster is to ask for all members and cache them.
 func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
@@ -346,6 +356,36 @@ func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
 	v.orgMembers = &map[string]struct{}{}
 	for _, u := range allMembers {
 		(*v.orgMembers)[u.GetLogin()] = struct{}{}
+	}
+
+	return nil
+}
+
+// Add all outside collaborators who are part of the repository to
+//
+//	outsideCollaborators *map[string]struct{}
+func (v *ValidOwner) initOutsideCollaboratorsList(ctx context.Context) error {
+	opt := &github.ListCollaboratorsOptions{
+		ListOptions: github.ListOptions{PerPage: 100},
+		Affiliation: "outside",
+	}
+
+	var allMembers []*github.User
+	for {
+		collaborators, resp, err := v.ghClient.Repositories.ListCollaborators(ctx, v.orgName, v.orgRepoName, opt)
+		if err != nil {
+			return err
+		}
+		allMembers = append(allMembers, collaborators...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+
+	v.outsideCollaborators = map[string]struct{}{}
+	for _, u := range allMembers {
+		(v.outsideCollaborators)[u.GetLogin()] = struct{}{}
 	}
 
 	return nil
