@@ -18,7 +18,7 @@ import (
 	"go.szostok.io/version/extension"
 )
 
-var severity api.SeverityType
+//var severity api.SeverityType
 
 // NewRoot returns a root cobra.Command for the whole Agent utility.
 func RootCmd() *cobra.Command {
@@ -80,7 +80,7 @@ func validateCmd(cfg *config.Config) *cobra.Command {
 
 func addValidateFlags(cmd *cobra.Command) {
 	cmd.Flags().StringSlice("checks", nil, "List of checks to be executed")
-	cmd.Flags().Var(&severity, "check-failure-level", "Defines the level on which the application should treat check issues as failures")
+	//cmd.Flags().Var(&severity, "check-failure-level", "Defines the level on which the application should treat check issues as failures")
 	cmd.Flags().String("experimental-checks", "", "The comma-separated list of experimental checks that should be executed")
 	cmd.Flags().String("github-access-token", "", "GitHub access token")
 	cmd.Flags().String("github-base-url", "https://api.github.com/", "GitHub base URL for API requests")
@@ -127,6 +127,7 @@ func InitializeConfig(cmd *cobra.Command, cfg *config.Config, args []string) err
 	if err := v.Unmarshal(cfg); err != nil {
 		return err
 	}
+	cfg.CheckFailureLevel = api.Warning
 
 	return nil
 }
