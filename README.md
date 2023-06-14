@@ -11,7 +11,7 @@
 
 ## Codeowners Validator
 <a href="/LICENSE"><img alt="Software License" src="https://img.shields.io/badge/license-Apache-brightgreen.svg?style=flat-square"/></a>
-<a href="https://goreportcard.com/report/github.com/mszostok/codeowners-validator"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners-validator?style=flat-square"/></a>
+<a href="https://goreportcard.com/report/github.com/mszostok/codeowners"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mszostok/codeowners?style=flat-square"/></a>
 <a href="https://twitter.com/m_szostok"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/m_szostok?color=a&label=Follow%20%40m_szostok%20for%20updates&style=social"></a>
 
 The Codeowners Validator project validates the GitHub [CODEOWNERS](https://help.github.com/articles/about-code-owners/) file based on [specified checks](#checks). It supports public and private GitHub repositories and also GitHub Enterprise installations.
@@ -29,7 +29,7 @@ docker run --rm -v $(pwd):/repo -w /repo \
   -e GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
   -e EXPERIMENTAL_CHECKS="notowned" \
   -e OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
-  mszostok/codeowners-validator:v0.7.4
+  mszostok/codeowners:v0.7.4
 ```
 
 #### Command line
@@ -40,13 +40,13 @@ env REPOSITORY_PATH="." \
     GITHUB_ACCESS_TOKEN="$GH_TOKEN" \
     EXPERIMENTAL_CHECKS="notowned" \
     OWNER_CHECKER_REPOSITORY="org-name/rep-name" \
-  codeowners-validator
+  codeowners
 ```
 
 #### GitHub Action
 
 ```yaml
-- uses: mszostok/codeowners-validator@v0.7.4
+- uses: mszostok/codeowners@v0.7.4
   with:
     checks: "files,owners,duppatterns,syntax"
     experimental_checks: "notowned,avoid-shadowing"
@@ -62,44 +62,44 @@ Check the [Configuration](#configuration) section for more info on how to enable
 
 ## Installation
 
-It's highly recommended to install a fixed version of `codeowners-validator`. Releases are available on the [releases page](https://github.com/mszostok/codeowners-validator/releases).
+It's highly recommended to install a fixed version of `codeowners`. Releases are available on the [releases page](https://github.com/mszostok/codeowners/releases).
 
 ### macOS & Linux
 
-`codeowners-validator` is available via [Homebrew](https://brew.sh/index_pl).
+`codeowners` is available via [Homebrew](https://brew.sh/index_pl).
 
 #### Homebrew
 
 | Install                                          | Upgrade                                          |
 |--------------------------------------------------|--------------------------------------------------|
-| `brew install mszostok/tap/codeowners-validator` | `brew upgrade mszostok/tap/codeowners-validator` |
+| `brew install mszostok/tap/codeowners` | `brew upgrade mszostok/tap/codeowners` |
 
 #### Install script
 
 ```bash
 # binary installed into ./bin/
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s v0.7.4
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners/main/install.sh | sh -s v0.7.4
 
-# binary installed into $(go env GOPATH)/bin/codeowners-validator
-curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s -- -b $(go env GOPATH)/bin v0.7.4
+# binary installed into $(go env GOPATH)/bin/codeowners
+curl -sfL https://raw.githubusercontent.com/mszostok/codeowners/main/install.sh | sh -s -- -b $(go env GOPATH)/bin v0.7.4
 
 # In alpine linux (as it does not come with curl by default)
-wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s v0.7.4
+wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners/main/install.sh | sh -s v0.7.4
 
 # Print version. Add `--oshort` to print just the version number.
-codeowners-validator version
+codeowners version
 ```
 
-You can also download [latest version](https://github.com/mszostok/codeowners-validator/releases/latest) from release page manually.
+You can also download [latest version](https://github.com/mszostok/codeowners/releases/latest) from release page manually.
 
 #### From Sources
 
-<!--- You can install `codeowners-validator` with `go install go.szostok.io/codeowners@v0.7.5`. --->
-You can install `codeowners-validator` with `go install github.com/mszostok/codeowners-validator@v0.7.4`.
+<!--- You can install `codeowners` with `go install go.szostok.io/codeowners@v0.7.5`. --->
+You can install `codeowners` with `go install github.com/mszostok/codeowners@v0.7.4`.
 
 > NOTE: please use Go 1.16 or greater.
 
-This will put `codeowners-validator` in `$(go env GOPATH)/bin`.
+This will put `codeowners` in `$(go env GOPATH)/bin`.
 
 ## Checks
 
@@ -165,6 +165,6 @@ Contributions are greatly appreciated! The project follows the typical GitHub pu
 
 ## Roadmap
 
-The [codeowners-validator roadmap uses GitHub milestones](https://github.com/mszostok/codeowners-validator/milestone/1) to track the progress of the project.
+The [codeowners roadmap uses GitHub milestones](https://github.com/mszostok/codeowners/milestone/1) to track the progress of the project.
 
 They are sorted with priority. First are most important.

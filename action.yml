@@ -1,4 +1,4 @@
-name: "GitHub CODEOWNERS Validator"
+name: "GitHub CODEOWNERS"
 description: "GitHub action to ensure the correctness of your CODEOWNERS file."
 author: "szostok.mateusz@gmail.com"
 
@@ -8,7 +8,7 @@ inputs:
     required: false
 
   github_app_id:
-    description: "Github App ID for authentication. This replaces the GITHUB_ACCESS_TOKEN. Instruction for creating a Github App can be found here: https://github.com/mszostok/codeowners-validator/blob/main/docs/gh-token.md"
+    description: "Github App ID for authentication. This replaces the GITHUB_ACCESS_TOKEN. Instruction for creating a Github App can be found here: https://github.com/mszostok/codeowners/blob/main/docs/gh-token.md"
     required: false
 
   github_app_installation_id:
@@ -80,7 +80,7 @@ inputs:
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/mszostok/codeowners-validator:v0.7.4'
+  image: 'docker://ghcr.io/mszostok/codeowners:v0.7.4'
   env:
     ENVS_PREFIX: "INPUT"
 

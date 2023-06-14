@@ -39,7 +39,7 @@ var repositories = []struct {
 	},
 }
 
-// TestCheckHappyPath tests that codeowners-validator reports no issues for valid CODEOWNERS file.
+// TestCheckHappyPath tests that codeowners reports no issues for valid CODEOWNERS file.
 //
 // This test is based on golden file.
 // If the `-test.update-golden` flag is set then the actual content is written
@@ -101,7 +101,7 @@ func TestCheckSuccess(t *testing.T) {
 					binaryPath := os.Getenv(binaryPathEnvName)
 					codeownersCmd := Exec().
 						Binary(binaryPath).
-						// codeowners-validator basic config
+						// codeowners basic config
 						WithArg("validate").
 						WithEnv("REPOSITORY_PATH", repoDir)
 
@@ -161,7 +161,7 @@ func TestCheckSuccess(t *testing.T) {
 				binaryPath := os.Getenv(binaryPathEnvName)
 				codeownersCmd := Exec().
 					Binary(binaryPath).
-					// codeowners-validator basic config
+					// codeowners basic config
 					WithArg("validate").
 					WithEnv("REPOSITORY_PATH", repoDir)
 
@@ -183,7 +183,7 @@ func TestCheckSuccess(t *testing.T) {
 	})
 }
 
-// TestCheckFailures tests that codeowners-validator reports issues for not valid CODEOWNERS file.
+// TestCheckFailures tests that codeowners reports issues for not valid CODEOWNERS file.
 //
 // This test is based on golden file.
 // If the `-test.update-golden` flag is set then the actual content is written
@@ -256,7 +256,7 @@ func TestCheckFailures(t *testing.T) {
 
 			codeownersCmd := Exec().
 				Binary(binaryPath).
-				// codeowners-validator basic config
+				// codeowners basic config
 				WithArg("validate").
 				WithEnv("REPOSITORY_PATH", repoDir)
 

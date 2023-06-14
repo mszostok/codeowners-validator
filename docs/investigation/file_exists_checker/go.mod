@@ -1,4 +1,4 @@
-module github.com/mszostok/codeowners-validator/docs/investigation/file_exists_checker
+module github.com/mszostok/codeowners/docs/investigation/file_exists_checker
 
 go 1.15
 

@@ -74,7 +74,7 @@ make fix-lint-issues
 This project supports the integration tests that are defined in the [tests](../tests) package. The tests are executed against [`gh-codeowners/codeowners-samples`](https://github.com/gh-codeowners/codeowners-samples).
 
 > **CAUTION:** Currently, running the integration tests both on external PRs and locally by external contributors is not supported, as the teams used for testing are visible only to the organization members. 
-> At the moment, the `codeowners-validator` repository owner is responsible for running these tests. 
+> At the moment, the `codeowners` repository owner is responsible for running these tests. 
 
 ## Build a binary
 
@@ -83,6 +83,6 @@ To generate a binary for this project, execute:
 make build
 ```
 
-This command generates a binary named `codeowners-validator` in the root directory.
+This command generates a binary named `codeowners` in the root directory.
 
 [↑ Back to top](#table-of-contents)

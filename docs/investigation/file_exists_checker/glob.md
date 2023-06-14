@@ -7,7 +7,7 @@ This document describes investigation about [`file exists`](../../../internal/ch
 A [CODEOWNERS](https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax) file uses a pattern that follows the same rules used in [gitignore](https://git-scm.com/docs/gitignore#_pattern_format) files.
 The gitignore files support two consecutive asterisks ("**") in patterns that match against the full path name. Unfortunately the core Go library `filepath.Glob` does not support [`**`](https://github.com/golang/go/issues/11862) at all.
 
-This caused that for some patterns the [`file exists`](../../../internal/check/file_exists.go) checker didn't work properly, see [issue#22](https://github.com/mszostok/codeowners-validator/issues/22). 
+This caused that for some patterns the [`file exists`](../../../internal/check/file_exists.go) checker didn't work properly, see [issue#22](https://github.com/mszostok/codeowners/issues/22). 
 
 Additionally, we need to support a single asterisk at the beginning of the pattern. For example, `*.js` should check for all JS files in the whole git repository. To achieve that we need to detect that and change from `*.js` to `**/*.js`.
 

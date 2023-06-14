@@ -1,5 +1,5 @@
 builds:
-  - id: codeowners-validator
+  - id: codeowners
     env:
       - CGO_ENABLED=0
     goos:
@@ -35,15 +35,15 @@ archives:
 dockers:
   - dockerfile: Dockerfile
     ids:
-      - codeowners-validator
+      - codeowners
     image_templates:
-      - "ghcr.io/mszostok/codeowners-validator:stable"
-      - "ghcr.io/mszostok/codeowners-validator:{{ .Tag }}"
-      - "ghcr.io/mszostok/codeowners-validator:v{{ .Major }}.{{ .Minor }}"
-      - "ghcr.io/mszostok/codeowners-validator:v{{ .Major }}"
-      - "mszostok/codeowners-validator:latest"
-      - "mszostok/codeowners-validator:{{ .Tag }}"
-      - "mszostok/codeowners-validator:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/mszostok/codeowners:stable"
+      - "ghcr.io/mszostok/codeowners:{{ .Tag }}"
+      - "ghcr.io/mszostok/codeowners:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/mszostok/codeowners:v{{ .Major }}"
+      - "mszostok/codeowners:latest"
+      - "mszostok/codeowners:{{ .Tag }}"
+      - "mszostok/codeowners:v{{ .Major }}.{{ .Minor }}"
 
 checksum:
   name_template: 'checksums.txt'
@@ -68,11 +68,11 @@ release:
   # Default is extracted from the origin remote URL or empty if its private hosted.
   github:
     owner: mszostok
-    name: codeowners-validator
+    name: codeowners
 
 brews:
-  - name: codeowners-validator
-    homepage: https://github.com/mszostok/codeowners-validator
+  - name: codeowners
+    homepage: https://github.com/mszostok/codeowners
     description: Ensures the correctness of your CODEOWNERS file.
     license: "Apache License 2.0"
     tap:
@@ -82,4 +82,4 @@ brews:
       name: Mateusz Szostok
       email: szostok.mateusz@gmail.com
     test: |
-      system "#{bin}/codeowners-validator -v --short"
+      system "#{bin}/codeowners -v --short"

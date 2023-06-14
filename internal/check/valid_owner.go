@@ -239,7 +239,7 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 
 	// repo contains the permissions for the team slug given
 	// TODO(mszostok): Switch to GraphQL API, see:
-	//   https://github.com/mszostok/codeowners-validator/pull/62#discussion_r561273525
+	//   https://github.com/mszostok/codeowners/pull/62#discussion_r561273525
 	repo, _, err := v.ghClient.Teams.IsTeamRepoBySlug(ctx, v.orgName, team, org, v.orgRepoName)
 	if err != nil { // TODO(mszostok): implement retry?
 		switch err := err.(type) {

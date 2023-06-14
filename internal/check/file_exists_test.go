@@ -86,13 +86,13 @@ func TestFileExists(t *testing.T) {
 		// https://github.community/t/codeowners-file-with-a-not-file-type-condition/1423
 		"Should not match with negation pattern": {
 			codeownersInput: `
-					!/codeowners-validator @pico
+					!/codeowners @pico
 			`,
 			paths: []string{
 				"/somewhere/over/the/rainbow/here/it/is.js",
 			},
 			expectedIssues: []api.Issue{
-				newErrIssue(`"!/codeowners-validator" does not match any files in repository`),
+				newErrIssue(`"!/codeowners" does not match any files in repository`),
 			},
 		},
 		"Should not found JS file": {
