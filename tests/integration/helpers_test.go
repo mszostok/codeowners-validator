@@ -54,19 +54,30 @@ func CloneRepo(t *testing.T, url string, branch string) (string, func()) {
 
 type Executor struct {
 	envs       map[string]string
+	arguments  []string
 	timeout    time.Duration
 	binaryPath string
 }
 
 func Exec() *Executor {
 	return &Executor{
-		envs: map[string]string{},
+		arguments: make([]string, 0),
+		envs:      map[string]string{},
 	}
 }
 
 // WithEnv adds given env. Overrides if previously existed
 func (s *Executor) WithEnv(key string, value string) *Executor {
-	s.envs[key] = value
+	if key == "PATH" {
+		s.envs[key] = value
+	} else {
+		s.envs[envPrefix+key] = value
+	}
+	return s
+}
+
+func (s *Executor) WithArg(argument string) *Executor {
+	s.arguments = append(s.arguments, argument)
 	return s
 }
 
@@ -83,7 +94,7 @@ func (s *Executor) AwaitResultAtMost(timeout time.Duration) *ExecuteOutput {
 
 	var stdout, stderr bytes.Buffer
 
-	cmd := exec.CommandContext(ctx, s.binaryPath)
+	cmd := exec.CommandContext(ctx, s.binaryPath, s.arguments...)
 	cmd.Stderr = &stderr
 	cmd.Stdout = &stdout
 

@@ -6,6 +6,7 @@ import (
 
 	"go.szostok.io/codeowners/internal/api"
 	"go.szostok.io/codeowners/internal/check"
+	"go.szostok.io/codeowners/internal/config"
 
 	"github.com/stretchr/testify/require"
 
@@ -56,9 +57,9 @@ func TestValidOwnerChecker(t *testing.T) {
 func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 	t.Run("Should ignore owner", func(t *testing.T) {
 		// given
-		ownerCheck, err := check.NewValidOwner(check.ValidOwnerConfig{
-			Repository:    "org/repo",
-			IgnoredOwners: []string{"@owner1"},
+		ownerCheck, err := check.NewValidOwner(&config.Config{
+			OwnerCheckerRepository:    "org/repo",
+			OwnerCheckerIgnoredOwners: []string{"@owner1"},
 		}, nil, true)
 		require.NoError(t, err)
 
@@ -103,10 +104,10 @@ func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 		for tn, tc := range tests {
 			t.Run(tn, func(t *testing.T) {
 				// given
-				ownerCheck, err := check.NewValidOwner(check.ValidOwnerConfig{
-					Repository:           "org/repo",
-					AllowUnownedPatterns: tc.allowUnownedPatterns,
-					IgnoredOwners:        []string{"@owner1"},
+				ownerCheck, err := check.NewValidOwner(&config.Config{
+					OwnerCheckerRepository:           "org/repo",
+					OwnerCheckerAllowUnownedPatterns: tc.allowUnownedPatterns,
+					OwnerCheckerIgnoredOwners:        []string{"@owner1"},
 				}, nil, true)
 				require.NoError(t, err)
 
@@ -144,10 +145,10 @@ func TestValidOwnerCheckerOwnersMustBeTeams(t *testing.T) {
 	for tn, tc := range tests {
 		t.Run(tn, func(t *testing.T) {
 			// given
-			ownerCheck, err := check.NewValidOwner(check.ValidOwnerConfig{
-				Repository:           "org/repo",
-				AllowUnownedPatterns: tc.allowUnownedPatterns,
-				OwnersMustBeTeams:    true,
+			ownerCheck, err := check.NewValidOwner(&config.Config{
+				OwnerCheckerRepository:           "org/repo",
+				OwnerCheckerAllowUnownedPatterns: tc.allowUnownedPatterns,
+				OwnerCheckerOwnersMustBeTeams:    true,
 			}, nil, true)
 			require.NoError(t, err)
 
