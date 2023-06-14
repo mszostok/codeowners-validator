@@ -1,0 +1,6 @@
+- id: codeowners
+  name: Validate CODEOWNERS file
+  description: Ensures the correctness of your CODEOWNERS file.
+  language: golang
+  # TODO: types: hardcode expected file location?
+  entry: codeowners validate

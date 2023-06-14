@@ -1,6 +1,6 @@
 scripts/
 .idea
-codeowners-validator
+/codeowners
 dist/
 tmp/
 bin/

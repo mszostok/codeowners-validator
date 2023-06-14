@@ -6,7 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"go.szostok.io/codeowners-validator/internal/ctxutil"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/ctxutil"
 )
 
 var (
@@ -32,16 +33,16 @@ func NewValidSyntax() *ValidSyntax {
 }
 
 // Check for syntax issues in your CODEOWNERS file.
-func (v *ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
-	var bldr OutputBuilder
+func (v *ValidSyntax) Check(ctx context.Context, in api.Input) (api.Output, error) {
+	var bldr api.OutputBuilder
 
 	for _, entry := range in.CodeownersEntries {
 		if ctxutil.ShouldExit(ctx) {
-			return Output{}, ctx.Err()
+			return api.Output{}, ctx.Err()
 		}
 
 		if entry.Pattern == "" {
-			bldr.ReportIssue("Missing pattern", WithEntry(entry))
+			bldr.ReportIssue("Missing pattern", api.WithEntry(entry))
 		}
 
 	ownersLoop:
@@ -52,12 +53,12 @@ func (v *ValidSyntax) Check(ctx context.Context, in Input) (Output, error) {
 			case strings.HasPrefix(item, "@"):
 				if !usernameOrTeamRegexp.MatchString(item) {
 					msg := fmt.Sprintf("Owner '%s' does not look like a GitHub username or team name", item)
-					bldr.ReportIssue(msg, WithEntry(entry), WithSeverity(Warning))
+					bldr.ReportIssue(msg, api.WithEntry(entry), api.WithSeverity(api.Warning))
 				}
 			default:
 				if !emailRegexp.MatchString(item) {
 					msg := fmt.Sprintf("Owner '%s' does not look like an email", item)
-					bldr.ReportIssue(msg, WithEntry(entry))
+					bldr.ReportIssue(msg, api.WithEntry(entry))
 				}
 			}
 		}

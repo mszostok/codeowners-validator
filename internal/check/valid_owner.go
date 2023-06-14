@@ -7,7 +7,9 @@ import (
 	"net/mail"
 	"strings"
 
-	"go.szostok.io/codeowners-validator/internal/ctxutil"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/config"
+	"go.szostok.io/codeowners/internal/ctxutil"
 
 	"github.com/google/go-github/v41/github"
 	"github.com/pkg/errors"
@@ -48,20 +50,21 @@ type ValidOwner struct {
 	orgName              string
 	orgTeams             []*github.Team
 	orgRepoName          string
+	outsideCollaborators *map[string]struct{}
 	ignOwners            map[string]struct{}
 	allowUnownedPatterns bool
 	ownersMustBeTeams    bool
 }
 
 // NewValidOwner returns new instance of the ValidOwner
-func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client, checkScopes bool) (*ValidOwner, error) {
-	split := strings.Split(cfg.Repository, "/")
+func NewValidOwner(cfg *config.Config, ghClient *github.Client, checkScopes bool) (*ValidOwner, error) {
+	split := strings.Split(cfg.OwnerCheckerRepository, "/")
 	if len(split) != 2 {
-		return nil, errors.Errorf("Wrong repository name. Expected pattern 'owner/repository', got '%s'", cfg.Repository)
+		return nil, errors.Errorf("Wrong repository name. Expected pattern 'owner/repository', got '%s'", cfg.OwnerCheckerRepository)
 	}
 
 	ignOwners := map[string]struct{}{}
-	for _, n := range cfg.IgnoredOwners {
+	for _, n := range cfg.OwnerCheckerIgnoredOwners {
 		ignOwners[n] = struct{}{}
 	}
 
@@ -71,8 +74,8 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client, checkScopes bo
 		orgName:              split[0],
 		orgRepoName:          split[1],
 		ignOwners:            ignOwners,
-		allowUnownedPatterns: cfg.AllowUnownedPatterns,
-		ownersMustBeTeams:    cfg.OwnersMustBeTeams,
+		allowUnownedPatterns: cfg.OwnerCheckerAllowUnownedPatterns,
+		ownersMustBeTeams:    cfg.OwnerCheckerOwnersMustBeTeams,
 	}, nil
 }
 
@@ -88,20 +91,20 @@ func NewValidOwner(cfg ValidOwnerConfig, ghClient *github.Client, checkScopes bo
 // - if GitHub user then check if have GitHub account
 // - if GitHub user then check if he/she is in organization
 // - if org team then check if exists in organization
-func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
-	var bldr OutputBuilder
+func (v *ValidOwner) Check(ctx context.Context, in api.Input) (api.Output, error) {
+	var bldr api.OutputBuilder
 
 	checkedOwners := map[string]struct{}{}
 
 	for _, entry := range in.CodeownersEntries {
 		if len(entry.Owners) == 0 && !v.allowUnownedPatterns {
-			bldr.ReportIssue("Missing owner, at least one owner is required", WithEntry(entry), WithSeverity(Warning))
+			bldr.ReportIssue("Missing owner, at least one owner is required", api.WithEntry(entry), api.WithSeverity(api.Warning))
 			continue
 		}
 
 		for _, ownerName := range entry.Owners {
 			if ctxutil.ShouldExit(ctx) {
-				return Output{}, ctx.Err()
+				return api.Output{}, ctx.Err()
 			}
 
 			if v.isIgnoredOwner(ownerName) {
@@ -114,7 +117,7 @@ func (v *ValidOwner) Check(ctx context.Context, in Input) (Output, error) {
 
 			validFn := v.selectValidateFn(ownerName)
 			if err := validFn(ctx, ownerName); err != nil {
-				bldr.ReportIssue(err.msg, WithEntry(entry))
+				bldr.ReportIssue(err.msg, api.WithEntry(entry))
 				if err.permanent { // Doesn't make sense to process further
 					return bldr.Output(), nil
 				}
@@ -236,7 +239,7 @@ func (v *ValidOwner) validateTeam(ctx context.Context, name string) *validateErr
 
 	// repo contains the permissions for the team slug given
 	// TODO(mszostok): Switch to GraphQL API, see:
-	//   https://github.com/mszostok/codeowners-validator/pull/62#discussion_r561273525
+	//   https://github.com/mszostok/codeowners/pull/62#discussion_r561273525
 	repo, _, err := v.ghClient.Teams.IsTeamRepoBySlug(ctx, v.orgName, team, org, v.orgRepoName)
 	if err != nil { // TODO(mszostok): implement retry?
 		switch err := err.(type) {
@@ -297,6 +300,12 @@ func (v *ValidOwner) validateGitHubUser(ctx context.Context, name string) *valid
 		}
 	}
 
+	if v.outsideCollaborators == nil { // TODO(mszostok): lazy init, make it more robust.
+		if err := v.initOutsideCollaboratorsList(ctx); err != nil {
+			return newValidateError("Cannot initialize outside collaborators list: %v", err).AsPermanent()
+		}
+	}
+
 	userName := strings.TrimPrefix(name, "@")
 	_, _, err := v.ghClient.Users.Get(ctx, userName)
 	if err != nil { // TODO(mszostok): implement retry?
@@ -314,15 +323,18 @@ func (v *ValidOwner) validateGitHubUser(ctx context.Context, name string) *valid
 	}
 
 	_, isMember := (*v.orgMembers)[userName]
-	if !isMember {
-		return newValidateError("User %q is not a member of the organization", name)
+	_, isOutsideCollaborator := (*v.outsideCollaborators)[userName]
+	if !(isMember || isOutsideCollaborator) {
+		return newValidateError("User %q is not an owner of the repository", name)
 	}
 
 	return nil
 }
 
 // There is a method to check if user is a org member
-//  client.Organizations.IsMember(context.Background(), "org-name", "user-name")
+//
+//	client.Organizations.IsMember(context.Background(), "org-name", "user-name")
+//
 // But latency is too huge for checking each single user independent
 // better and faster is to ask for all members and cache them.
 func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
@@ -346,6 +358,36 @@ func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
 	v.orgMembers = &map[string]struct{}{}
 	for _, u := range allMembers {
 		(*v.orgMembers)[u.GetLogin()] = struct{}{}
+	}
+
+	return nil
+}
+
+// Add all outside collaborators who are part of the repository to
+//
+//	outsideCollaborators *map[string]struct{}
+func (v *ValidOwner) initOutsideCollaboratorsList(ctx context.Context) error {
+	opt := &github.ListCollaboratorsOptions{
+		ListOptions: github.ListOptions{PerPage: 100},
+		Affiliation: "outside",
+	}
+
+	var allMembers []*github.User
+	for {
+		collaborators, resp, err := v.ghClient.Repositories.ListCollaborators(ctx, v.orgName, v.orgRepoName, opt)
+		if err != nil {
+			return err
+		}
+		allMembers = append(allMembers, collaborators...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+
+	v.outsideCollaborators = &map[string]struct{}{}
+	for _, u := range allMembers {
+		(*v.outsideCollaborators)[u.GetLogin()] = struct{}{}
 	}
 
 	return nil

@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	envPrefix                               = "CODEOWNERS_"
 	binaryPathEnvName                       = "BINARY_PATH"
 	codeownersSamplesRepo                   = "https://github.com/gh-codeowners/codeowners-samples.git"
 	caseInsensitiveOrgCodeownersSamplesRepo = "https://github.com/GitHubCODEOWNERS/codeowners-samples.git"
@@ -38,7 +39,7 @@ var repositories = []struct {
 	},
 }
 
-// TestCheckHappyPath tests that codeowners-validator reports no issues for valid CODEOWNERS file.
+// TestCheckHappyPath tests that codeowners reports no issues for valid CODEOWNERS file.
 //
 // This test is based on golden file.
 // If the `-test.update-golden` flag is set then the actual content is written
@@ -100,7 +101,8 @@ func TestCheckSuccess(t *testing.T) {
 					binaryPath := os.Getenv(binaryPathEnvName)
 					codeownersCmd := Exec().
 						Binary(binaryPath).
-						// codeowners-validator basic config
+						// codeowners basic config
+						WithArg("validate").
 						WithEnv("REPOSITORY_PATH", repoDir)
 
 					for k, v := range tc.envs {
@@ -159,7 +161,8 @@ func TestCheckSuccess(t *testing.T) {
 				binaryPath := os.Getenv(binaryPathEnvName)
 				codeownersCmd := Exec().
 					Binary(binaryPath).
-					// codeowners-validator basic config
+					// codeowners basic config
+					WithArg("validate").
 					WithEnv("REPOSITORY_PATH", repoDir)
 
 				for k, v := range tc.envs {
@@ -180,14 +183,15 @@ func TestCheckSuccess(t *testing.T) {
 	})
 }
 
-// TestCheckFailures tests that codeowners-validator reports issues for not valid CODEOWNERS file.
+// TestCheckFailures tests that codeowners reports issues for not valid CODEOWNERS file.
 //
 // This test is based on golden file.
 // If the `-test.update-golden` flag is set then the actual content is written
 // to the golden file.
 //
 // To update golden file, run:
-//   TEST=TestCheckFailures UPDATE_GOLDEN=true make test-integration
+//
+//	TEST=TestCheckFailures UPDATE_GOLDEN=true make test-integration
 func TestCheckFailures(t *testing.T) {
 	type Envs map[string]string
 	tests := []struct {
@@ -252,7 +256,8 @@ func TestCheckFailures(t *testing.T) {
 
 			codeownersCmd := Exec().
 				Binary(binaryPath).
-				// codeowners-validator basic config
+				// codeowners basic config
+				WithArg("validate").
 				WithEnv("REPOSITORY_PATH", repoDir)
 
 			for k, v := range tc.envs {
@@ -274,7 +279,8 @@ func TestCheckFailures(t *testing.T) {
 }
 
 // To update golden file, run:
-//  TEST=TestOwnerCheckAuthZAndAuthN TOKEN_WITH_NO_SCOPES=<token_with_no_scopes> UPDATE_GOLDEN=true make test-integration
+//
+//	TEST=TestOwnerCheckAuthZAndAuthN TOKEN_WITH_NO_SCOPES=<token_with_no_scopes> UPDATE_GOLDEN=true make test-integration
 func TestOwnerCheckAuthZAndAuthN(t *testing.T) {
 	t.Parallel()
 
@@ -284,6 +290,7 @@ func TestOwnerCheckAuthZAndAuthN(t *testing.T) {
 		// given
 		codeownersCmd := Exec().
 			Binary(os.Getenv(binaryPathEnvName)).
+			WithArg("validate").
 			WithEnv("REPOSITORY_PATH", "not-needed").
 			WithEnv("CHECKS", "owners").
 			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/codeowners-samples")
@@ -306,6 +313,7 @@ func TestOwnerCheckAuthZAndAuthN(t *testing.T) {
 		// given
 		codeownersCmd := Exec().
 			Binary(os.Getenv(binaryPathEnvName)).
+			WithArg("validate").
 			WithEnv("REPOSITORY_PATH", "not-needed").
 			WithEnv("CHECKS", "owners").
 			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/codeowners-samples").
@@ -328,6 +336,7 @@ func TestOwnerCheckAuthZAndAuthN(t *testing.T) {
 		// given
 		codeownersCmd := Exec().
 			Binary(os.Getenv(binaryPathEnvName)).
+			WithArg("validate").
 			WithEnv("REPOSITORY_PATH", "not-needed").
 			WithEnv("CHECKS", "owners").
 			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/codeowners-samples").
@@ -350,6 +359,7 @@ func TestOwnerCheckAuthZAndAuthN(t *testing.T) {
 		// given
 		codeownersCmd := Exec().
 			Binary(os.Getenv(binaryPathEnvName)).
+			WithArg("validate").
 			WithEnv("REPOSITORY_PATH", "not-needed").
 			WithEnv("CHECKS", "owners").
 			WithEnv("OWNER_CHECKER_REPOSITORY", "gh-codeowners/private-repo").
@@ -378,6 +388,7 @@ func TestGitHubAppAuth(t *testing.T) {
 
 	codeownersCmd := Exec().
 		Binary(os.Getenv(binaryPathEnvName)).
+		WithArg("validate").
 		WithEnv("REPOSITORY_PATH", repoDir).
 		WithEnv("CHECKS", "owners").
 		WithEnv("OWNER_CHECKER_REPOSITORY", "GitHubCODEOWNERS/codeowners-samples").

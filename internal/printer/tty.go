@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"go.szostok.io/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners/internal/api"
 )
 
 // writer used for test purpose
@@ -19,7 +19,7 @@ type TTYPrinter struct {
 	m sync.RWMutex
 }
 
-func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output, checkErr error) {
+func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration, checkOut api.Output, checkErr error) {
 	tty.m.Lock()
 	defer tty.m.Unlock()
 
@@ -48,12 +48,12 @@ func (tty *TTYPrinter) PrintCheckResult(checkName string, duration time.Duration
 	}
 }
 
-func (*TTYPrinter) severityPrintfFunc(severity check.SeverityType) func(w io.Writer, format string, a ...interface{}) {
+func (*TTYPrinter) severityPrintfFunc(severity api.SeverityType) func(w io.Writer, format string, a ...interface{}) {
 	p := color.New()
 	switch severity {
-	case check.Warning:
+	case api.Warning:
 		p.Add(color.FgYellow)
-	case check.Error:
+	case api.Error:
 		p.Add(color.FgRed)
 	}
 

@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"go.szostok.io/codeowners-validator/internal/ctxutil"
-	"go.szostok.io/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/ctxutil"
+	"go.szostok.io/codeowners/pkg/codeowners"
 )
 
 // DuplicatedPattern validates if CODEOWNERS file does not contain
@@ -19,8 +20,8 @@ func NewDuplicatedPattern() *DuplicatedPattern {
 }
 
 // Check searches for doubles paths(patterns) in CODEOWNERS file.
-func (d *DuplicatedPattern) Check(ctx context.Context, in Input) (Output, error) {
-	var bldr OutputBuilder
+func (d *DuplicatedPattern) Check(ctx context.Context, in api.Input) (api.Output, error) {
+	var bldr api.OutputBuilder
 
 	// TODO(mszostok): decide if the `CodeownersEntries` entry by default should be
 	//  indexed by pattern (`map[string][]codeowners.Entry{}`)
@@ -28,7 +29,7 @@ func (d *DuplicatedPattern) Check(ctx context.Context, in Input) (Output, error)
 	patterns := map[string][]codeowners.Entry{}
 	for _, entry := range in.CodeownersEntries {
 		if ctxutil.ShouldExit(ctx) {
-			return Output{}, ctx.Err()
+			return api.Output{}, ctx.Err()
 		}
 
 		patterns[entry.Pattern] = append(patterns[entry.Pattern], entry)

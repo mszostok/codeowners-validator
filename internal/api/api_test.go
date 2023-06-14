@@ -1,15 +1,14 @@
-package check_test
+package api_test
 
 import (
 	"testing"
 
-	"go.szostok.io/codeowners-validator/internal/check"
-
 	"github.com/stretchr/testify/assert"
+	"go.szostok.io/codeowners/internal/api"
 )
 
 func TestAPIBuilder(t *testing.T) {
-	var bldr *check.OutputBuilder
+	var bldr *api.OutputBuilder
 
 	t.Run("Does not panic on ReportIssue when builder is nil", func(t *testing.T) {
 		assert.NotPanics(t, func() {

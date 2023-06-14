@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"go.szostok.io/codeowners-validator/internal/check"
-	"go.szostok.io/codeowners-validator/internal/printer"
-	"go.szostok.io/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/printer"
+	"go.szostok.io/codeowners/pkg/codeowners"
 
 	"github.com/sirupsen/logrus"
 )
@@ -21,7 +21,7 @@ const (
 
 // Printer prints the checks results
 type Printer interface {
-	PrintCheckResult(checkName string, duration time.Duration, checkOut check.Output, err error)
+	PrintCheckResult(checkName string, duration time.Duration, checkOut api.Output, err error)
 	PrintSummary(allCheck int, failedChecks int)
 }
 
@@ -32,15 +32,15 @@ type CheckRunner struct {
 	log                logrus.FieldLogger
 	codeowners         []codeowners.Entry
 	repoPath           string
-	treatedAsFailure   check.SeverityType
-	checks             []check.Checker
+	treatedAsFailure   api.SeverityType
+	checks             []api.Checker
 	printer            Printer
-	allFoundIssues     map[check.SeverityType]uint32
+	allFoundIssues     map[api.SeverityType]uint32
 	notPassedChecksCnt int
 }
 
 // NewCheckRunner is a constructor for CheckRunner
-func NewCheckRunner(log logrus.FieldLogger, co []codeowners.Entry, repoPath string, treatedAsFailure check.SeverityType, checks ...check.Checker) *CheckRunner {
+func NewCheckRunner(log logrus.FieldLogger, co []codeowners.Entry, repoPath string, treatedAsFailure api.SeverityType, checks ...api.Checker) *CheckRunner {
 	return &CheckRunner{
 		log:              log.WithField("service", "check:runner"),
 		repoPath:         repoPath,
@@ -49,7 +49,7 @@ func NewCheckRunner(log logrus.FieldLogger, co []codeowners.Entry, repoPath stri
 		checks:           checks,
 
 		printer:        &printer.TTYPrinter{},
-		allFoundIssues: map[check.SeverityType]uint32{},
+		allFoundIssues: map[api.SeverityType]uint32{},
 	}
 }
 
@@ -60,10 +60,10 @@ func (r *CheckRunner) Run(ctx context.Context) {
 	// TODO(mszostok): timeout per check?
 	wg.Add(len(r.checks))
 	for _, c := range r.checks {
-		go func(c check.Checker) {
+		go func(c api.Checker) {
 			defer wg.Done()
 			startTime := time.Now()
-			out, err := c.Check(ctx, check.Input{
+			out, err := c.Check(ctx, api.Input{
 				CodeownersEntries: r.codeowners,
 				RepoDir:           r.repoPath,
 			})
@@ -78,7 +78,7 @@ func (r *CheckRunner) Run(ctx context.Context) {
 }
 
 func (r *CheckRunner) ShouldExitWithCheckFailure() bool {
-	higherOccurredIssue := check.SeverityType(MaxInt)
+	higherOccurredIssue := api.SeverityType(MaxInt)
 	for key := range r.allFoundIssues {
 		if higherOccurredIssue > key {
 			higherOccurredIssue = key
@@ -88,7 +88,7 @@ func (r *CheckRunner) ShouldExitWithCheckFailure() bool {
 	return higherOccurredIssue <= r.treatedAsFailure
 }
 
-func (r *CheckRunner) collectMetrics(checkOut check.Output, err error) {
+func (r *CheckRunner) collectMetrics(checkOut api.Output, err error) {
 	r.m.Lock()
 	defer r.m.Unlock()
 	for _, i := range checkOut.Issues {
@@ -96,7 +96,7 @@ func (r *CheckRunner) collectMetrics(checkOut check.Output, err error) {
 	}
 
 	if err != nil {
-		r.allFoundIssues[check.Error]++
+		r.allFoundIssues[api.Error]++
 	}
 
 	if len(checkOut.Issues) > 0 || err != nil {

@@ -5,24 +5,26 @@ import (
 	"errors"
 	"testing"
 
-	"go.szostok.io/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/check"
+	"go.szostok.io/codeowners/internal/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRespectingCanceledContext(t *testing.T) {
-	must := func(checker check.Checker, err error) check.Checker {
+	must := func(checker api.Checker, err error) api.Checker {
 		require.NoError(t, err)
 		return checker
 	}
 
-	checkers := []check.Checker{
+	checkers := []api.Checker{
 		check.NewDuplicatedPattern(),
 		check.NewFileExist(),
 		check.NewValidSyntax(),
 		check.NewNotOwnedFile(check.NotOwnedFileConfig{}),
-		must(check.NewValidOwner(check.ValidOwnerConfig{Repository: "org/repo"}, nil, true)),
+		must(check.NewValidOwner(&config.Config{OwnerCheckerRepository: "org/repo"}, nil, true)),
 	}
 
 	for _, checker := range checkers {

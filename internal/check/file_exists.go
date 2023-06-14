@@ -6,7 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"go.szostok.io/codeowners-validator/internal/ctxutil"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/ctxutil"
 
 	"github.com/mattn/go-zglob"
 	"github.com/pkg/errors"
@@ -18,12 +19,12 @@ func NewFileExist() *FileExist {
 	return &FileExist{}
 }
 
-func (f *FileExist) Check(ctx context.Context, in Input) (Output, error) {
-	var bldr OutputBuilder
+func (f *FileExist) Check(ctx context.Context, in api.Input) (api.Output, error) {
+	var bldr api.OutputBuilder
 
 	for _, entry := range in.CodeownersEntries {
 		if ctxutil.ShouldExit(ctx) {
-			return Output{}, ctx.Err()
+			return api.Output{}, ctx.Err()
 		}
 
 		fullPath := filepath.Join(in.RepoDir, f.fnmatchPattern(entry.Pattern))
@@ -32,15 +33,15 @@ func (f *FileExist) Check(ctx context.Context, in Input) (Output, error) {
 		case err == nil:
 		case errors.Is(err, os.ErrNotExist):
 			msg := fmt.Sprintf("%q does not match any files in repository", entry.Pattern)
-			bldr.ReportIssue(msg, WithEntry(entry))
+			bldr.ReportIssue(msg, api.WithEntry(entry))
 			continue
 		default:
-			return Output{}, errors.Wrapf(err, "while checking if there is any file in %s matching pattern %s", in.RepoDir, entry.Pattern)
+			return api.Output{}, errors.Wrapf(err, "while checking if there is any file in %s matching pattern %s", in.RepoDir, entry.Pattern)
 		}
 
 		if len(matches) == 0 {
 			msg := fmt.Sprintf("%q does not match any files in repository", entry.Pattern)
-			bldr.ReportIssue(msg, WithEntry(entry))
+			bldr.ReportIssue(msg, api.WithEntry(entry))
 		}
 	}
 

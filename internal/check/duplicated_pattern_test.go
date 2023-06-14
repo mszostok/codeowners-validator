@@ -4,7 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"go.szostok.io/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/check"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -13,7 +14,7 @@ import (
 func TestDuplicatedPattern(t *testing.T) {
 	tests := map[string]struct {
 		codeownersInput string
-		expectedIssues  []check.Issue
+		expectedIssues  []api.Issue
 	}{
 		"Should report info about duplicated entries": {
 			codeownersInput: `
@@ -25,16 +26,16 @@ func TestDuplicatedPattern(t *testing.T) {
 					/script @mszostok
 					/script m.t@g.com
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   nil,
 					Message: `Pattern "/build/logs/" is defined 2 times in lines:
             * 4: with owners: [@doctocat]
             * 5: with owners: [@doctocat]`,
 				},
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   nil,
 					Message: `Pattern "/script" is defined 2 times in lines:
             * 7: with owners: [@mszostok]

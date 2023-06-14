@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"go.szostok.io/codeowners-validator/internal/check"
-	"go.szostok.io/codeowners-validator/internal/ptr"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/ptr"
 
 	"github.com/sebdah/goldie/v2"
 )
@@ -23,24 +23,24 @@ func TestTTYPrinterPrintCheckResult(t *testing.T) {
 		defer restore()
 
 		// when
-		tty.PrintCheckResult("Foo Checker", time.Second, check.Output{
-			Issues: []check.Issue{
+		tty.PrintCheckResult("Foo Checker", time.Second, api.Output{
+			Issues: []api.Issue{
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   ptr.Uint64Ptr(42),
 					Message:  "Simulate error in line 42",
 				},
 				{
-					Severity: check.Warning,
+					Severity: api.Warning,
 					LineNo:   ptr.Uint64Ptr(2020),
 					Message:  "Simulate warning in line 2020",
 				},
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					Message:  "Error without line number",
 				},
 				{
-					Severity: check.Warning,
+					Severity: api.Warning,
 					Message:  "Warning without line number",
 				},
 			},
@@ -59,7 +59,7 @@ func TestTTYPrinterPrintCheckResult(t *testing.T) {
 		defer restore()
 
 		// when
-		tty.PrintCheckResult("Foo Checker", time.Second, check.Output{
+		tty.PrintCheckResult("Foo Checker", time.Second, api.Output{
 			Issues: nil,
 		}, nil)
 

@@ -13,7 +13,7 @@ all: build-race test-unit test-integration test-lint
 # When running integration tests on windows machine
 # it cannot execute binary without extension.
 # It needs to be parametrized, so we can override it on CI.
-export BINARY_PATH = $(ROOT_DIR)/codeowners-validator$(BINARY_EXT)
+export BINARY_PATH = $(ROOT_DIR)/codeowners$(BINARY_EXT)
 
 ############
 # Building #

@@ -8,8 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"go.szostok.io/codeowners-validator/internal/check"
-	"go.szostok.io/codeowners-validator/internal/ptr"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/check"
+	"go.szostok.io/codeowners/internal/ptr"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ import (
 func TestFileExists(t *testing.T) {
 	tests := map[string]struct {
 		codeownersInput string
-		expectedIssues  []check.Issue
+		expectedIssues  []api.Issue
 		paths           []string
 	}{
 		"Should found JS file": {
@@ -85,20 +86,20 @@ func TestFileExists(t *testing.T) {
 		// https://github.community/t/codeowners-file-with-a-not-file-type-condition/1423
 		"Should not match with negation pattern": {
 			codeownersInput: `
-					!/codeowners-validator @pico
+					!/codeowners @pico
 			`,
 			paths: []string{
 				"/somewhere/over/the/rainbow/here/it/is.js",
 			},
-			expectedIssues: []check.Issue{
-				newErrIssue(`"!/codeowners-validator" does not match any files in repository`),
+			expectedIssues: []api.Issue{
+				newErrIssue(`"!/codeowners" does not match any files in repository`),
 			},
 		},
 		"Should not found JS file": {
 			codeownersInput: `
 					*.js @pico
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				newErrIssue(`"*.js" does not match any files in repository`),
 			},
 		},
@@ -106,7 +107,7 @@ func TestFileExists(t *testing.T) {
 			codeownersInput: `
 					**/foo @pico
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				newErrIssue(`"**/foo" does not match any files in repository`),
 			},
 		},
@@ -114,7 +115,7 @@ func TestFileExists(t *testing.T) {
 			codeownersInput: `
 					**/foo.js @pico
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				newErrIssue(`"**/foo.js" does not match any files in repository`),
 			},
 		},
@@ -122,7 +123,7 @@ func TestFileExists(t *testing.T) {
 			codeownersInput: `
 					**/foo/bar @bello
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				newErrIssue(`"**/foo/bar" does not match any files in repository`),
 			},
 		},
@@ -130,7 +131,7 @@ func TestFileExists(t *testing.T) {
 			codeownersInput: `
 					**/foo/bar.js @bello
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				newErrIssue(`"**/foo/bar.js" does not match any files in repository`),
 			},
 		},
@@ -138,7 +139,7 @@ func TestFileExists(t *testing.T) {
 			codeownersInput: `
 					abc/** @bello
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				newErrIssue(`"abc/**" does not match any files in repository`),
 			},
 		},
@@ -146,7 +147,7 @@ func TestFileExists(t *testing.T) {
 			codeownersInput: `
 					a/**/b @bello
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				newErrIssue(`"a/**/b" does not match any files in repository`),
 			},
 		},
@@ -205,9 +206,9 @@ func TestFileExistCheckFileSystemFailure(t *testing.T) {
 	assert.Empty(t, out)
 }
 
-func newErrIssue(msg string) check.Issue {
-	return check.Issue{
-		Severity: check.Error,
+func newErrIssue(msg string) api.Issue {
+	return api.Issue{
+		Severity: api.Error,
 		LineNo:   ptr.Uint64Ptr(2),
 		Message:  msg,
 	}
