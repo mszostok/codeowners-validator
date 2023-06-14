@@ -7,8 +7,9 @@ import (
 	"path"
 	"strings"
 
-	"go.szostok.io/codeowners-validator/internal/ctxutil"
-	"go.szostok.io/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/ctxutil"
+	"go.szostok.io/codeowners/pkg/codeowners"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
@@ -43,12 +44,12 @@ func NewNotOwnedFile(cfg NotOwnedFileConfig) *NotOwnedFile {
 	}
 }
 
-func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err error) {
+func (c *NotOwnedFile) Check(ctx context.Context, in api.Input) (output api.Output, err error) {
 	if ctxutil.ShouldExit(ctx) {
-		return Output{}, ctx.Err()
+		return api.Output{}, ctx.Err()
 	}
 
-	var bldr OutputBuilder
+	var bldr api.OutputBuilder
 
 	if len(in.CodeownersEntries) == 0 {
 		bldr.ReportIssue("The CODEOWNERS file is empty. The files in the repository don't have any owner.")
@@ -58,12 +59,12 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 	patterns := c.patternsToBeIgnored(in.CodeownersEntries)
 
 	if err := c.trustWorkspaceIfNeeded(in.RepoDir); err != nil {
-		return Output{}, err
+		return api.Output{}, err
 	}
 
 	statusOut, err := c.GitCheckStatus(in.RepoDir)
 	if err != nil {
-		return Output{}, err
+		return api.Output{}, err
 	}
 	if len(statusOut) != 0 {
 		bldr.ReportIssue("git state is dirty: commit all changes before executing this check")
@@ -73,24 +74,24 @@ func (c *NotOwnedFile) Check(ctx context.Context, in Input) (output Output, err 
 	defer func() {
 		errReset := c.GitResetCurrentBranch(in.RepoDir)
 		if err != nil {
-			output = Output{}
+			output = api.Output{}
 			err = multierror.Append(err, errReset).ErrorOrNil()
 		}
 	}()
 
 	err = c.AppendToGitignoreFile(in.RepoDir, patterns)
 	if err != nil {
-		return Output{}, err
+		return api.Output{}, err
 	}
 
 	err = c.GitRemoveIgnoredFiles(in.RepoDir)
 	if err != nil {
-		return Output{}, err
+		return api.Output{}, err
 	}
 
 	out, err := c.GitListFiles(in.RepoDir)
 	if err != nil {
-		return Output{}, err
+		return api.Output{}, err
 	}
 
 	lsOut := strings.TrimSpace(out)

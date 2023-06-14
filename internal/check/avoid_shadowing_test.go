@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"go.szostok.io/codeowners-validator/internal/check"
-	"go.szostok.io/codeowners-validator/internal/ptr"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/check"
+	"go.szostok.io/codeowners/internal/ptr"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,7 +15,7 @@ import (
 func TestAvoidShadowing(t *testing.T) {
 	tests := map[string]struct {
 		codeownersInput string
-		expectedIssues  []check.Issue
+		expectedIssues  []api.Issue
 	}{
 		"Should report info about shadowed entries": {
 			codeownersInput: `
@@ -32,9 +33,9 @@ func TestAvoidShadowing(t *testing.T) {
 					/b*/other    @o1
 					/script/*	 @o2
 			`,
-			expectedIssues: []check.Issue{
+			expectedIssues: []api.Issue{
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   ptr.Uint64Ptr(6),
 					Message: `Pattern "*" shadows the following patterns:
             * 2: "/build/logs/"
@@ -42,14 +43,14 @@ func TestAvoidShadowing(t *testing.T) {
 Entries should go from least-specific to most-specific.`,
 				},
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   ptr.Uint64Ptr(7),
 					Message: `Pattern "/s*/" shadows the following patterns:
             * 3: "/script"
 Entries should go from least-specific to most-specific.`,
 				},
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   ptr.Uint64Ptr(8),
 					Message: `Pattern "/s*" shadows the following patterns:
             * 3: "/script"
@@ -57,14 +58,14 @@ Entries should go from least-specific to most-specific.`,
 Entries should go from least-specific to most-specific.`,
 				},
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   ptr.Uint64Ptr(9),
 					Message: `Pattern "/b*" shadows the following patterns:
             * 2: "/build/logs/"
 Entries should go from least-specific to most-specific.`,
 				},
 				{
-					Severity: check.Error,
+					Severity: api.Error,
 					LineNo:   ptr.Uint64Ptr(10),
 					Message: `Pattern "/b*/logs" shadows the following patterns:
             * 2: "/build/logs/"

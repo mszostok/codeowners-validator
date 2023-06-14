@@ -3,7 +3,7 @@ package codeowners_test
 import (
 	"fmt"
 
-	"go.szostok.io/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners/pkg/codeowners"
 )
 
 func ExampleNewFromPath() {

@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.szostok.io/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners/internal/api"
 
-	"go.szostok.io/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners/pkg/codeowners"
 )
 
 var FixtureValidCODEOWNERS = `
@@ -25,15 +25,15 @@ var FixtureValidCODEOWNERS = `
 		/script m.t@g.com
 `
 
-func LoadInput(in string) check.Input {
+func LoadInput(in string) api.Input {
 	r := strings.NewReader(in)
 
-	return check.Input{
+	return api.Input{
 		CodeownersEntries: codeowners.ParseCodeowners(r),
 	}
 }
 
-func assertIssue(t *testing.T, expIssue *check.Issue, gotIssues []check.Issue) {
+func assertIssue(t *testing.T, expIssue *api.Issue, gotIssues []api.Issue) {
 	t.Helper()
 
 	if expIssue != nil {

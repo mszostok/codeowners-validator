@@ -4,11 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"go.szostok.io/codeowners-validator/internal/check"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/check"
 
 	"github.com/stretchr/testify/require"
 
-	"go.szostok.io/codeowners-validator/internal/ptr"
+	"go.szostok.io/codeowners/internal/ptr"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -74,21 +75,21 @@ func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 	t.Run("Should ignore user only and check the remaining owners", func(t *testing.T) {
 		tests := map[string]struct {
 			codeowners           string
-			issue                *check.Issue
+			issue                *api.Issue
 			allowUnownedPatterns bool
 		}{
 			"No owners": {
 				codeowners: `*`,
-				issue: &check.Issue{
-					Severity: check.Warning,
+				issue: &api.Issue{
+					Severity: api.Warning,
 					LineNo:   ptr.Uint64Ptr(1),
 					Message:  "Missing owner, at least one owner is required",
 				},
 			},
 			"Bad owner definition": {
 				codeowners: `*	badOwner @owner1`,
-				issue: &check.Issue{
-					Severity: check.Error,
+				issue: &api.Issue{
+					Severity: api.Error,
 					LineNo:   ptr.Uint64Ptr(1),
 					Message:  `Not valid owner definition "badOwner"`,
 				},
@@ -123,13 +124,13 @@ func TestValidOwnerCheckerIgnoredOwner(t *testing.T) {
 func TestValidOwnerCheckerOwnersMustBeTeams(t *testing.T) {
 	tests := map[string]struct {
 		codeowners           string
-		issue                *check.Issue
+		issue                *api.Issue
 		allowUnownedPatterns bool
 	}{
 		"Bad owner definition": {
 			codeowners: `*	@owner1`,
-			issue: &check.Issue{
-				Severity: check.Error,
+			issue: &api.Issue{
+				Severity: api.Error,
 				LineNo:   ptr.Uint64Ptr(1),
 				Message:  `Only team owners allowed and "@owner1" is not a team`,
 			},

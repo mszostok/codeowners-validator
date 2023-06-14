@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.szostok.io/codeowners-validator/pkg/url"
+	"go.szostok.io/codeowners/pkg/url"
 )
 
 func TestCanonicalURLPath(t *testing.T) {

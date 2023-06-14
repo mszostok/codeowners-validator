@@ -94,7 +94,7 @@ You can also download [latest version](https://github.com/mszostok/codeowners-va
 
 #### From Sources
 
-<!--- You can install `codeowners-validator` with `go install go.szostok.io/codeowners-validator@v0.7.5`. --->
+<!--- You can install `codeowners-validator` with `go install go.szostok.io/codeowners@v0.7.5`. --->
 You can install `codeowners-validator` with `go install github.com/mszostok/codeowners-validator@v0.7.4`.
 
 > NOTE: please use Go 1.16 or greater.

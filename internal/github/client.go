@@ -8,39 +8,30 @@ import (
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
 
-	"go.szostok.io/codeowners-validator/pkg/url"
+	"go.szostok.io/codeowners/internal/config"
+	"go.szostok.io/codeowners/pkg/url"
 
 	"github.com/google/go-github/v41/github"
 	"golang.org/x/oauth2"
 )
 
-type ClientConfig struct {
-	AccessToken string `envconfig:"optional"`
-
-	AppID             int64  `envconfig:"optional"`
-	AppPrivateKey     string `envconfig:"optional"`
-	AppInstallationID int64  `envconfig:"optional"`
-
-	BaseURL            string        `envconfig:"optional"`
-	UploadURL          string        `envconfig:"optional"`
-	HTTPRequestTimeout time.Duration `envconfig:"default=30s"`
-}
+var httpRequestTimeout int = 30
 
 // Validate validates if provided client options are valid.
-func (c *ClientConfig) Validate() error {
-	if c.AccessToken == "" && c.AppID == 0 {
+func Validate(cfg *config.Config) error {
+	if cfg.GithubAccessToken == "" && cfg.GithubAppID == 0 {
 		return errors.New("GitHub authorization is required, provide ACCESS_TOKEN or APP_ID")
 	}
 
-	if c.AccessToken != "" && c.AppID != 0 {
+	if cfg.GithubAccessToken != "" && cfg.GithubAppID != 0 {
 		return errors.New("GitHub ACCESS_TOKEN cannot be provided when APP_ID is specified")
 	}
 
-	if c.AppID != 0 {
-		if c.AppInstallationID == 0 {
+	if cfg.GithubAppID != 0 {
+		if cfg.GithubAppInstallationID == 0 {
 			return errors.New("GitHub APP_INSTALLATION_ID is required with APP_ID")
 		}
-		if c.AppPrivateKey == "" {
+		if cfg.GithubAppPrivateKey == "" {
 			return errors.New("GitHub APP_PRIVATE_KEY is required with APP_ID")
 		}
 	}
@@ -48,27 +39,31 @@ func (c *ClientConfig) Validate() error {
 	return nil
 }
 
-func NewClient(ctx context.Context, cfg *ClientConfig) (ghClient *github.Client, isApp bool, err error) {
-	if err := cfg.Validate(); err != nil {
+func NewClient(ctx context.Context, cfg *config.Config) (ghClient *github.Client, isApp bool, err error) {
+	if err := Validate(cfg); err != nil {
 		return nil, false, err
 	}
 
-	httpClient := http.DefaultClient
+	httpClient := &http.Client{
+		Transport:     http.DefaultClient.Transport,
+		CheckRedirect: http.DefaultClient.CheckRedirect,
+		Jar:           http.DefaultClient.Jar,
+		Timeout:       time.Duration(httpRequestTimeout) * time.Second,
+	}
 
-	if cfg.AccessToken != "" {
+	if cfg.GithubAccessToken != "" {
 		httpClient = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: cfg.AccessToken},
+			&oauth2.Token{AccessToken: cfg.GithubAccessToken},
 		))
-	} else if cfg.AppID != 0 {
+	} else if cfg.GithubAppID != 0 {
 		httpClient, err = createAppInstallationHTTPClient(cfg)
 		isApp = true
 		if err != nil {
 			return
 		}
 	}
-	httpClient.Timeout = cfg.HTTPRequestTimeout
 
-	baseURL, uploadURL := cfg.BaseURL, cfg.UploadURL
+	baseURL, uploadURL := cfg.GithubBaseURL, cfg.GithubUploadURL
 
 	if baseURL == "" {
 		ghClient = github.NewClient(httpClient)
@@ -84,9 +79,9 @@ func NewClient(ctx context.Context, cfg *ClientConfig) (ghClient *github.Client,
 	return
 }
 
-func createAppInstallationHTTPClient(cfg *ClientConfig) (client *http.Client, err error) {
+func createAppInstallationHTTPClient(cfg *config.Config) (client *http.Client, err error) {
 	tr := http.DefaultTransport
-	itr, err := ghinstallation.New(tr, cfg.AppID, cfg.AppInstallationID, []byte(cfg.AppPrivateKey))
+	itr, err := ghinstallation.New(tr, cfg.GithubAppID, cfg.GithubAppInstallationID, []byte(cfg.GithubAppPrivateKey))
 	if err != nil {
 		return nil, err
 	}

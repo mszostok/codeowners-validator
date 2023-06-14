@@ -7,8 +7,9 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"go.szostok.io/codeowners-validator/internal/ctxutil"
-	"go.szostok.io/codeowners-validator/pkg/codeowners"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/ctxutil"
+	"go.szostok.io/codeowners/pkg/codeowners"
 )
 
 type AvoidShadowing struct{}
@@ -17,17 +18,17 @@ func NewAvoidShadowing() *AvoidShadowing {
 	return &AvoidShadowing{}
 }
 
-func (c *AvoidShadowing) Check(ctx context.Context, in Input) (output Output, err error) {
-	var bldr OutputBuilder
+func (c *AvoidShadowing) Check(ctx context.Context, in api.Input) (output api.Output, err error) {
+	var bldr api.OutputBuilder
 
 	previousEntries := []codeowners.Entry{}
 	for _, entry := range in.CodeownersEntries {
 		if ctxutil.ShouldExit(ctx) {
-			return Output{}, ctx.Err()
+			return api.Output{}, ctx.Err()
 		}
 		re, err := wildCardToRegexp(endWithSlash(entry.Pattern))
 		if err != nil {
-			return Output{}, errors.Wrapf(err, "while compiling pattern %s into a regexp", entry.Pattern)
+			return api.Output{}, errors.Wrapf(err, "while compiling pattern %s into a regexp", entry.Pattern)
 		}
 		shadowed := []codeowners.Entry{}
 		for _, previous := range previousEntries {
@@ -37,7 +38,7 @@ func (c *AvoidShadowing) Check(ctx context.Context, in Input) (output Output, er
 		}
 		if len(shadowed) > 0 {
 			msg := fmt.Sprintf("Pattern %q shadows the following patterns:\n%s\nEntries should go from least-specific to most-specific.", entry.Pattern, c.listFormatFunc(shadowed))
-			bldr.ReportIssue(msg, WithEntry(entry))
+			bldr.ReportIssue(msg, api.WithEntry(entry))
 		}
 		previousEntries = append(previousEntries, entry)
 	}
@@ -45,7 +46,7 @@ func (c *AvoidShadowing) Check(ctx context.Context, in Input) (output Output, er
 	return bldr.Output(), nil
 }
 
-// listFormatFunc is a basic formatter that outputs a bullet point list of the pattern.
+// listFormatFunc is a basic formatter that api.Outputs a bullet point list of the pattern.
 func (c *AvoidShadowing) listFormatFunc(es []codeowners.Entry) string {
 	points := make([]string, len(es))
 	for i, err := range es {

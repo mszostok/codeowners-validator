@@ -3,47 +3,41 @@ package load
 import (
 	"context"
 
-	"go.szostok.io/codeowners-validator/internal/check"
-	"go.szostok.io/codeowners-validator/internal/envconfig"
-	"go.szostok.io/codeowners-validator/internal/github"
+	"go.szostok.io/codeowners/internal/api"
+	"go.szostok.io/codeowners/internal/check"
+	"go.szostok.io/codeowners/internal/config"
+	"go.szostok.io/codeowners/internal/github"
 
 	"github.com/pkg/errors"
+	"github.com/vrischmann/envconfig"
 )
 
 // For now, it is a good enough solution to init checks. Important thing is to do not require env variables
 // and do not create clients which will not be used because of the given checker.
 //
 // MAYBE in the future the https://github.com/uber-go/dig will be used.
-func Checks(ctx context.Context, enabledChecks, experimentalChecks []string) ([]check.Checker, error) {
-	var checks []check.Checker
+func Checks(ctx context.Context, cfg *config.Config) ([]api.Checker, error) {
+	var checks []api.Checker
 
-	if isEnabled(enabledChecks, "syntax") {
+	if isEnabled(cfg.Checks, "syntax") {
 		checks = append(checks, check.NewValidSyntax())
 	}
 
-	if isEnabled(enabledChecks, "duppatterns") {
+	if isEnabled(cfg.Checks, "duppatterns") {
 		checks = append(checks, check.NewDuplicatedPattern())
 	}
 
-	if isEnabled(enabledChecks, "files") {
+	if isEnabled(cfg.Checks, "files") {
 		checks = append(checks, check.NewFileExist())
 	}
 
-	if isEnabled(enabledChecks, "owners") {
-		var cfg struct {
-			OwnerChecker check.ValidOwnerConfig
-			Github       github.ClientConfig
-		}
-		if err := envconfig.Init(&cfg); err != nil {
-			return nil, errors.Wrapf(err, "while loading config for %s", "owners")
-		}
-
-		ghClient, isApp, err := github.NewClient(ctx, &cfg.Github)
+	if isEnabled(cfg.Checks, "owners") {
+		ghClient, isApp, err := github.NewClient(ctx, cfg)
 		if err != nil {
 			return nil, errors.Wrap(err, "while creating GitHub client")
 		}
 
-		owners, err := check.NewValidOwner(cfg.OwnerChecker, ghClient, !isApp)
+		owners, err := check.NewValidOwner(cfg, ghClient, !isApp)
 		if err != nil {
 			return nil, errors.Wrap(err, "while enabling 'owners' checker")
 		}
@@ -55,7 +49,7 @@ func Checks(ctx context.Context, enabledChecks, experimentalChecks []string) ([]
 		checks = append(checks, owners)
 	}
 
-	expChecks, err := loadExperimentalChecks(experimentalChecks)
+	expChecks, err := loadExperimentalChecks(cfg.ExperimentalChecks)
 	if err != nil {
 		return nil, errors.Wrap(err, "while loading experimental checks")
 	}
@@ -63,8 +57,8 @@ func Checks(ctx context.Context, enabledChecks, experimentalChecks []string) ([]
 	return append(checks, expChecks...), nil
 }
 
-func loadExperimentalChecks(experimentalChecks []string) ([]check.Checker, error) {
-	var checks []check.Checker
+func loadExperimentalChecks(experimentalChecks []string) ([]api.Checker, error) {
+	var checks []api.Checker
 
 	if contains(experimentalChecks, "notowned") {
 		var cfg struct {
