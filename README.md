@@ -86,7 +86,7 @@ curl -sfL https://raw.githubusercontent.com/mszostok/codeowners-validator/main/i
 # In alpine linux (as it does not come with curl by default)
 wget -O - -q https://raw.githubusercontent.com/mszostok/codeowners-validator/main/install.sh | sh -s v0.7.4
 
-# Print version. Add `--oshort` to print just the version number.
+# Print version. Add `--short` to print just the version number.
 codeowners-validator version
 ```
 
