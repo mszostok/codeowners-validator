@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
+	"github.com/hashicorp/go-retryablehttp"
 
 	"go.szostok.io/codeowners-validator/pkg/url"
 
@@ -52,26 +53,25 @@ func NewClient(ctx context.Context, cfg *ClientConfig) (ghClient *github.Client,
 	if err := cfg.Validate(); err != nil {
 		return nil, false, err
 	}
-
-	httpClient := http.DefaultClient
+	retryableClient := retryablehttp.NewClient()
 
 	if cfg.AccessToken != "" {
-		httpClient = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
+		retryableClient.HTTPClient = oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: cfg.AccessToken},
 		))
 	} else if cfg.AppID != 0 {
-		httpClient, err = createAppInstallationHTTPClient(cfg)
+		retryableClient.HTTPClient, err = createAppInstallationHTTPClient(cfg)
 		isApp = true
 		if err != nil {
 			return
 		}
 	}
-	httpClient.Timeout = cfg.HTTPRequestTimeout
+	retryableClient.HTTPClient.Timeout = cfg.HTTPRequestTimeout
 
 	baseURL, uploadURL := cfg.BaseURL, cfg.UploadURL
 
 	if baseURL == "" {
-		ghClient = github.NewClient(httpClient)
+		ghClient = github.NewClient(retryableClient.StandardClient())
 		return
 	}
 
@@ -80,7 +80,7 @@ func NewClient(ctx context.Context, cfg *ClientConfig) (ghClient *github.Client,
 	}
 
 	bURL, uURL := url.CanonicalPath(baseURL), url.CanonicalPath(uploadURL)
-	ghClient, err = github.NewEnterpriseClient(bURL, uURL, httpClient)
+	ghClient, err = github.NewEnterpriseClient(bURL, uURL, retryableClient.StandardClient())
 	return
 }
 

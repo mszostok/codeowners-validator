@@ -8,12 +8,14 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/google/go-github/v41 v41.0.0
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/mattn/go-zglob v0.0.4-0.20201017022353-70beb5203ba6
 	github.com/pkg/errors v0.9.1
 	github.com/sebdah/goldie/v2 v2.5.3
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/afero v1.9.2
+	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.8.0
 	github.com/vrischmann/envconfig v1.3.0
@@ -26,8 +28,6 @@ require (
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gotest.tools v2.2.0+incompatible
 )
-
-require github.com/spf13/cobra v1.5.0
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
@@ -45,6 +45,7 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hokaccha/go-prettyjson v0.0.0-20211117102719-0474bc63780f // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
