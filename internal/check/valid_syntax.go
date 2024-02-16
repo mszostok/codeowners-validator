@@ -13,7 +13,7 @@ var (
 	// A valid username/organization name has up to 39 characters (per GitHub Join page)
 	// and is matched by the following regex: /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i
 	// A valid team name consists of alphanumerics, underscores and dashes
-	usernameOrTeamRegexp = regexp.MustCompile(`^@(?i:[a-z\d](?:[a-z\d-]){0,37}[a-z\d](/[a-z\d](?:[a-z\d_-]*)[a-z\d])?)$`)
+	usernameOrTeamRegexp = regexp.MustCompile(`^@(?i:[a-z\d](?:[a-z\d_-]){0,37}[a-z\d](/[a-z\d](?:[a-z\d_-]*)[a-z\d])?)$`)
 
 	// Per: https://davidcel.is/posts/stop-validating-email-addresses-with-regex/
 	// just check if there is '@' and a '.' afterwards
