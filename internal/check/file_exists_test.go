@@ -2,7 +2,6 @@ package check_test
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -155,7 +154,7 @@ func TestFileExists(t *testing.T) {
 	for tn, tc := range tests {
 		t.Run(tn, func(t *testing.T) {
 			// given
-			tmp, err := ioutil.TempDir("", "file-checker")
+			tmp, err := os.MkdirTemp("", "file-checker")
 			require.NoError(t, err)
 			defer func() {
 				assert.NoError(t, os.RemoveAll(tmp))
@@ -182,7 +181,7 @@ func TestFileExists(t *testing.T) {
 
 func TestFileExistCheckFileSystemFailure(t *testing.T) {
 	// given
-	tmpdir, err := ioutil.TempDir("", "file-checker")
+	tmpdir, err := os.MkdirTemp("", "file-checker")
 	require.NoError(t, err)
 	defer func() {
 		assert.NoError(t, os.RemoveAll(tmpdir))

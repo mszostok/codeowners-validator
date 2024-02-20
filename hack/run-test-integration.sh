@@ -7,6 +7,7 @@ set -E         # needs to be set if we want the ERR trap
 
 CURRENT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT_PATH=$(cd "${CURRENT_DIR}/.." && pwd)
+TEST=""
 readonly CURRENT_DIR
 readonly ROOT_PATH
 

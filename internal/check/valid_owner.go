@@ -322,7 +322,9 @@ func (v *ValidOwner) validateGitHubUser(ctx context.Context, name string) *valid
 }
 
 // There is a method to check if user is a org member
-//  client.Organizations.IsMember(context.Background(), "org-name", "user-name")
+//
+//	client.Organizations.IsMember(context.Background(), "org-name", "user-name")
+//
 // But latency is too huge for checking each single user independent
 // better and faster is to ask for all members and cache them.
 func (v *ValidOwner) initOrgListMembers(ctx context.Context) error {
