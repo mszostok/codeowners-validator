@@ -12,37 +12,36 @@ defaults:
   run:
     shell: bash
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || 'branch' }} # scope to for the current workflow
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }} # cancel only PR related jobs
+
 jobs:
   unit-test:
     strategy:
       fail-fast: false
       matrix:
-        go-version: [ 1.18.x ]
         os: [ ubuntu-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version-file: 'go.mod'
           cache: true
-      - name: "Build and unit-test with Go ${{ matrix.go-version }}"
+      - name: "Build and unit-test"
         run: make test-unit
-      - name: "Hammer unit-test with ${{ matrix.go-version }}"
+      - name: "Hammer unit-test"
         run: make test-hammer
   code-quality-test:
-    strategy:
-      fail-fast: false
-      matrix:
-        go-version: [ 1.18.x ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version-file: 'go.mod'
           cache: true
       - name: "Code Quality Analysis"
         run: make test-lint
@@ -50,7 +49,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: [ 1.18.x ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -58,15 +56,15 @@ jobs:
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version-file: 'go.mod'
           cache: true
       - if: matrix.os == 'windows-latest'
         run: echo "BINARY_EXT=.exe" >> $GITHUB_ENV
-      - name: "Integration testing with ${{ matrix.go-version }}"
+      - name: "Integration testing"
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_INTEGRATION_TESTS }}
           TOKEN_WITH_NO_SCOPES: ${{ secrets.TOKEN_WITH_NO_SCOPES }}
