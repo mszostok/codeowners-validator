@@ -66,6 +66,7 @@ get_binaries() {
     darwin/amd64) BINARIES="codeowners-validator" ;;
     linux/386) BINARIES="codeowners-validator" ;;
     linux/amd64) BINARIES="codeowners-validator" ;;
+    linux/arm64) BINARIES="codeowners-validator" ;;
     windows/386) BINARIES="codeowners-validator" ;;
     windows/amd64) BINARIES="codeowners-validator" ;;
     *)
